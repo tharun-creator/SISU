@@ -2,7 +2,17 @@
  * api.js — Centralized API client with JWT token injection and error handling
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const configuredApiUrl = import.meta.env.VITE_API_URL;
+const isLocalApp = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const BASE_URL = (configuredApiUrl || (isLocalApp ? 'http://localhost:8000' : '')).replace(/\/$/, '');
+
+function getConnectionErrorMessage() {
+  if (!configuredApiUrl && !isLocalApp) {
+    return 'Backend URL is not configured. Add VITE_API_URL in Vercel with your Render backend URL, then redeploy the frontend.';
+  }
+
+  return `Could not connect to the backend server${BASE_URL ? ` at ${BASE_URL}` : ''}. Please make sure the backend is deployed and running.`;
+}
 
 function getToken() {
   return localStorage.getItem('sisu_token');
@@ -16,26 +26,42 @@ async function request(path, options = {}) {
     ...options.headers,
   };
 
-  const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
 
-  if (res.status === 401) {
-    localStorage.removeItem('sisu_token');
-    localStorage.removeItem('sisu_user');
-    window.location.href = '/login';
-    throw new Error('Unauthorized');
+    if (res.status === 401) {
+      localStorage.removeItem('sisu_token');
+      localStorage.removeItem('sisu_user');
+      window.location.href = '/login';
+      throw new Error('Unauthorized');
+    }
+
+    if (!res.ok) {
+      let errorData;
+      try {
+        errorData = await res.json();
+      } catch (e) {
+        errorData = { detail: 'An unexpected error occurred' };
+      }
+      
+      const message = typeof errorData.detail === 'string' 
+        ? errorData.detail 
+        : (errorData.detail?.message || 'Request failed');
+        
+      const error = new Error(message);
+      error.detail = errorData.detail;
+      error.status = res.status;
+      throw error;
+    }
+
+    if (res.status === 204) return null;
+    return await res.json();
+  } catch (err) {
+    if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+      throw new Error(getConnectionErrorMessage());
+    }
+    throw err;
   }
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: 'Request failed' }));
-    const error = new Error(typeof err.detail === 'string' ? err.detail : (err.detail?.message || 'Request failed'));
-    error.detail = err.detail; // Attach full detail for structured errors (like 409 alternatives)
-    throw error;
-  }
-
-  // 204 No Content
-  if (res.status === 204) return null;
-
-  return res.json();
 }
 
 export const api = {
