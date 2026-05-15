@@ -1,14 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { AuthProvider, PrivateRoute } from './lib/auth';
-import ClientDashboard from './pages/ClientDashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import BookingPage from './pages/BookingPage';
-import NotificationsPage from './pages/NotificationsPage';
-
-import SettingsPage from './pages/SettingsPage';
+import { AuthProvider, PrivateRoute } from './lib/auth.jsx';
+import ClientDashboard from './pages/ClientDashboard.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+import Login from './pages/Login.jsx';
+import Signup from './pages/Signup.jsx';
+import BookingPage from './pages/BookingPage.jsx';
+import NotificationsPage from './pages/NotificationsPage.jsx';
+import SettingsPage from './pages/SettingsPage.jsx';
 
 function App() {
   return (

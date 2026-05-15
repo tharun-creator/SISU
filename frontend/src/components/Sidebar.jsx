@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/auth.jsx';
 
 const clientNav = [
   { icon: 'grid_view', label: 'Dashboard', path: '/' },

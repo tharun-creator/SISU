@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Sidebar from './Sidebar';
-import { useAuth } from '../lib/auth';
+import Sidebar from './Sidebar.jsx';
+import { useAuth } from '../lib/auth.jsx';
 
 export default function Layout({ children, notifCount = 0 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
