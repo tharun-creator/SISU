@@ -15,8 +15,17 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set in .env")
 
+# Strip query parameters for SSL to prevent PyMySQL Connection error on cloud databases like Aiven
+db_url = DATABASE_URL
+connect_args = {}
+if "mysql" in db_url:
+    if "?" in db_url:
+        db_url = db_url.split("?")[0]
+    connect_args = {"ssl": {}}
+
 engine = create_engine(
-    DATABASE_URL,
+    db_url,
+    connect_args=connect_args,
     pool_size=10,
     max_overflow=20,
     pool_recycle=3600,
