@@ -78,6 +78,8 @@ export const api = {
   createMeeting: (data) => request('/api/meetings', { method: 'POST', body: JSON.stringify(data) }),
   getMeeting: (id) => request(`/api/meetings/${id}`),
   cancelMeeting: (id) => request(`/api/meetings/${id}`, { method: 'DELETE' }),
+  requestReschedule: (id, data) => request(`/api/meetings/${id}/reschedule`, { method: 'PUT', body: JSON.stringify(data) }),
+  updateOtterNotes: (id, otterNotes) => request(`/api/meetings/${id}/otter-notes`, { method: 'PUT', body: JSON.stringify({ otter_notes: otterNotes }) }),
 
   // Admin
   adminGetMeetings: (status) => request(`/api/admin/meetings${status ? `?status=${status}` : ''}`),
@@ -90,6 +92,9 @@ export const api = {
 
   // Availability
   getAvailability: () => request('/api/availability'),
+  createAvailability: (data) => request('/api/availability', { method: 'POST', body: JSON.stringify(data) }),
+  updateAvailability: (id, data) => request(`/api/availability/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteAvailability: (id) => request(`/api/availability/${id}`, { method: 'DELETE' }),
   getFreeSlots: (date, duration = 60) => request(`/api/availability/free-slots?date=${date}&duration=${duration}`),
   getAvailableSlots: (fromTime, duration = 60, count = 10) => 
     request(`/api/meetings/available-slots?from_time=${fromTime}&duration=${duration}&count=${count}`),

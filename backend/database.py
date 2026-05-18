@@ -88,6 +88,8 @@ class Meeting(Base):
     meet_link = Column(String(512), nullable=True)
     notes = Column(Text, nullable=True)
     admin_notes = Column(Text, nullable=True)
+    phone = Column(String(50), nullable=True)
+    otter_notes = Column(Text, nullable=True)
     preferred_communication = Column(String(100), default="video")
     attachment_url = Column(String(512), nullable=True)
     deleted_at = Column(DateTime, nullable=True)

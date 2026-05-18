@@ -180,8 +180,9 @@ def build_zapier_payload(
     - start_time_utc: Pure UTC (fallback)
     """
     start_db = meeting.start_time  # Naive IST from DB e.g. 2026-05-27 13:00:00
-    # FORCE exactly 1 hour duration for the "box" in Google Calendar
-    end_db = start_db + datetime.timedelta(hours=1)
+    # Use meeting's actual duration (default to 60 if not set)
+    duration = meeting.duration_minutes or 60
+    end_db = start_db + datetime.timedelta(minutes=duration)
 
     start_ist = _naive_to_ist_aware(start_db)
     end_ist = _naive_to_ist_aware(end_db)
@@ -213,7 +214,7 @@ def build_zapier_payload(
         # ACCURATE KEYS (as requested)
         "start_time": format_datetime_for_google_calendar(start_db.isoformat()),
         "end_time": format_datetime_for_google_calendar(end_db.isoformat()),
-        "duration_minutes": 60,
+        "duration_minutes": duration,
         "timezone": "Asia/Kolkata",
 
         # ── Fallbacks ───────────────────────────────────────────────────────

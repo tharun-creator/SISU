@@ -1,7 +1,7 @@
 """
 main.py — Sisu Executive Meeting Platform — FastAPI Backend
 """
-from fastapi import FastAPI, HTTPException, Depends, Request, BackgroundTasks
+from fastapi import FastAPI, HTTPException, Depends, Request, BackgroundTasks, Header
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -102,6 +102,7 @@ class MeetingCreate(BaseModel):
     duration_minutes: int = 60
     preferred_communication: str = "video"
     google_meet: bool = True
+    phone: Optional[str] = None
 
 class MeetingUpdate(BaseModel):
     title: Optional[str] = None
@@ -111,6 +112,8 @@ class MeetingUpdate(BaseModel):
     admin_notes: Optional[str] = None
     priority: Optional[str] = None
     meet_link: Optional[str] = None
+    phone: Optional[str] = None
+    otter_notes: Optional[str] = None
 
 class MeetingStatusUpdate(BaseModel):
     status: str
@@ -124,6 +127,11 @@ class AvailabilityCreate(BaseModel):
     end_time: str
     recurring: bool = False
     day_of_week: Optional[int] = None
+
+class RescheduleRequest(BaseModel):
+    new_start_time: str
+    new_end_time: str
+    reason: Optional[str] = None
 
 # ── Timezone Setup ────────────────────────────────────────────────────────────
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
@@ -185,6 +193,8 @@ def meeting_to_dict(m: Meeting) -> dict:
         "notes": m.notes,
         "admin_notes": m.admin_notes,
         "preferred_communication": m.preferred_communication,
+        "phone": m.phone,
+        "otter_notes": m.otter_notes,
         "created_at": m.created_at.isoformat() if m.created_at else None,
         "updated_at": m.updated_at.isoformat() if m.updated_at else None,
     }
@@ -265,7 +275,9 @@ async def chat_endpoint(request: ChatMessage, current_user: User = Depends(get_c
     if not request.message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty")
     try:
-        response_text = await generate_chat_response(request.message, request.history, current_user.name)
+        response_text = await generate_chat_response(
+            request.message, request.history, user_name=current_user.name, user_id=current_user.id
+        )
         return ChatResponse(response=response_text)
     except Exception as e:
         return ChatResponse(response="", error=str(e))
@@ -384,6 +396,7 @@ async def create_meeting(
         end_time=end,
         duration_minutes=req.duration_minutes,
         preferred_communication=req.preferred_communication,
+        phone=req.phone,
         status="pending",
     )
     db.add(meeting)
@@ -467,6 +480,23 @@ async def get_meeting(
         raise HTTPException(status_code=403, detail="Access denied")
     return meeting_to_dict(meeting)
 
+@app.put("/api/meetings/{meeting_id}/otter-notes")
+async def update_meeting_otter_notes(
+    meeting_id: int,
+    req: MeetingUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
+    if not meeting:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+    if current_user.role == "client" and meeting.client_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to edit these notes")
+    meeting.otter_notes = req.otter_notes
+    db.commit()
+    db.refresh(meeting)
+    return meeting_to_dict(meeting)
+
 @app.delete("/api/meetings/{meeting_id}")
 async def cancel_meeting(
     meeting_id: int,
@@ -510,14 +540,85 @@ async def cancel_meeting(
 
     return {"message": "Meeting cancelled"}
 
+
+@app.put("/api/meetings/{meeting_id}/reschedule")
+async def client_reschedule_request(
+    meeting_id: int,
+    req: RescheduleRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
+    if not meeting:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+    if meeting.client_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    start = parse_dt_to_ist(req.new_start_time)
+    end = parse_dt_to_ist(req.new_end_time)
+
+    if start < datetime.datetime.now():
+        raise HTTPException(status_code=400, detail="Cannot reschedule to a past date")
+
+    # Conflict check (excluding this meeting itself)
+    conflict = db.query(Meeting).filter(
+        Meeting.start_time < end,
+        Meeting.end_time > start,
+        Meeting.id != meeting.id,
+        Meeting.deleted_at == None,
+        Meeting.status.in_(["pending", "approved"]),
+    ).first()
+    if conflict:
+        # Use meeting_booking_service to find alternatives and raise conflict
+        alternatives = meeting_booking_service.find_next_available_slots(
+            db, start, duration_minutes=meeting.duration_minutes
+        )
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "conflict": True,
+                "message": "The proposed time conflicts with an existing booking. Please choose from the alternatives.",
+                "alternative_slots": alternatives,
+            },
+        )
+
+    old_status = meeting.status
+    old_start = meeting.start_time
+    old_end = meeting.end_time
+
+    # Update times and set status to reschedule_requested
+    meeting.start_time = start
+    meeting.end_time = end
+    meeting.status = "reschedule_requested"
+    
+    # Log change details in notes
+    orig_time_str = f"[Reschedule Request] Original: {old_start.strftime('%b %d, %Y at %I:%M %p')} IST"
+    reason_str = f"Reason: {req.reason}" if req.reason else "No reason provided."
+    resched_note = f"{orig_time_str} · {reason_str}"
+    if meeting.notes:
+        meeting.notes = f"{resched_note}\n\n{meeting.notes}"
+    else:
+        meeting.notes = resched_note
+
+    db.commit()
+
+    log_status_change(db, meeting.id, old_status, "reschedule_requested", current_user.email, req.reason)
+
+    # Notify Admin via DB Notification
+    admins = db.query(User).filter(User.role == "admin").all()
+    for admin in admins:
+        create_notification(
+            db, admin.id, "reschedule_requested",
+            "Reschedule Requested",
+            f"{current_user.name} has requested to reschedule '{meeting.title}' to {start.strftime('%B %d, %I:%M %p')}.",
+            meeting.id
+        )
+
+    return meeting_to_dict(meeting)
+
+
 # ── Admin Routes ───────────────────────────────────────────────────────────────
-@app.get("/api/admin/meetings")
-async def get_admin_meetings(status: Optional[str] = None, db: Session = Depends(get_db), current_user: User = Depends(require_admin)):
-    q = db.query(Meeting).filter(Meeting.deleted_at == None)
-    if status:
-        q = q.filter(Meeting.status == status)
-    meetings = q.order_by(Meeting.start_time.desc()).all()
-    return [meeting_to_dict(m) for m in meetings]
 
 @app.put("/api/admin/meetings/{meeting_id}/status")
 async def admin_update_meeting_status(
@@ -686,7 +787,10 @@ async def admin_get_all_meetings(
 ):
     q = db.query(Meeting).filter(Meeting.deleted_at == None)
     if status:
-        q = q.filter(Meeting.status == status)
+        if status == "pending":
+            q = q.filter(Meeting.status.in_(["pending", "reschedule_requested"]))
+        else:
+            q = q.filter(Meeting.status == status)
     meetings = q.order_by(Meeting.created_at.desc()).all()
     return [meeting_to_dict(m) for m in meetings]
 
@@ -767,6 +871,37 @@ async def create_availability(
     db.add(slot)
     db.commit()
     return {"message": "Slot created"}
+
+@app.put("/api/availability/{slot_id}")
+async def update_availability(
+    slot_id: int,
+    req: AvailabilityCreate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    slot = db.query(AvailabilitySlot).filter(AvailabilitySlot.id == slot_id).first()
+    if not slot:
+        raise HTTPException(status_code=404, detail="Slot not found")
+    slot.start_time = parse_dt_to_ist(req.start_time)
+    slot.end_time = parse_dt_to_ist(req.end_time)
+    slot.recurring = req.recurring
+    slot.day_of_week = req.day_of_week
+    db.commit()
+    db.refresh(slot)
+    return {"message": "Slot updated", "id": slot.id}
+
+@app.delete("/api/availability/{slot_id}")
+async def delete_availability(
+    slot_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    slot = db.query(AvailabilitySlot).filter(AvailabilitySlot.id == slot_id).first()
+    if not slot:
+        raise HTTPException(status_code=404, detail="Slot not found")
+    db.delete(slot)
+    db.commit()
+    return {"message": "Slot deleted"}
 
 @app.get("/api/availability/free-slots")
 async def get_free_slots(date: str, duration: int = 60, db: Session = Depends(get_db)):

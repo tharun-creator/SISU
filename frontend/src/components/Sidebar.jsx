@@ -33,8 +33,9 @@ export default function Sidebar({ notifCount = 0, active, onClose }) {
           position: 'fixed',
           top: 0, left: 0, bottom: 0,
           width: 260,
-          background: '#FFFFFF',
-          borderRight: '1px solid var(--color-border)',
+          background: 'rgba(10, 11, 20, 0.75)',
+          backdropFilter: 'blur(30px) saturate(200%)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.05)',
           display: 'flex',
           flexDirection: 'column',
           zIndex: 70,
@@ -42,7 +43,7 @@ export default function Sidebar({ notifCount = 0, active, onClose }) {
         }}
       >
         {/* Logo & Mobile Close */}
-        <div style={{ padding: '20px 12px 16px', borderBottom: '1px solid var(--color-border)', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '20px 12px 16px', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <span style={{ display: 'inline-block', fontSize: 24, fontWeight: 800, letterSpacing: '-0.3px', background: 'linear-gradient(135deg, #6C63FF, #00C2FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', color: '#6C63FF' }}>SISU</span>
             <p style={{ fontSize: 10, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 1 }}>{isAdmin ? 'Executive' : 'Portal'}</p>
@@ -87,7 +88,7 @@ export default function Sidebar({ notifCount = 0, active, onClose }) {
                 border: isActive ? '1px solid rgba(108, 99, 255, 0.15)' : '1px solid transparent',
                 position: 'relative',
               }}
-              onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}}
+              onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'; e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'; }}}
               onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 20, flexShrink: 0, color: isActive ? '#6C63FF' : 'var(--color-text-secondary)' }}>
@@ -113,8 +114,8 @@ export default function Sidebar({ notifCount = 0, active, onClose }) {
       </nav>
 
       {/* User info */}
-      <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16, marginTop: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: '#FAFAFA', border: '1px solid var(--color-border)', marginBottom: 8 }}>
+      <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: 16, marginTop: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', marginBottom: 8 }}>
           <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #6C63FF, #00C2FF)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14, fontWeight: 700, color: 'white' }}>
             {user?.name ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '?'}
           </div>

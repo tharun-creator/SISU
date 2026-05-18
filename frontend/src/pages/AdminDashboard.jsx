@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 import Sidebar from '../components/Sidebar';
 import Layout from '../components/Layout';
+import OtterMeetingNotesModal from '../components/OtterMeetingNotesModal';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { format, parseISO, isToday, isThisWeek, isThisMonth } from 'date-fns';
 
-const STATUS_COLORS = { pending: '#f59e0b', approved: '#10b981', rejected: '#ef4444', cancelled: '#6b7280', rescheduled: '#fb923c', completed: '#6C63FF' };
+const STATUS_COLORS = { pending: '#f59e0b', approved: '#10b981', rejected: '#ef4444', cancelled: '#6b7280', rescheduled: '#fb923c', reschedule_requested: '#fb923c', completed: '#6C63FF' };
 const PRIORITY_COLORS = { urgent: '#ef4444', high: '#fb923c', normal: '#6C63FF', low: '#6ee7b7' };
 
 function StatCard({ icon, label, value, delta, color = '#6C63FF', delay = 0 }) {
@@ -30,7 +31,7 @@ function StatCard({ icon, label, value, delta, color = '#6C63FF', delay = 0 }) {
   );
 }
 
-function BookingModal({ meeting, onClose, onAction }) {
+function BookingModal({ meeting, onClose, onAction, onOpenOtter }) {
   const [status, setStatus] = useState('approved');
   const [notes, setNotes] = useState('');
   const [meetLink, setMeetLink] = useState('');
@@ -71,7 +72,10 @@ function BookingModal({ meeting, onClose, onAction }) {
           </p>
           <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}><span className="material-symbols-outlined" style={{ fontSize: 16 }}>assignment</span> {meeting.meeting_type} · {meeting.duration_minutes} mins</p>
           {meeting.reason && <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 8, fontStyle: 'italic' }}>"{meeting.reason}"</p>}
-        </div>
+        <button className="btn btn-ghost btn-sm" onClick={() => onOpenOtter(meeting)} style={{ color: '#00C2FF', fontSize: 11, padding: '6px 12px', border: '1px solid rgba(0,194,255,0.2)', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 10, width: '100%', justifyContent: 'center' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>graphic_eq</span> Open Otter AI Notes & Transcript
+        </button>
+      </div>
 
         {/* Action selection */}
         <div style={{ marginBottom: 16 }}>
@@ -134,6 +138,7 @@ export default function AdminDashboard() {
   const [notifications, setNotifications] = useState([]);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [otterMeeting, setOtterMeeting] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
   const [dateFilter, setDateFilter] = useState('all time');
 
@@ -168,7 +173,13 @@ export default function AdminDashboard() {
   };
 
   const filteredMeetings = meetings.filter(m => {
-    if (activeTab !== 'all' && m.status !== activeTab) return false;
+    if (activeTab !== 'all') {
+      if (activeTab === 'pending') {
+        if (m.status !== 'pending' && m.status !== 'reschedule_requested') return false;
+      } else {
+        if (m.status !== activeTab) return false;
+      }
+    }
     if (dateFilter !== 'all time' && m.start_time) {
       const date = parseISO(m.start_time);
       if (dateFilter === 'today' && !isToday(date)) return false;
@@ -187,7 +198,7 @@ export default function AdminDashboard() {
 
   return (
     <Layout notifCount={notifications.length}>
-      {selectedMeeting && <BookingModal meeting={selectedMeeting} onClose={() => setSelectedMeeting(null)} onAction={handleAction} />}
+      {selectedMeeting && <BookingModal meeting={selectedMeeting} onClose={() => setSelectedMeeting(null)} onAction={handleAction} onOpenOtter={setOtterMeeting} />}
 
       <main className="main-content">
         <div className="ambient-bg" />
@@ -283,11 +294,24 @@ export default function AdminDashboard() {
                           {m.display_time || (m.start_time ? format(parseISO(m.start_time), 'hh:mm a') : 'TBD')}
                         </td>
                         <td><span className={`badge badge-${m.priority}`}>{m.priority}</span></td>
-                        <td><span className={`badge badge-${m.status}`}>{m.status}</span></td>
+                        <td>
+                          <span className={`badge badge-${m.status}`} style={{ textTransform: 'capitalize' }}>
+                            {m.status === 'reschedule_requested' ? 'reschedule requested' : m.status}
+                          </span>
+                        </td>
                         <td onClick={(e) => e.stopPropagation()}>
-                          {m.status === 'pending' && (
-                            <button className="btn btn-primary btn-sm" onClick={() => setSelectedMeeting(m)}>Review</button>
-                          )}
+                          <div style={{ display: 'flex', gap: 6 }}>
+                            {(m.status === 'pending' || m.status === 'reschedule_requested') ? (
+                              <button className="btn btn-primary btn-sm" onClick={() => setSelectedMeeting(m)}>Review</button>
+                            ) : (
+                              <button className="btn btn-ghost btn-sm" onClick={() => setSelectedMeeting(m)} style={{ fontSize: 11, padding: '4px 10px' }}>Details</button>
+                            )}
+                            {(m.status === 'approved' || m.status === 'rescheduled' || m.status === 'completed' || m.status === 'pending') && (
+                              <button className="btn btn-ghost btn-sm" onClick={() => setOtterMeeting(m)} style={{ color: '#00C2FF', border: '1px solid rgba(0,194,255,0.2)', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, padding: '4px 10px' }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>graphic_eq</span> Otter
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </motion.tr>
                     ))}
@@ -341,6 +365,11 @@ export default function AdminDashboard() {
           </div>
         </div>
       </main>
+      <AnimatePresence>
+        {otterMeeting && (
+          <OtterMeetingNotesModal meeting={otterMeeting} onClose={() => setOtterMeeting(null)} />
+        )}
+      </AnimatePresence>
     </Layout>
   );
 }
