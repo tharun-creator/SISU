@@ -197,23 +197,21 @@ def build_zapier_payload(
     )
 
     return {
-        # ── Identity ────────────────────────────────────────────────────────
-        "meeting_id": str(meeting.id),
-
-        # ── Content ─────────────────────────────────────────────────────────
+        # ── EXACT BACKEND REQUIREMENTS ──────────────────────────────────────
         "title": meeting.title,
         "description": meeting.description or "",
-        "meeting_type": meeting.meeting_type,
+        "start_time": start_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30"),
+        "end_time": end_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30"),
+        "clientName": client_name,
+        "email": client_email,
+        "bookingId": f"SISU-{meeting.id:03d}",
+        "google_meet": True if meeting.preferred_communication == "video" else False,
 
-        # ── PRIMARY: Use these two fields in your Zap ───────────────────────
-        # In Google Calendar action → Start Date & Time = start_datetime_ist
-        #                           → Start Time Zone   = timezone
+        # ── Fallbacks & Legacy Fields ───────────────────────────────────────
+        "meeting_id": str(meeting.id),
+        "meeting_type": meeting.meeting_type,
         "start_datetime_ist": start_ist.strftime("%Y-%m-%dT%H:%M:%S"),
         "end_datetime_ist": end_ist.strftime("%Y-%m-%dT%H:%M:%S"),
-        
-        # ACCURATE KEYS (as requested)
-        "start_time": format_datetime_for_google_calendar(start_db.isoformat()),
-        "end_time": format_datetime_for_google_calendar(end_db.isoformat()),
         "duration_minutes": duration,
         "timezone": "Asia/Kolkata",
 
@@ -227,6 +225,7 @@ def build_zapier_payload(
         "display_date": start_ist.strftime("%B %d, %Y"),
         "display_time": start_ist.strftime("%I:%M %p IST"),
         "created_at": meeting.created_at.strftime("%Y-%m-%dT%H:%M:%S") if meeting.created_at else None,
+        "zapier_formatted_datetime": f"{start_ist.strftime('%b %d, %Y')} at {start_ist.strftime('%I:%M%p')}",
 
         # ── HIGH COMPATIBILITY (ISO with Offset) ───────────────────────────
         "start_time_full": start_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30"),

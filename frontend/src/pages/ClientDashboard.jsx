@@ -18,8 +18,37 @@ const STATUS_CONFIG = {
 const SESSION_TYPES = [
   { id: 'strategy', label: '30 Min Strategy', duration: 30, desc: 'Tactical alignment & roadmap quick-wins.', icon: 'bolt' },
   { id: 'mentorship', label: '60 Min Mentorship', duration: 60, desc: 'Deep strategic dive & playbook audit.', icon: 'hub' },
-  { id: 'vip', label: '2hr Executive VIP', duration: 120, desc: 'SOP audits & growth blueprint mapping.', icon: 'diamond' }
+  { id: 'vip', label: '2hr Executive VIP', duration: 120, desc: 'SOP audits & growth blueprint mapping.', icon: 'diamond' },
+  { id: 'custom', label: 'Custom Duration / Time (IST)', duration: 60, desc: 'Specify custom duration and slot.', icon: 'more_time' }
 ];
+
+const parseCustomTimeToSlot = (timeStr, duration = 60) => {
+  if (!timeStr) return null;
+  let match = timeStr.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+  if (!match) return null;
+  
+  let hours = parseInt(match[1], 10);
+  let minutes = match[2] ? parseInt(match[2], 10) : 0;
+  let ampm = match[3] ? match[3].toLowerCase() : null;
+  
+  if (ampm === 'pm' && hours < 12) hours += 12;
+  if (ampm === 'am' && hours === 12) hours = 0;
+  
+  const startStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  
+  let endMinutes = minutes + parseInt(duration, 10);
+  let endHours = hours + Math.floor(endMinutes / 60);
+  endMinutes = endMinutes % 60;
+  endHours = endHours % 24;
+  
+  const endStr = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+  
+  return {
+    label: `${timeStr} IST`,
+    start: startStr,
+    end: endStr
+  };
+};
 
 export default function ClientDashboard() {
   const { user, logout } = useAuth();
@@ -48,6 +77,8 @@ export default function ClientDashboard() {
   // Unified Booking States (Original Apple Layout)
   const [agenda, setAgenda] = useState('');
   const [sessionType, setSessionType] = useState(SESSION_TYPES[1]); // Default 60m
+  const [customTime, setCustomTime] = useState('');
+  const [customDuration, setCustomDuration] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [description, setDescription] = useState('');
@@ -102,7 +133,7 @@ export default function ClientDashboard() {
       sender: 'ai',
       text: `Hello Vikas — I'm your SISU AI Concierge. 🌟 To book a mentorship session with Tharun, here is the seamless procedure:
       
-1️⃣ Define your challenge in the **Strategic Session Agenda** field.
+1️⃣ Define your challenge in the **Agenda** field.
 2️⃣ Choose a duration, pick a date on our Smart Calendar, and select an available slot.
 3️⃣ Complete final details and click **Request Mentorship Session**!
 
@@ -156,9 +187,10 @@ How can I help you scale today?`,
   // Load available time slots when date or duration changes
   useEffect(() => {
     if (selectedDate && sessionType) {
-      loadSlots(selectedDate, sessionType.duration);
+      const dur = sessionType.id === 'custom' ? (parseInt(customDuration, 10) || 60) : sessionType.duration;
+      loadSlots(selectedDate, dur);
     }
-  }, [selectedDate, sessionType]);
+  }, [selectedDate, sessionType, customDuration]);
 
   const loadSlots = async (d, duration) => {
     setLoadingSlots(true);
@@ -312,6 +344,8 @@ Ready to launch Phase 3 during your next call!`
   const handleSelectType = (type) => {
     setSessionType(type);
     setSelectedSlot(null);
+    setCustomTime('');
+    setCustomDuration('');
   };
 
   const handleSelectDate = (year, month, day) => {
@@ -325,7 +359,7 @@ Ready to launch Phase 3 during your next call!`
 
   const handleFinalSubmit = async () => {
     if (!agenda.trim()) {
-      alert("Please provide a Session Agenda topic first.");
+      alert("Please provide an Agenda topic first.");
       return;
     }
     if (!selectedDate || !selectedSlot) {
@@ -337,16 +371,19 @@ Ready to launch Phase 3 during your next call!`
     const startStr = `${selectedDate.year}-${String(selectedDate.month + 1).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}T${selectedSlot.start}:00`;
     const endStr = `${selectedDate.year}-${String(selectedDate.month + 1).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}T${selectedSlot.end}:00`;
 
+    const dur = sessionType.id === 'custom' ? (parseInt(customDuration, 10) || 60) : sessionType.duration;
+    const typeLabel = sessionType.id === 'custom' ? `Custom: ${dur} mins` : sessionType.label;
+
     try {
       await api.createMeeting({
         title: agenda,
         description: description || 'Booked via Executive Mentorship Workspace',
-        reason: `Topic: ${agenda}. Priority: ${priority.toUpperCase()}`,
-        meeting_type: sessionType.label,
+        reason: `Topic: ${agenda}. Custom Slot: ${selectedSlot.label}`,
+        meeting_type: typeLabel,
         priority: priority,
         start_time: startStr,
         end_time: endStr,
-        duration_minutes: sessionType.duration,
+        duration_minutes: dur,
         preferred_communication: meetType,
         phone: phone || 'N/A'
       });
@@ -438,7 +475,6 @@ Ready to launch Phase 3 during your next call!`
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'linear-gradient(135deg, #5B5FFF, #00C2FF)', boxShadow: '0 0 12px #5B5FFF' }} />
           <span style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-0.3px', color: 'white' }}>SISU</span>
-          <span style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', marginLeft: 6, fontWeight: 700 }}>Concierge Cockpit</span>
         </div>
 
         <div style={{ display: 'flex', gap: 6, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', padding: 3, borderRadius: 10 }}>
@@ -565,20 +601,7 @@ Ready to launch Phase 3 during your next call!`
             </div>
           </div>
 
-          {/* 3. AI Slot Recommendation */}
-          <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, padding: 14 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.8px', color: '#94A3B8', textTransform: 'uppercase', display: 'block', marginBottom: 8 }}>AI Slot Recommendation</span>
-            
-            <div style={{ padding: 10, background: 'rgba(91,95,255,0.04)', border: '1px solid rgba(91,95,255,0.15)', borderRadius: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>Best Available Time</span>
-                <span style={{ fontSize: 10, color: '#00C2FF', fontWeight: 700 }}>6:00 PM IST</span>
-              </div>
-              <p style={{ fontSize: 10, color: '#94A3B8', marginTop: 4, margin: 0, lineHeight: 1.4 }}>
-                Reason: Lower meeting density and high focus window availability. Ideal for outbound review!
-              </p>
-            </div>
-          </div>
+
 
           {/* 4. Pre-Session Prep Checklist */}
           <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, padding: 14 }}>
@@ -811,7 +834,7 @@ Ready to launch Phase 3 during your next call!`
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#86868B', fontWeight: 800, marginBottom: 8 }}>1. Strategic Session Agenda</label>
+                    <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#86868B', fontWeight: 800, marginBottom: 8 }}>1. Agenda</label>
                     <input
                       className="apple-input"
                       type="text"
@@ -821,7 +844,7 @@ Ready to launch Phase 3 during your next call!`
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="apple-form-header-grid">
                     <div>
                       <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#86868B', fontWeight: 800, marginBottom: 8 }}>2. Mentorship Duration</label>
                       <select className="apple-select" value={sessionType.id} onChange={(e) => handleSelectType(SESSION_TYPES.find(s => s.id === e.target.value))}>
@@ -834,8 +857,8 @@ Ready to launch Phase 3 during your next call!`
                     <div>
                       <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#86868B', fontWeight: 800, marginBottom: 8 }}>3. Coaching Channel</label>
                       <select className="apple-select" value={meetType} onChange={(e) => setMeetType(e.target.value)}>
-                        <option value="video">📹 Google Meet (Online Video)</option>
-                        <option value="in_person">🏢 SISU Office (Physical Meet)</option>
+                        <option value="video">Google Meet (Online Video)</option>
+                        <option value="in_person">Spi Edge (Inoffice Meet)</option>
                       </select>
                     </div>
                   </div>
@@ -843,7 +866,7 @@ Ready to launch Phase 3 during your next call!`
                   <div style={{ borderTop: '1px solid #D2D2D7', paddingTop: 20 }}>
                     <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#86868B', fontWeight: 800, marginBottom: 12 }}>4. Pick Coaching Date & Time Slot</label>
                     
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 20 }}>
+                    <div className="apple-calendar-grid-container">
                       
                       <div style={{ background: 'rgba(255,255,255,0.5)', border: '1px solid #E5E5E7', borderRadius: 12, padding: 12 }}>
                         <AppleCalendarWidget
@@ -854,19 +877,64 @@ Ready to launch Phase 3 during your next call!`
 
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <p style={{ fontSize: 11.5, fontWeight: 700, color: '#1D1D1F', marginBottom: 10, textAlign: 'center' }}>
-                          {selectedDate ? `Available slots (${sessionType.duration}m)` : 'Choose a date first'}
+                          {selectedDate ? (sessionType.id === 'custom' ? 'Custom Time & Duration' : `Available slots (${sessionType.duration}m)`) : 'Choose a date first'}
                         </p>
 
                         <div className="apple-slots-grid" style={{ flex: 1, overflowY: 'auto', maxHeight: 220, paddingRight: 4 }}>
-                          {loadingSlots ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 6, color: '#86868B' }}>
-                              <div className="apple-spinner" />
-                              <span style={{ fontSize: 11 }}>Syncing...</span>
-                            </div>
-                          ) : !selectedDate ? (
+                          {!selectedDate ? (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#86868B', textAlign: 'center', border: '1px dashed #D2D2D7', borderRadius: 10, padding: 12 }}>
                               <span className="material-symbols-outlined" style={{ fontSize: 20, marginBottom: 6 }}>event_available</span>
                               <span style={{ fontSize: 11, lineHeight: 1.4 }}>Pick a date on the calendar to unlock coaching slots.</span>
+                            </div>
+                          ) : sessionType.id === 'custom' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '4px' }}>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 10, color: '#86868B', fontWeight: 700, marginBottom: 4 }}>Custom Time (IST)</label>
+                                <input
+                                  type="text"
+                                  className="apple-input"
+                                  style={{ height: 36, background: '#F5F5F7', border: '1px solid #D2D2D7', borderRadius: 8, padding: '8px 12px', fontSize: 13, width: '100%', color: '#1D1D1F', outline: 'none' }}
+                                  placeholder="e.g. 5:30 PM or 17:30"
+                                  value={customTime}
+                                  onChange={(e) => {
+                                    setCustomTime(e.target.value);
+                                    const parsedSlot = parseCustomTimeToSlot(e.target.value, customDuration || 60);
+                                    if (parsedSlot) {
+                                      setSelectedSlot(parsedSlot);
+                                    } else {
+                                      setSelectedSlot(null);
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 10, color: '#86868B', fontWeight: 700, marginBottom: 4 }}>Custom Duration (minutes)</label>
+                                <input
+                                  type="number"
+                                  className="apple-input"
+                                  style={{ height: 36, background: '#F5F5F7', border: '1px solid #D2D2D7', borderRadius: 8, padding: '8px 12px', fontSize: 13, width: '100%', color: '#1D1D1F', outline: 'none' }}
+                                  placeholder="e.g. 60"
+                                  value={customDuration}
+                                  onChange={(e) => {
+                                    const dur = e.target.value;
+                                    setCustomDuration(dur);
+                                    const parsedSlot = parseCustomTimeToSlot(customTime, dur || 60);
+                                    if (parsedSlot) {
+                                      setSelectedSlot(parsedSlot);
+                                    }
+                                  }}
+                                />
+                              </div>
+                              {selectedSlot && (
+                                <div style={{ fontSize: 11, color: '#22c55e', fontWeight: 600, marginTop: 4 }}>
+                                  ✓ Slot parsed: {selectedSlot.start} to {selectedSlot.end} IST
+                                </div>
+                              )}
+                            </div>
+                          ) : loadingSlots ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 6, color: '#86868B' }}>
+                              <div className="apple-spinner" />
+                              <span style={{ fontSize: 11 }}>Syncing...</span>
                             </div>
                           ) : availableSlots.length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '16px 8px', color: '#86868B', fontSize: 11, fontStyle: 'italic' }}>
@@ -895,14 +963,16 @@ Ready to launch Phase 3 during your next call!`
                     </div>
                   </div>
 
-                  <div style={{ borderTop: '1px solid #D2D2D7', paddingTop: 20, display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 16 }}>
+                  <div className="apple-form-footer-grid">
                     <div>
-                      <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#86868B', fontWeight: 700, marginBottom: 6 }}>5. Mentorship Urgency</label>
-                      <select className="apple-select" value={priority} onChange={(e) => setPriority(e.target.value)}>
-                        <option value="low">🟢 Normal Urgency</option>
-                        <option value="normal">🟡 High Urgency</option>
-                        <option value="high">🔴 Immediate Executive Review</option>
-                      </select>
+                      <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#86868B', fontWeight: 700, marginBottom: 6 }}>5. Description</label>
+                      <textarea
+                        className="apple-input"
+                        style={{ height: 38, minHeight: 38, maxHeight: 120, background: '#F5F5F7', border: '1px solid #D2D2D7', borderRadius: 8, padding: '8px 12px', fontSize: 13, width: '100%', color: '#1D1D1F', outline: 'none', resize: 'vertical' }}
+                        placeholder="e.g. Discussing outbound roadmap & scaling SDR metrics..."
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                      />
                     </div>
 
                     <div>
@@ -916,6 +986,25 @@ Ready to launch Phase 3 during your next call!`
                         onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
+                  </div>
+
+                  {/* Mobile-only Submit Action Button */}
+                  <div className="mobile-submit-container">
+                    <button
+                      onClick={handleFinalSubmit}
+                      disabled={submitting}
+                      className="btn btn-primary"
+                      style={{ width: '100%', padding: '14px', background: 'linear-gradient(135deg, #5B5FFF, #00C2FF)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 12, cursor: 'pointer', boxShadow: '0 8px 24px rgba(91,95,255,0.3)', color: 'white', fontWeight: 700, fontSize: 14 }}
+                    >
+                      {submitting ? (
+                        <span className="spinner" style={{ width: 16, height: 16 }} />
+                      ) : (
+                        <>
+                          <span>Request Mentorship Session</span>
+                          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+                        </>
+                      )}
+                    </button>
                   </div>
 
                 </div>
@@ -947,7 +1036,7 @@ Ready to launch Phase 3 during your next call!`
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 8 }}>
                 <span style={{ color: '#64748B' }}>Session Duration</span>
-                <span style={{ fontWeight: 600, color: 'white' }}>{sessionType.label}</span>
+                <span style={{ fontWeight: 600, color: 'white' }}>{sessionType.id === 'custom' ? `${customDuration || 60} mins (Custom)` : sessionType.label}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 8 }}>
                 <span style={{ color: '#64748B' }}>Proposed Slot</span>
@@ -961,15 +1050,15 @@ Ready to launch Phase 3 during your next call!`
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 8 }}>
                 <span style={{ color: '#64748B' }}>Format Type</span>
-                <span style={{ fontWeight: 600, color: 'white' }}>{meetType === 'video' ? '📹 Google Meet' : '🏢 In-Person'}</span>
+                <span style={{ fontWeight: 600, color: 'white' }}>{meetType === 'video' ? 'Google Meet' : 'Spi Edge (Inoffice Meet)'}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 8 }}>
                 <span style={{ color: '#64748B' }}>Callback Phone</span>
                 <span style={{ fontWeight: 600, color: 'white' }}>{phone || 'Not provided'}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                <span style={{ color: '#64748B' }}>Urgency Level</span>
-                <span style={{ fontWeight: 700, color: priority === 'high' ? '#ef4444' : priority === 'low' ? '#22c55e' : '#5B5FFF', textTransform: 'uppercase', fontSize: 11 }}>{priority}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13 }}>
+                <span style={{ color: '#64748B' }}>Description</span>
+                <span style={{ fontWeight: 500, color: 'white', fontSize: 12, lineHeight: 1.4 }}>{description.trim() ? description : 'No description provided'}</span>
               </div>
             </div>
 
@@ -990,58 +1079,6 @@ Ready to launch Phase 3 during your next call!`
                 )}
               </button>
             )}
-          </div>
-
-          {/* 7. Outbound Sales Growth Roadmap */}
-          <div style={{ background: '#0F1725', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#5B5FFF' }}>alt_route</span>
-              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.8px', color: '#94A3B8', textTransform: 'uppercase' }}>Growth Roadmap</span>
-            </div>
-            
-            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: 14 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>Phase 2: Outbound Sales</span>
-                <span style={{ fontSize: 10.5, fontWeight: 700, color: '#22c55e' }}>66% Done</span>
-              </div>
-              
-              <div style={{ width: '100%', height: 5, background: 'rgba(255,255,255,0.08)', borderRadius: 100, overflow: 'hidden', marginBottom: 12 }}>
-                <div style={{ width: '66%', height: '100%', background: 'linear-gradient(90deg, #5B5FFF, #00C2FF)', borderRadius: 100 }} />
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                {tasks.map(t => (
-                  <div key={t.id} onClick={() => toggleTask(t.id)} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', cursor: 'pointer' }}>
-                    <div style={{ width: 14, height: 14, borderRadius: 4, border: `1px solid ${t.completed ? '#22c55e' : 'rgba(255,255,255,0.2)'}`, background: t.completed ? 'rgba(34,197,94,0.1)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                      {t.completed && <span className="material-symbols-outlined" style={{ fontSize: 9, color: '#22c55e', fontWeight: 'bold' }}>done</span>}
-                    </div>
-                    <span style={{ fontSize: 11.5, color: t.completed ? '#64748B' : '#E2E8F0', textDecoration: t.completed ? 'line-through' : 'none', lineHeight: 1.4 }}>{t.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* 8. Active Deliverable Resource Vault */}
-          <div style={{ background: '#0F1725', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#00C2FF' }}>folder_open</span>
-              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.8px', color: '#94A3B8', textTransform: 'uppercase' }}>Executive Resource Vault</span>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {resources.map(r => (
-                <div key={r.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 10, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 10 }}>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', minWidth: 0 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 15, color: '#94A3B8' }}>{r.icon}</span>
-                    <span style={{ fontSize: 11.5, color: '#E2E8F0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</span>
-                  </div>
-                  <button onClick={() => alert(`Downloading template playbook: ${r.title}`)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#F8FAFC', padding: '4px 6px', borderRadius: 4, cursor: 'pointer', display: 'flex' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 12 }}>download</span>
-                  </button>
-                </div>
-              ))}
-            </div>
           </div>
 
         </div>
@@ -1257,6 +1294,40 @@ Ready to launch Phase 3 during your next call!`
         }
         .mobile-back-btn:hover {
           background: rgba(255, 255, 255, 0.08);
+        }
+
+        .apple-form-header-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+
+        .apple-calendar-grid-container {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 20px;
+        }
+
+        .apple-form-footer-grid {
+          border-top: 1px solid #D2D2D7;
+          padding-top: 20px;
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 16px;
+        }
+
+        .mobile-submit-container {
+          display: none;
+          margin-top: 24px;
+        }
+
+        @media (max-width: 640px) {
+          .apple-form-header-grid,
+          .apple-calendar-grid-container,
+          .apple-form-footer-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
         }
 
         @media (max-width: 1024px) {

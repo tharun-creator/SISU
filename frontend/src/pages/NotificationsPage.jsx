@@ -53,7 +53,6 @@ export default function NotificationsPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'linear-gradient(135deg, #5B5FFF, #00C2FF)', boxShadow: '0 0 12px #5B5FFF' }} />
           <a href="/" style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-0.3px', color: 'white', textDecoration: 'none' }}>SISU</a>
-          <span style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', marginLeft: 6, fontWeight: 700 }}>Concierge Cockpit</span>
         </div>
 
         <div style={{ display: 'flex', gap: 6 }}>

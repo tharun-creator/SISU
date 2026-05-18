@@ -425,7 +425,7 @@ async def create_meeting(
     meeting_dict = {
         "title": meeting.title,
         "date": local_start.strftime("%B %d, %Y"),
-        "time": local_start.strftime("%I:%M %p"),
+        "time": f"{local_start.strftime('%I:%M %p')} IST",
         "type": meeting.meeting_type,
         "duration": f"{meeting.duration_minutes} mins",
         "priority": meeting.priority,
@@ -526,7 +526,7 @@ async def cancel_meeting(
         meeting_dict = {
             "title": meeting.title,
             "date": meeting.start_time.strftime("%B %d, %Y"),
-            "time": meeting.start_time.strftime("%I:%M %p"),
+            "time": f"{meeting.start_time.strftime('%I:%M %p')} IST",
             "type": meeting.meeting_type,
             "duration": f"{meeting.duration_minutes} mins",
         }
@@ -664,8 +664,8 @@ async def admin_update_meeting_status(
                 if client:
                     local_old = to_local(old_start)
                     local_new = to_local(new_start)
-                    old_dict = {"title": meeting.title, "date": local_old.strftime("%B %d, %Y"), "time": local_old.strftime("%I:%M %p"), "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
-                    new_dict = {"title": meeting.title, "date": local_new.strftime("%B %d, %Y"), "time": local_new.strftime("%I:%M %p"), "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
+                    old_dict = {"title": meeting.title, "date": local_old.strftime("%B %d, %Y"), "time": f"{local_old.strftime('%I:%M %p')} IST", "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
+                    new_dict = {"title": meeting.title, "date": local_new.strftime("%B %d, %Y"), "time": f"{local_new.strftime('%I:%M %p')} IST", "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
                     background_tasks.add_task(email_service.send_meeting_rescheduled, client.email, client.name, old_dict, new_dict)
                     create_notification(db, client.id, "rescheduled", "Meeting Rescheduled", f"Your meeting has been rescheduled to {local_new.strftime('%B %d at %I:%M %p')}", meeting.id)
 
@@ -680,7 +680,7 @@ async def admin_update_meeting_status(
     meeting_dict = {
         "title": meeting.title,
         "date": local_start.strftime("%B %d, %Y"),
-        "time": local_start.strftime("%I:%M %p"),
+        "time": f"{local_start.strftime('%I:%M %p')} IST",
         "type": meeting.meeting_type,
         "duration": f"{meeting.duration_minutes} mins",
         "priority": meeting.priority,
@@ -742,7 +742,7 @@ def _create_calendar_and_update(
         fresh_dict = {
             "title": m.title,
             "date": to_local(m.start_time).strftime("%B %d, %Y"),
-            "time": to_local(m.start_time).strftime("%I:%M %p"),
+            "time": f"{to_local(m.start_time).strftime('%I:%M %p')} IST",
             "type": m.meeting_type,
             "duration": f"{m.duration_minutes} mins",
         }

@@ -173,12 +173,12 @@ export default function AdminDashboard() {
   };
 
   const filteredMeetings = meetings.filter(m => {
-    if (activeTab !== 'all') {
-      if (activeTab === 'pending') {
-        if (m.status !== 'pending' && m.status !== 'reschedule_requested') return false;
-      } else {
-        if (m.status !== activeTab) return false;
-      }
+    if (activeTab === 'all') {
+      if (m.status !== 'approved' && m.status !== 'rescheduled' && m.status !== 'completed') return false;
+    } else if (activeTab === 'pending') {
+      if (m.status !== 'pending' && m.status !== 'reschedule_requested' && m.status !== 'rejected') return false;
+    } else {
+      if (m.status !== activeTab) return false;
     }
     if (dateFilter !== 'all time' && m.start_time) {
       const date = parseISO(m.start_time);
@@ -188,6 +188,8 @@ export default function AdminDashboard() {
     }
     return true;
   });
+
+  const pendingAndRejectedMeetings = meetings.filter(m => m.status === 'pending' || m.status === 'reschedule_requested' || m.status === 'rejected');
 
   const pieData = [
     { name: 'Approved', value: stats.approved_meetings || 0, color: '#10b981' },
@@ -323,10 +325,10 @@ export default function AdminDashboard() {
 
           {/* Right sidebar */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {/* Pending requests quick actions */}
+             {/* Pending requests quick actions */}
             <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700 }}>Pending Requests</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 700 }}>Pending & Rejected Requests</h3>
                 {pendingMeetings.length > 0 && (
                   <span style={{ background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 100, padding: '2px 10px', fontSize: 11, fontWeight: 700, color: '#f59e0b' }}>
                     {pendingMeetings.length} NEW
@@ -334,12 +336,12 @@ export default function AdminDashboard() {
                 )}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {pendingMeetings.length === 0 ? (
+                {pendingAndRejectedMeetings.length === 0 ? (
                   <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 13, padding: '20px 0' }}>All caught up!</p>
-                ) : pendingMeetings.slice(0, 8).map((m) => (
+                ) : pendingAndRejectedMeetings.slice(0, 8).map((m) => (
                   <div key={m.id} style={{ padding: 14, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--color-border)', borderRadius: 12 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                      <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg, #f59e0b, #fb923c)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: 'white', flexShrink: 0 }}>
+                      <div style={{ width: 32, height: 32, background: m.status === 'rejected' ? 'linear-gradient(135deg, #ef4444, #f87171)' : 'linear-gradient(135deg, #f59e0b, #fb923c)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: 'white', flexShrink: 0 }}>
                         {m.client_name?.charAt(0) || '?'}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -370,6 +372,42 @@ export default function AdminDashboard() {
           <OtterMeetingNotesModal meeting={otterMeeting} onClose={() => setOtterMeeting(null)} />
         )}
       </AnimatePresence>
+      <style>{`
+        /* White color style overrides for Admin Dashboard high legibility */
+        .page-subtitle {
+          color: #E2E8F0 !important;
+        }
+        .stat-label {
+          color: #CBD5E1 !important;
+          font-weight: 600 !important;
+        }
+        .data-table th {
+          color: #FFFFFF !important;
+          font-weight: 700 !important;
+        }
+        .data-table td {
+          color: #FFFFFF !important;
+        }
+        .data-table td p {
+          color: #FFFFFF !important;
+        }
+        .data-table td p:last-child {
+          color: #CBD5E1 !important;
+        }
+        .card h3 {
+          color: #FFFFFF !important;
+        }
+        .card p {
+          color: #E2E8F0 !important;
+        }
+        .card p span {
+          color: #E2E8F0 !important;
+        }
+        /* Custom date color in table */
+        .data-table td:nth-child(3) {
+          color: #FFFFFF !important;
+        }
+      `}</style>
     </Layout>
   );
 }
