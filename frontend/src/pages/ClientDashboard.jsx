@@ -375,7 +375,7 @@ Ready to launch Phase 3 during your next call!`
     const typeLabel = sessionType.id === 'custom' ? `Custom: ${dur} mins` : sessionType.label;
 
     try {
-      await api.createMeeting({
+      const res = await api.createMeeting({
         title: agenda,
         description: description || 'Booked via Executive Mentorship Workspace',
         reason: `Topic: ${agenda}. Custom Slot: ${selectedSlot.label}`,
@@ -387,6 +387,11 @@ Ready to launch Phase 3 during your next call!`
         preferred_communication: meetType,
         phone: phone || 'N/A'
       });
+
+      if (res && res.success === false) {
+        alert(res.message || "This booking already exists!");
+        return;
+      }
 
       setBookingSuccess(true);
       await fetchData();
