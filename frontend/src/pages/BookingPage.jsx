@@ -15,6 +15,10 @@ const COMM_METHODS = ['Video Call', 'Phone Call', 'In-Person', 'Email'];
 
 export default function BookingPage() {
   const { user } = useAuth();
+  if (user?.role === 'admin') {
+    window.location.href = '/admin';
+    return null;
+  }
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     title: '',

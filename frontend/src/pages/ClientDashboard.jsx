@@ -102,6 +102,10 @@ const parseCustomTimeToSlot = (timeStr, duration = 60) => {
 
 export default function ClientDashboard() {
   const { user, logout, updateUser } = useAuth();
+  if (user?.role === 'admin') {
+    window.location.href = '/admin';
+    return null;
+  }
   const [meetings, setMeetings] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
