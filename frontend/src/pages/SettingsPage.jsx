@@ -6,7 +6,7 @@ import { useAuth } from '../lib/auth';
 import { api } from '../lib/api';
 
 export default function SettingsPage() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({
@@ -17,11 +17,44 @@ export default function SettingsPage() {
     phone: user?.phone || '',
   });
 
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [securityMessage, setSecurityMessage] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
+
   const handleSave = async (e) => {
     e.preventDefault();
-    // In a real app, call PUT /api/users/me
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      const updatedUser = await api.updateProfile(form);
+      updateUser(updatedUser);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      alert(err.message || 'Failed to update profile');
+    }
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+    if (!currentPassword || !newPassword || !confirmPassword) return;
+    if (newPassword !== confirmPassword) {
+      setSecurityMessage({ text: 'New passwords do not match', type: 'error' });
+      return;
+    }
+    setActionLoading(true);
+    setSecurityMessage(null);
+    try {
+      await api.changePassword({ current_password: currentPassword, new_password: newPassword });
+      setSecurityMessage({ text: 'Password updated successfully', type: 'success' });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setSecurityMessage({ text: err.message || 'Failed to update password', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const tabs = ['profile', 'notifications', 'security'];
@@ -129,21 +162,41 @@ export default function SettingsPage() {
             )}
 
             {activeTab === 'security' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>Security Settings</h3>
+                
+                {securityMessage && (
+                  <div style={{
+                    padding: '12px 16px',
+                    background: securityMessage.type === 'success' ? 'rgba(132,204,22,0.1)' : 'rgba(239,68,68,0.1)',
+                    border: `1px solid ${securityMessage.type === 'success' ? 'rgba(132,204,22,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                    borderRadius: 10,
+                    color: securityMessage.type === 'success' ? 'var(--color-green)' : 'var(--color-red)',
+                    fontSize: 14
+                  }}>
+                    {securityMessage.text}
+                  </div>
+                )}
+
                 <div style={{ padding: 16, background: 'rgba(255,255,255,0.01)', border: '1px solid var(--color-border)', borderRadius: 12 }}>
                   <p style={{ fontWeight: 600, marginBottom: 4, fontSize: 14, color: 'var(--color-text-primary)' }}>Account Email</p>
                   <p style={{ color: 'var(--color-text-secondary)', fontSize: 13 }}>{user?.email}</p>
                 </div>
                 <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Current Password</label>
+                  <input className="input-premium" type="password" placeholder="Enter current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+                </div>
+                <div>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>New Password</label>
-                  <input className="input-premium" type="password" placeholder="Enter new password" />
+                  <input className="input-premium" type="password" placeholder="Enter new password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Confirm Password</label>
-                  <input className="input-premium" type="password" placeholder="Confirm new password" />
+                  <input className="input-premium" type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                 </div>
-                <button className="btn-premium btn-premium-primary" style={{ alignSelf: 'flex-start' }}>Update Password</button>
+                <button type="submit" disabled={actionLoading || !currentPassword || !newPassword || !confirmPassword} className="btn-premium btn-premium-primary" style={{ alignSelf: 'flex-start' }}>
+                  {actionLoading ? 'Updating...' : 'Update Password'}
+                </button>
 
                 <div className="divider-premium" />
 
@@ -151,10 +204,10 @@ export default function SettingsPage() {
                   <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-red)', marginBottom: 8, fontFamily: 'var(--font-heading)' }}>Danger Zone</h4>
                   <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 16 }}>Sign out from all devices or delete your account.</p>
                   <div style={{ display: 'flex', gap: 10 }}>
-                    <button className="btn-premium btn-premium-danger" onClick={logout}>Sign Out</button>
+                    <button type="button" className="btn-premium btn-premium-danger" onClick={logout}>Sign Out</button>
                   </div>
                 </div>
-              </div>
+              </form>
             )}
           </motion.div>
         </div>
