@@ -6,7 +6,7 @@ import { useAuth } from '../lib/auth';
 import { api } from '../lib/api';
 
 export default function SettingsPage() {
-  const { user, logout, updateUser } = useAuth();
+  const { user, logout, updateUser, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({
@@ -89,8 +89,8 @@ export default function SettingsPage() {
                   <div>
                     <p style={{ fontWeight: 700, fontSize: 16, color: 'var(--color-text-primary)', margin: 0 }}>{user?.name}</p>
                     <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', margin: '2px 0 6px 0' }}>{user?.email}</p>
-                    <span style={{ fontSize: 11, padding: '2px 10px', background: user?.role === 'admin' ? 'rgba(59,130,246,0.12)' : 'rgba(132,204,22,0.12)', color: user?.role === 'admin' ? 'var(--color-accent)' : '#84cc16', border: `1px solid ${user?.role === 'admin' ? 'rgba(59,130,246,0.2)' : 'rgba(132,204,22,0.2)'}`, borderRadius: 100, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: 'var(--font-mono)' }}>
-                      {user?.role}
+                    <span style={{ fontSize: 11, padding: '2px 10px', background: isAdmin ? 'rgba(59,130,246,0.12)' : 'rgba(132,204,22,0.12)', color: isAdmin ? 'var(--color-accent)' : '#84cc16', border: `1px solid ${isAdmin ? 'rgba(59,130,246,0.2)' : 'rgba(132,204,22,0.2)'}`, borderRadius: 100, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: 'var(--font-mono)' }}>
+                      {isAdmin ? 'admin' : 'client'}
                     </span>
                   </div>
                 </div>

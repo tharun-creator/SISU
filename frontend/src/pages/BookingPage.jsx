@@ -14,8 +14,8 @@ const DURATIONS = [30, 45, 60, 90, 120];
 const COMM_METHODS = ['Video Call', 'Phone Call', 'In-Person', 'Email'];
 
 export default function BookingPage() {
-  const { user } = useAuth();
-  if (user?.role === 'admin') {
+  const { user, isAdmin } = useAuth();
+  if (isAdmin) {
     window.location.href = '/admin';
     return null;
   }

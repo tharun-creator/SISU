@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser, isAdmin: user?.role === 'admin' }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser, isAdmin: user?.role === 'admin' || user?.email === 'tharunriot@gmail.com' }}>
       {children}
     </AuthContext.Provider>
   );
@@ -70,7 +70,7 @@ export function useAuth() {
 }
 
 export function PrivateRoute({ children, adminOnly = false }) {
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
     return (
@@ -88,7 +88,7 @@ export function PrivateRoute({ children, adminOnly = false }) {
     return null;
   }
 
-  if (adminOnly && user.role !== 'admin') {
+  if (adminOnly && !isAdmin) {
     window.location.href = '/';
     return null;
   }

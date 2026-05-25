@@ -19,8 +19,8 @@ const TIME_SLOTS = [
 ];
 
 export default function AdminCalendarSlotsPage() {
-  const { user } = useAuth();
-  if (user?.role !== 'admin') {
+  const { user, isAdmin } = useAuth();
+  if (!isAdmin) {
     window.location.href = '/';
     return null;
   }

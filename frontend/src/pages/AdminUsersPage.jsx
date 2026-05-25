@@ -5,8 +5,8 @@ import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
 
 export default function AdminUsersPage() {
-  const { user: currentUser } = useAuth();
-  if (currentUser?.role !== 'admin') {
+  const { user: currentUser, isAdmin } = useAuth();
+  if (!isAdmin) {
     window.location.href = '/';
     return null;
   }

@@ -195,16 +195,24 @@ class AdminEmail(Base):
 # Create all tables
 Base.metadata.create_all(bind=engine)
 
-# Seed default admin email if table is empty
+# Seed default admin email if not present, and ensure correct role
 db = SessionLocal()
 try:
-    if not db.query(AdminEmail).first():
+    admin_exists = db.query(AdminEmail).filter(AdminEmail.email == "tharunriot@gmail.com").first()
+    if not admin_exists:
         default_admin = AdminEmail(email="tharunriot@gmail.com")
         db.add(default_admin)
         db.commit()
         print("Seeded default admin email: tharunriot@gmail.com")
+    
+    # Check if user exists and enforce role
+    tharun_user = db.query(User).filter(User.email == "tharunriot@gmail.com").first()
+    if tharun_user and tharun_user.role != "admin":
+        tharun_user.role = "admin"
+        db.commit()
+        print("Forced tharunriot@gmail.com user role to 'admin' in database.")
 except Exception as e:
-    print(f"Error seeding default admin: {e}")
+    print(f"Error seeding default admin / verifying user: {e}")
     db.rollback()
 finally:
     db.close()

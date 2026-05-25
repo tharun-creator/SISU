@@ -16,7 +16,7 @@ export default function Signup() {
     setLoading(true);
     try {
       const user = await register({ ...form, role: 'client' });
-      window.location.href = user.role === 'admin' ? '/admin' : '/';
+      window.location.href = (user.role === 'admin' || user.email === 'tharunriot@gmail.com') ? '/admin' : '/';
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {

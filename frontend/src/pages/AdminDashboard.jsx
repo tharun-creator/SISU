@@ -314,8 +314,8 @@ function BookingModal({ meeting, onClose, onAction }) {
 }
 
 export default function AdminDashboard() {
-  const { user } = useAuth();
-  if (user?.role !== 'admin') {
+  const { user, isAdmin } = useAuth();
+  if (!isAdmin) {
     window.location.href = '/';
     return null;
   }
