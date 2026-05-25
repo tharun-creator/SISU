@@ -184,8 +184,30 @@ class DateAvailabilitySignal(Base):
     custom_slots = Column(Text, nullable=True)  # comma-separated slots, e.g. "09:00-10:00,10:00-11:00"
 
 
+# ── Admin Emails ───────────────────────────────────────────────────────────────
+class AdminEmail(Base):
+    __tablename__ = "admin_emails"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), unique=True, nullable=False, index=True)
+
+
 # Create all tables
 Base.metadata.create_all(bind=engine)
+
+# Seed default admin email if table is empty
+db = SessionLocal()
+try:
+    if not db.query(AdminEmail).first():
+        default_admin = AdminEmail(email="tharunriot@gmail.com")
+        db.add(default_admin)
+        db.commit()
+        print("Seeded default admin email: tharunriot@gmail.com")
+except Exception as e:
+    print(f"Error seeding default admin: {e}")
+    db.rollback()
+finally:
+    db.close()
 
 
 def get_db():

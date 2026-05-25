@@ -19,7 +19,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from database import get_db, Booking as DBBooking, Meeting, User, Notification, MeetingStatusLog, AvailabilitySlot, PasswordResetToken, DateAvailabilitySignal
+from database import get_db, Booking as DBBooking, Meeting, User, Notification, MeetingStatusLog, AvailabilitySlot, PasswordResetToken, DateAvailabilitySignal, AdminEmail
 from llm import generate_chat_response
 import auth
 from auth import get_current_user, require_admin, RegisterRequest, LoginRequest
@@ -469,7 +469,7 @@ async def get_meetings(
     current_user: User = Depends(get_current_user),
 ):
     q = db.query(Meeting).filter(Meeting.deleted_at == None)
-    if current_user.email != "tharunriot@gmail.com":
+    if current_user.role != "admin":
         q = q.filter(Meeting.client_id == current_user.id)
     if status:
         q = q.filter(Meeting.status == status)
@@ -614,7 +614,7 @@ async def get_meeting(
     meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
-    if current_user.email != "tharunriot@gmail.com" and meeting.client_id != current_user.id:
+    if current_user.role != "admin" and meeting.client_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     return meeting_to_dict(meeting)
 
@@ -630,7 +630,7 @@ async def cancel_meeting(
     meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
-    if current_user.email != "tharunriot@gmail.com" and meeting.client_id != current_user.id:
+    if current_user.role != "admin" and meeting.client_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
 
     old_status = meeting.status
@@ -729,7 +729,7 @@ async def client_reschedule_request(
     log_status_change(db, meeting.id, old_status, "reschedule_requested", current_user.email, req.reason)
 
     # Notify Admin via DB Notification
-    admins = db.query(User).filter(User.email == "tharunriot@gmail.com").all()
+    admins = db.query(User).filter(User.role == "admin").all()
     for admin in admins:
         create_notification(
             db, admin.id, "reschedule_requested",
@@ -763,7 +763,8 @@ async def admin_create_user(
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    role = "admin" if req.email == "tharunriot@gmail.com" else "client"
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email == req.email).first() is not None
+    role = "admin" if is_admin else "client"
     
     new_user = User(
         name=req.name,
@@ -788,9 +789,13 @@ async def admin_promote_user(
     if not email:
         raise HTTPException(status_code=400, detail="Email cannot be empty")
         
-    if email != "tharunriot@gmail.com":
-        raise HTTPException(status_code=400, detail="Only tharunriot@gmail.com can be promoted to admin.")
-        
+    # Check if already in admin_emails table
+    admin_email_exists = db.query(AdminEmail).filter(AdminEmail.email == email).first()
+    if not admin_email_exists:
+        new_admin_email = AdminEmail(email=email)
+        db.add(new_admin_email)
+        db.commit()
+
     user = db.query(User).filter(User.email == email).first()
     if user:
         user.role = "admin"
@@ -831,14 +836,21 @@ async def admin_demote_user(
     if email == admin.email:
         raise HTTPException(status_code=400, detail="You cannot demote yourself.")
         
+    if email == "tharunriot@gmail.com":
+        raise HTTPException(status_code=400, detail="The default admin tharunriot@gmail.com cannot be demoted.")
+
+    # Remove from admin_emails table
+    db.query(AdminEmail).filter(AdminEmail.email == email).delete()
+    
     user = db.query(User).filter(User.email == email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-        
-    user.role = "client"
-    db.commit()
-    db.refresh(user)
-    return {"message": f"Successfully demoted {user.name} to client", "user": auth.user_to_dict(user)}
+    if user:
+        user.role = "client"
+        db.commit()
+        db.refresh(user)
+    else:
+        db.commit()
+
+    return {"message": f"Successfully demoted {email} to client", "user": auth.user_to_dict(user) if user else None}
 
 @app.put("/api/admin/users/{user_id}/status")
 async def admin_update_user_status(

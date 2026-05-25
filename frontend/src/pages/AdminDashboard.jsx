@@ -315,7 +315,7 @@ function BookingModal({ meeting, onClose, onAction }) {
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  if (user?.email !== 'tharunriot@gmail.com') {
+  if (user?.role !== 'admin') {
     window.location.href = '/';
     return null;
   }

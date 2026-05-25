@@ -20,7 +20,7 @@ const TIME_SLOTS = [
 
 export default function AdminCalendarSlotsPage() {
   const { user } = useAuth();
-  if (user?.email !== 'tharunriot@gmail.com') {
+  if (user?.role !== 'admin') {
     window.location.href = '/';
     return null;
   }

@@ -12,7 +12,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from database import get_db, User
+from database import get_db, User, AdminEmail
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 SECRET_KEY = os.getenv("JWT_SECRET", "sisu-super-secret-key-change-in-production")
@@ -103,8 +103,9 @@ def get_current_user(
     return user
 
 
-def require_admin(current_user: User = Depends(get_current_user)) -> User:
-    if current_user.email != "tharunriot@gmail.com":
+def require_admin(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> User:
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email == current_user.email).first() is not None
+    if not is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
@@ -115,7 +116,8 @@ def register_user(req: RegisterRequest, db: Session) -> TokenResponse:
     if existing:
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    role = "admin" if req.email == "tharunriot@gmail.com" else "client"
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email == req.email).first() is not None
+    role = "admin" if is_admin else "client"
 
     user = User(
         name=req.name,
@@ -143,7 +145,8 @@ def login_user(req: LoginRequest, db: Session) -> TokenResponse:
         raise HTTPException(status_code=403, detail="Account is disabled")
 
     # Enforce role logic
-    if user.email == "tharunriot@gmail.com":
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email == user.email).first() is not None
+    if is_admin:
         if user.role != "admin":
             user.role = "admin"
             db.commit()

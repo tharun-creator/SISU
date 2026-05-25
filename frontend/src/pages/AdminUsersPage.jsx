@@ -6,7 +6,7 @@ import { useAuth } from '../lib/auth';
 
 export default function AdminUsersPage() {
   const { user: currentUser } = useAuth();
-  if (currentUser?.email !== 'tharunriot@gmail.com') {
+  if (currentUser?.role !== 'admin') {
     window.location.href = '/';
     return null;
   }
@@ -14,10 +14,11 @@ export default function AdminUsersPage() {
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientPassword, setClientPassword] = useState('');
+  const [adminEmailInput, setAdminEmailInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [message, setMessage] = useState(null); // { text, type: 'success' | 'error' }
-  const [newClientCreds, setNewClientCreds] = useState(null); // { email, password }
+  const [newClientCreds, setNewClientCreds] = useState(null); // { email, password, isAdmin }
 
   const fetchUsers = async () => {
     try {
@@ -59,6 +60,46 @@ export default function AdminUsersPage() {
       await fetchUsers();
     } catch (err) {
       setMessage({ text: err.message || 'Failed to create client account', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePromoteAdmin = async (e) => {
+    e.preventDefault();
+    if (!adminEmailInput.trim()) return;
+    setActionLoading(true);
+    setMessage(null);
+    setNewClientCreds(null);
+    try {
+      const res = await api.adminPromoteUser({ email: adminEmailInput.trim() });
+      setMessage({ text: res.message, type: 'success' });
+      setAdminEmailInput('');
+      if (res.created_new && res.user.temporary_password) {
+        setNewClientCreds({
+          email: res.user.email,
+          password: res.user.temporary_password,
+          isAdmin: true
+        });
+      }
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to promote user', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePromoteUser = async (email) => {
+    if (!window.confirm(`Are you sure you want to promote '${email}' to admin?`)) return;
+    setActionLoading(true);
+    setMessage(null);
+    try {
+      const res = await api.adminPromoteUser({ email });
+      setMessage({ text: res.message, type: 'success' });
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to promote user', type: 'error' });
     } finally {
       setActionLoading(false);
     }
@@ -153,8 +194,42 @@ export default function AdminUsersPage() {
         </AnimatePresence>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', gap: 24, alignItems: 'start', position: 'relative', zIndex: 1 }}>
-          {/* Left Column: Create Client form & Temporary credentials card */}
+          {/* Left Column: Promote Admin & Create Client forms */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Promote Admin card */}
+            <div className="glass-premium" style={{ padding: 24 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 8, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>
+                Add or Promote Admin
+              </h3>
+              <p style={{ fontSize: 12.5, color: 'var(--color-text-secondary)', marginBottom: 20, lineHeight: 1.5 }}>
+                Grant admin permissions to an email address. If the user doesn't exist, a new profile will be created.
+              </p>
+
+              <form onSubmit={handlePromoteAdmin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                    Admin Email Address
+                  </label>
+                  <input
+                    type="email"
+                    className="input-premium"
+                    placeholder="e.g. admin@example.com"
+                    value={adminEmailInput}
+                    onChange={(e) => setAdminEmailInput(e.target.value)}
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={actionLoading || !adminEmailInput}
+                  className="btn-premium btn-premium-primary"
+                  style={{ alignSelf: 'stretch', justifyContent: 'center' }}
+                >
+                  {actionLoading ? 'Processing...' : 'Grant Admin Access'}
+                </button>
+              </form>
+            </div>
+
             {/* Create Client card */}
             <div className="glass-premium" style={{ padding: 24 }}>
               <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 8, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>
@@ -227,7 +302,7 @@ export default function AdminUsersPage() {
                 >
                   <h4 style={{ fontSize: 13, color: '#84cc16', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12, fontFamily: 'var(--font-mono)' }}>
                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>lock</span> 
-                    Client Credentials Created
+                    {newClientCreds.isAdmin ? 'Admin' : 'Client'} Credentials Created
                   </h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5, borderBottom: '1px solid var(--color-border)', paddingBottom: 6 }}>
@@ -240,7 +315,7 @@ export default function AdminUsersPage() {
                     </div>
                   </div>
                   <div style={{ marginTop: 14, fontSize: 11.5, color: 'var(--color-text-secondary)', lineHeight: 1.5, background: 'rgba(255,255,255,0.01)', padding: 10, borderRadius: 8, border: '1px solid var(--color-border)' }}>
-                    ℹ️ Provide these details to the client so they can log in.
+                    ℹ️ Provide these details to the user so they can log in.
                   </div>
                 </motion.div>
               )}
@@ -351,12 +426,38 @@ export default function AdminUsersPage() {
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
                             {!isSelf && (
                               <>
+                                {/* Promote / Demote Action */}
+                                {isAdmin ? (
+                                  u.email !== 'tharunriot@gmail.com' && (
+                                    <button
+                                      onClick={() => handleDemoteUser(u.email)}
+                                      className="btn-premium btn-premium-ghost"
+                                      style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, color: 'var(--color-accent-orange)', border: '1px solid rgba(249,115,22,0.08)' }}
+                                      title="Demote to client"
+                                      disabled={actionLoading}
+                                    >
+                                      Demote
+                                    </button>
+                                  )
+                                ) : (
+                                  <button
+                                    onClick={() => handlePromoteUser(u.email)}
+                                    className="btn-premium btn-premium-ghost"
+                                    style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, color: 'var(--color-accent)', border: '1px solid rgba(59,130,246,0.08)' }}
+                                    title="Promote to admin"
+                                    disabled={actionLoading}
+                                  >
+                                    Promote
+                                  </button>
+                                )}
+
                                 {/* Enable / Disable Status */}
                                 <button
                                   onClick={() => handleToggleStatus(u)}
                                   className="btn-premium btn-premium-ghost"
                                   style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, color: u.is_active ? 'var(--color-red)' : 'var(--color-green)' }}
                                   title={u.is_active ? 'Deactivate account' : 'Activate account'}
+                                  disabled={actionLoading}
                                 >
                                   {u.is_active ? 'Deactivate' : 'Activate'}
                                 </button>
@@ -367,6 +468,7 @@ export default function AdminUsersPage() {
                                   className="btn-premium btn-premium-danger"
                                   style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, minWidth: 'auto' }}
                                   title="Delete Account"
+                                  disabled={actionLoading}
                                 >
                                   Delete
                                 </button>
