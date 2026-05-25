@@ -51,8 +51,13 @@ export function AuthProvider({ children }) {
     window.location.href = '/login';
   };
 
+  const updateUser = (updatedUser) => {
+    localStorage.setItem('sisu_user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, isAdmin: user?.role === 'admin' }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser, isAdmin: user?.role === 'admin' }}>
       {children}
     </AuthContext.Provider>
   );

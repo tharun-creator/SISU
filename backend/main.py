@@ -12,13 +12,14 @@ import os
 import requests
 import time
 import re
+import secrets
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from database import get_db, Booking as DBBooking, Meeting, User, Notification, MeetingStatusLog, AvailabilitySlot
+from database import get_db, Booking as DBBooking, Meeting, User, Notification, MeetingStatusLog, AvailabilitySlot, PasswordResetToken, DateAvailabilitySignal
 from llm import generate_chat_response
 import auth
 from auth import get_current_user, require_admin, RegisterRequest, LoginRequest
@@ -132,6 +133,46 @@ class RescheduleRequest(BaseModel):
     new_start_time: str
     new_end_time: str
     reason: Optional[str] = None
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str
+
+class UpdateProfileRequest(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    company: Optional[str] = None
+    job_title: Optional[str] = None
+    timezone: Optional[str] = None
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class DateSignalRequest(BaseModel):
+    date: str  # "YYYY-MM-DD"
+    signal: str  # "green" | "yellow" | "red"
+    custom_slots: Optional[str] = None  # Comma-separated slots, e.g. "09:00-10:00,10:00-11:00"
+
+class UserCreateRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+    role: str = "client"
+
+class UserPromoteRequest(BaseModel):
+    email: str
+
+class UserDemoteRequest(BaseModel):
+    email: str
+
+class UserStatusUpdateRequest(BaseModel):
+    is_active: bool
+
 
 # ── Timezone Setup ────────────────────────────────────────────────────────────
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
@@ -268,6 +309,101 @@ async def login(req: LoginRequest, db: Session = Depends(get_db)):
 @app.get("/api/auth/me")
 async def me(current_user: User = Depends(get_current_user)):
     return auth.user_to_dict(current_user)
+
+@app.post("/api/auth/forgot-password")
+async def forgot_password(req: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == req.email).first()
+    if user:
+        # Invalidate existing active tokens
+        db.query(PasswordResetToken).filter(
+            PasswordResetToken.user_id == user.id,
+            PasswordResetToken.is_used == False
+        ).update({"is_used": True})
+        
+        # Create a new secure token
+        token = secrets.token_urlsafe(32)
+        expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
+        
+        reset_token_obj = PasswordResetToken(
+            user_id=user.id,
+            token=token,
+            expires_at=expires_at,
+            is_used=False
+        )
+        db.add(reset_token_obj)
+        db.commit()
+        
+        # Build reset link
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+        reset_link = f"{frontend_url.rstrip('/')}/reset-password?token={token}"
+        
+        # Send password reset email
+        background_tasks.add_task(
+            email_service.send_password_reset,
+            user.email, user.name, reset_link
+        )
+        
+    return {"detail": "If an account exists, a link has been sent."}
+
+@app.post("/api/auth/reset-password")
+async def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
+    reset_token = db.query(PasswordResetToken).filter(
+        PasswordResetToken.token == req.token
+    ).first()
+    
+    if not reset_token or reset_token.is_used or reset_token.expires_at < datetime.datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+        
+    user = db.query(User).filter(User.id == reset_token.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user.password_hash = auth.hash_password(req.password)
+    reset_token.is_used = True
+    db.commit()
+    
+    return {"detail": "Your password has been reset successfully."}
+
+@app.put("/api/auth/update-profile")
+async def update_profile(
+    req: UpdateProfileRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if req.name is not None:
+        name_val = req.name.strip()
+        if not name_val:
+            raise HTTPException(status_code=400, detail="Name cannot be empty")
+        current_user.name = name_val
+    if req.phone is not None:
+        current_user.phone = req.phone.strip()
+    if req.company is not None:
+        current_user.company = req.company.strip()
+    if req.job_title is not None:
+        current_user.job_title = req.job_title.strip()
+    if req.timezone is not None:
+        current_user.timezone = req.timezone.strip()
+    
+    db.commit()
+    db.refresh(current_user)
+    return auth.user_to_dict(current_user)
+
+@app.put("/api/auth/change-password")
+async def change_password(
+    req: ChangePasswordRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not auth.verify_password(req.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Incorrect current password")
+    
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters long")
+        
+    current_user.password_hash = auth.hash_password(req.new_password)
+    db.commit()
+    return {"detail": "Password updated successfully"}
+
 
 # ── Chat Route ─────────────────────────────────────────────────────────────────
 @app.post("/api/chat", response_model=ChatResponse)
@@ -480,22 +616,7 @@ async def get_meeting(
         raise HTTPException(status_code=403, detail="Access denied")
     return meeting_to_dict(meeting)
 
-@app.put("/api/meetings/{meeting_id}/otter-notes")
-async def update_meeting_otter_notes(
-    meeting_id: int,
-    req: MeetingUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
-    if not meeting:
-        raise HTTPException(status_code=404, detail="Meeting not found")
-    if current_user.role == "client" and meeting.client_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to edit these notes")
-    meeting.otter_notes = req.otter_notes
-    db.commit()
-    db.refresh(meeting)
-    return meeting_to_dict(meeting)
+
 
 @app.delete("/api/meetings/{meeting_id}")
 async def cancel_meeting(
@@ -619,6 +740,177 @@ async def client_reschedule_request(
 
 
 # ── Admin Routes ───────────────────────────────────────────────────────────────
+
+# ── Admin User Management Endpoints ──
+
+@app.get("/api/admin/users")
+async def admin_get_users(
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    users = db.query(User).order_by(User.created_at.desc()).all()
+    return [auth.user_to_dict(u) for u in users]
+
+@app.post("/api/admin/users/create")
+async def admin_create_user(
+    req: UserCreateRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    existing = db.query(User).filter(User.email == req.email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    new_user = User(
+        name=req.name,
+        email=req.email,
+        password_hash=auth.hash_password(req.password),
+        role=req.role,
+        is_active=True
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return auth.user_to_dict(new_user)
+
+@app.post("/api/admin/users/promote")
+async def admin_promote_user(
+    req: UserPromoteRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    email = req.email.strip()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email cannot be empty")
+        
+    user = db.query(User).filter(User.email == email).first()
+    if user:
+        user.role = "admin"
+        db.commit()
+        db.refresh(user)
+        return {"message": f"Successfully promoted {user.name} to admin", "user": auth.user_to_dict(user)}
+    else:
+        # Create a new user with admin role and default temporary password
+        temp_pass = "SisuAdmin@2026"
+        new_admin = User(
+            name="Pending Admin",
+            email=email,
+            password_hash=auth.hash_password(temp_pass),
+            role="admin",
+            is_active=True
+        )
+        db.add(new_admin)
+        db.commit()
+        db.refresh(new_admin)
+        
+        user_dict = auth.user_to_dict(new_admin)
+        user_dict["temporary_password"] = temp_pass
+        return {
+            "message": "User did not exist. Created a new Admin profile with temporary credentials.",
+            "user": user_dict,
+            "created_new": True
+        }
+
+@app.post("/api/admin/users/demote")
+async def admin_demote_user(
+    req: UserDemoteRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    email = req.email.strip()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email cannot be empty")
+    
+    if email == admin.email:
+        raise HTTPException(status_code=400, detail="You cannot demote yourself.")
+        
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user.role = "client"
+    db.commit()
+    db.refresh(user)
+    return {"message": f"Successfully demoted {user.name} to client", "user": auth.user_to_dict(user)}
+
+@app.put("/api/admin/users/{user_id}/status")
+async def admin_update_user_status(
+    user_id: int,
+    req: UserStatusUpdateRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    if user_id == admin.id:
+        raise HTTPException(status_code=400, detail="You cannot deactivate yourself.")
+        
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user.is_active = req.is_active
+    db.commit()
+    db.refresh(user)
+    return {"message": f"User status updated", "user": auth.user_to_dict(user)}
+
+@app.delete("/api/admin/users/{user_id}")
+async def admin_delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    if user_id == admin.id:
+        raise HTTPException(status_code=400, detail="You cannot delete yourself.")
+        
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    db.delete(user)
+    db.commit()
+    return {"message": "User successfully deleted"}
+
+# ── Admin Calendar Signaling Endpoints ──
+
+@app.get("/api/availability/calendar-signals")
+async def get_calendar_signals(db: Session = Depends(get_db)):
+    signals = db.query(DateAvailabilitySignal).all()
+    return {
+        s.date: {
+            "signal": s.signal,
+            "custom_slots": s.custom_slots.split(",") if s.custom_slots else []
+        }
+        for s in signals
+    }
+
+@app.post("/api/admin/availability/date-signal")
+async def admin_set_date_signal(
+    req: DateSignalRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    date_str = req.date.strip()
+    # Validate date format (YYYY-MM-DD)
+    if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
+        raise HTTPException(status_code=400, detail="Date must be in YYYY-MM-DD format")
+        
+    if req.signal not in ["green", "yellow", "red"]:
+        raise HTTPException(status_code=400, detail="Signal must be 'green', 'yellow', or 'red'")
+        
+    sig = db.query(DateAvailabilitySignal).filter(DateAvailabilitySignal.date == date_str).first()
+    if sig:
+        sig.signal = req.signal
+        sig.custom_slots = req.custom_slots
+    else:
+        sig = DateAvailabilitySignal(
+            date=date_str,
+            signal=req.signal,
+            custom_slots=req.custom_slots
+        )
+        db.add(sig)
+        
+    db.commit()
+    return {"message": "Date availability signal saved successfully", "date": date_str, "signal": req.signal}
+
 
 @app.put("/api/admin/meetings/{meeting_id}/status")
 async def admin_update_meeting_status(
@@ -905,6 +1197,68 @@ async def delete_availability(
 
 @app.get("/api/availability/free-slots")
 async def get_free_slots(date: str, duration: int = 60, db: Session = Depends(get_db)):
+    dt_str = date.split('T')[0]
+    sig = db.query(DateAvailabilitySignal).filter(DateAvailabilitySignal.date == dt_str).first()
+    
+    if sig:
+        if sig.signal == "red":
+            return []
+        elif sig.signal == "yellow":
+            if not sig.custom_slots:
+                return []
+            
+            custom_slots_list = []
+            for slot_str in sig.custom_slots.split(","):
+                if "-" not in slot_str:
+                    continue
+                start_part, end_part = slot_str.split("-")
+                try:
+                    t_start = datetime.datetime.strptime(start_part.strip(), "%H:%M")
+                    label = t_start.strftime("%I:%M %p")
+                    custom_slots_list.append({
+                        "start": start_part.strip(),
+                        "end": end_part.strip(),
+                        "label": label + " IST"
+                    })
+                except Exception:
+                    custom_slots_list.append({
+                        "start": start_part.strip(),
+                        "end": end_part.strip(),
+                        "label": f"{start_part.strip()} - {end_part.strip()} IST"
+                    })
+            
+            # Filter out locally booked meetings conflict
+            day_start = datetime.datetime.fromisoformat(dt_str).replace(hour=0, minute=0, second=0, microsecond=0)
+            day_end = day_start + datetime.timedelta(days=1)
+            local_meetings = db.query(Meeting).filter(
+                Meeting.start_time >= day_start,
+                Meeting.start_time < day_end,
+                Meeting.status.in_(["pending", "approved"]),
+                Meeting.deleted_at == None
+            ).all()
+            
+            final_slots = []
+            for slot in custom_slots_list:
+                try:
+                    slot_start_time = datetime.datetime.strptime(slot["start"], "%H:%M").time()
+                    slot_end_time = datetime.datetime.strptime(slot["end"], "%H:%M").time()
+                    
+                    slot_start_dt = datetime.datetime.combine(day_start.date(), slot_start_time).replace(tzinfo=IST)
+                    slot_end_dt = datetime.datetime.combine(day_start.date(), slot_end_time).replace(tzinfo=IST)
+                    
+                    conflict = False
+                    for m in local_meetings:
+                        m_start = to_local(m.start_time)
+                        m_end = to_local(m.end_time)
+                        if slot_start_dt < m_end and slot_end_dt > m_start:
+                            conflict = True
+                            break
+                    if not conflict:
+                        final_slots.append(slot)
+                except Exception:
+                    final_slots.append(slot)
+            return final_slots
+
     try:
         dt = datetime.datetime.fromisoformat(date)
         slots = calendar_service.get_free_slots(dt, duration)

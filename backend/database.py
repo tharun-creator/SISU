@@ -163,6 +163,27 @@ class AvailabilitySlot(Base):
     day_of_week = Column(Integer, nullable=True)  # 0=Mon … 6=Sun for recurring
 
 
+# ── Password Reset Tokens ──────────────────────────────────────────────────────
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    token = Column(String(255), unique=True, nullable=False, index=True)
+    expires_at = Column(DateTime, nullable=False)
+    is_used = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+# ── Date Availability Signals ──────────────────────────────────────────────────
+class DateAvailabilitySignal(Base):
+    __tablename__ = "date_availability_signals"
+
+    date = Column(String(10), primary_key=True, index=True)  # "YYYY-MM-DD"
+    signal = Column(String(20), nullable=False)  # "green", "yellow", "red"
+    custom_slots = Column(Text, nullable=True)  # comma-separated slots, e.g. "09:00-10:00,10:00-11:00"
+
+
 # Create all tables
 Base.metadata.create_all(bind=engine)
 

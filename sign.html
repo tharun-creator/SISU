@@ -128,9 +128,12 @@
 <!-- Password -->
 <div class="space-y-2">
 <label class="font-label-md text-label-md text-on-surface-variant block" for="password">Password</label>
-<div class="relative">
+<div class="relative group">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]" data-icon="lock">lock</span>
-<input class="w-full pl-10 pr-4 py-3 bg-white border border-outline-variant rounded-lg text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all duration-200" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<input class="w-full pl-10 pr-12 py-3 bg-white border border-outline-variant rounded-lg text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all duration-200" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors" id="toggle-password" type="button">
+<span class="material-symbols-outlined" id="password-toggle-icon">visibility</span>
+</button>
 </div>
 <p class="font-label-sm text-label-sm text-on-surface-variant">At least 8 characters with a mix of symbols.</p>
 </div>
@@ -154,6 +157,14 @@
         const phoneInput = document.getElementById('phone');
         const passwordInput = document.getElementById('password');
         const submitBtn = signupForm.querySelector('button[type="submit"]');
+        const togglePasswordBtn = document.getElementById('toggle-password');
+        const passwordToggleIcon = document.getElementById('password-toggle-icon');
+
+        togglePasswordBtn.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            passwordToggleIcon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+        });
 
         signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();

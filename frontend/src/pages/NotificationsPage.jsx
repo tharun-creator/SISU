@@ -3,14 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { formatDistanceToNow, parseISO } from 'date-fns';
+import Layout from '../components/Layout';
 
 const TYPE_CONFIG = {
-  booking_received: { icon: 'calendar_today', color: '#6C63FF' },
-  approved:         { icon: 'check_circle', color: '#10b981' },
-  rejected:         { icon: 'close', color: '#ef4444' },
-  rescheduled:      { icon: 'update', color: '#fb923c' },
-  cancelled:        { icon: 'close', color: '#6b7280' },
-  reminder:         { icon: 'schedule', color: '#f59e0b' },
+  booking_received: { icon: 'calendar_today', color: 'var(--color-accent)' },
+  approved:         { icon: 'check_circle', color: 'var(--color-green)' },
+  rejected:         { icon: 'close', color: 'var(--color-red)' },
+  rescheduled:      { icon: 'update', color: 'var(--color-accent-orange)' },
+  cancelled:        { icon: 'close', color: 'var(--color-text-muted)' },
+  reminder:         { icon: 'schedule', color: 'var(--color-amber)' },
 };
 
 export default function NotificationsPage() {
@@ -46,56 +47,25 @@ export default function NotificationsPage() {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div style={{ background: '#070B14', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif", color: '#F8FAFC' }}>
-      
-      {/* ── STUNNING TOP NAVIGATION NAVBAR ─────────────────────────────────── */}
-      <nav style={{ height: 64, borderBottom: '1px solid rgba(255,255,255,0.06)', background: '#070B14', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'linear-gradient(135deg, #5B5FFF, #00C2FF)', boxShadow: '0 0 12px #5B5FFF' }} />
-          <a href="/" style={{ fontSize: 16, fontWeight: 900, letterSpacing: '-0.3px', color: 'white', textDecoration: 'none' }}>SISU</a>
-        </div>
-
-        <div style={{ display: 'flex', gap: 6 }}>
-          <a href="/" style={{ padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600, textDecoration: 'none', background: 'rgba(255,255,255,0.03)', color: 'white', border: '1px solid rgba(255,255,255,0.06)' }}>
-            ← Back to Dashboard
-          </a>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg, #5B5FFF, #00C2FF)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 11, fontWeight: 800 }}>
-              {user?.name ? user.name[0].toUpperCase() : 'U'}
-            </div>
-            <span style={{ fontSize: 13, fontWeight: 500, color: '#E2E8F0' }}>{user?.name || 'User'}</span>
-          </div>
-
-          <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.08)' }} />
-
-          <button onClick={logout} style={{ background: 'none', border: 'none', color: '#64748B', display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', fontSize: 13, padding: 0 }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>logout</span> Sign Out
-          </button>
-        </div>
-      </nav>
-
-      {/* Ambient glass background layer */}
-      <div style={{ flex: 1, position: 'relative', display: 'flex', justifyContent: 'center', padding: '40px 20px', overflowY: 'auto' }}>
-        <div style={{ position: 'absolute', top: '10%', left: '30%', width: 400, height: 400, background: 'rgba(91,95,255,0.05)', borderRadius: '50%', filter: 'blur(100px)', zIndex: 0 }} />
-        <div style={{ position: 'absolute', bottom: '15%', right: '25%', width: 350, height: 350, background: 'rgba(0,194,255,0.03)', borderRadius: '50%', filter: 'blur(80px)', zIndex: 0 }} />
+    <Layout title="Notifications" notifCount={unreadCount}>
+      <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '10px 0' }}>
+        <div style={{ position: 'absolute', top: '10%', left: '30%', width: 400, height: 400, background: 'rgba(59,130,255,0.03)', borderRadius: '50%', filter: 'blur(100px)', zIndex: 0 }} />
 
         {/* Unified notifications card deck */}
         <div style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: 16 }}>
             <div>
-              <h2 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.5px', color: 'white', margin: 0 }}>Notifications Ledger</h2>
-              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4, marginBottom: 0 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>Notifications Ledger</h2>
+              <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 4, marginBottom: 0 }}>
                 {unreadCount > 0 ? `${unreadCount} unread update${unreadCount > 1 ? 's' : ''} awaiting review.` : 'Your executive schedule is fully up-to-date.'}
               </p>
             </div>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAll}
-                style={{ padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, background: 'rgba(255,255,255,0.03)', color: '#F8FAFC', border: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer', transition: 'all 0.2s' }}
+                className="btn-premium btn-premium-secondary"
+                style={{ padding: '8px 16px', fontSize: 12 }}
               >
                 Mark All Read
               </button>
@@ -105,26 +75,26 @@ export default function NotificationsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {loading ? (
               Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} style={{ padding: 20, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 14 }}>
+                <div key={i} className="glass-premium" style={{ padding: 20 }}>
                   <div style={{ display: 'flex', gap: 14 }}>
-                    <div className="skeleton" style={{ width: 42, height: 42, borderRadius: 12 }} />
+                    <div className="skeleton-pulse" style={{ width: 40, height: 40, borderRadius: 10 }} />
                     <div style={{ flex: 1 }}>
-                      <div className="skeleton" style={{ height: 14, width: '40%', marginBottom: 10 }} />
-                      <div className="skeleton" style={{ height: 12, width: '70%' }} />
+                      <div className="skeleton-pulse" style={{ height: 14, width: '40%', marginBottom: 10 }} />
+                      <div className="skeleton-pulse" style={{ height: 12, width: '70%' }} />
                     </div>
                   </div>
                 </div>
               ))
             ) : notifications.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '80px 20px', color: '#64748B', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: 16 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 44, marginBottom: 12, color: '#64748B' }}>notifications_off</span>
-                <p style={{ fontSize: 15, fontWeight: 700, color: 'white', marginBottom: 4 }}>No notifications found</p>
+              <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--color-text-muted)', border: '1px dashed var(--color-border)', borderRadius: 16 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 44, marginBottom: 12, color: 'var(--color-text-muted)' }}>notifications_off</span>
+                <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 4 }}>No notifications found</p>
                 <p style={{ fontSize: 12 }}>We will coordinate slot confirmations and reschedule approvals here.</p>
               </div>
             ) : (
               <AnimatePresence>
                 {notifications.map((n, i) => {
-                  const cfg = TYPE_CONFIG[n.type] || { icon: 'notifications', color: '#5B5FFF' };
+                  const cfg = TYPE_CONFIG[n.type] || { icon: 'notifications', color: 'var(--color-accent)' };
                   return (
                     <motion.div
                       key={n.id}
@@ -132,10 +102,11 @@ export default function NotificationsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.03 }}
                       onClick={() => !n.is_read && handleMarkRead(n.id)}
+                      className="glow-card"
                       style={{
                         padding: 18,
-                        background: n.is_read ? 'rgba(255,255,255,0.02)' : 'rgba(91,95,255,0.03)',
-                        border: `1px solid ${n.is_read ? 'rgba(255,255,255,0.04)' : 'rgba(91,95,255,0.1)'}`,
+                        background: n.is_read ? 'rgba(255,255,255,0.01)' : 'rgba(59, 130, 246, 0.03)',
+                        border: `1px solid ${n.is_read ? 'var(--color-border)' : 'rgba(59, 130, 246, 0.15)'}`,
                         borderRadius: 14,
                         display: 'flex',
                         gap: 14,
@@ -153,9 +124,9 @@ export default function NotificationsPage() {
                       </div>
 
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: 13.5, fontWeight: n.is_read ? 600 : 800, color: 'white', margin: 0 }}>{n.title}</p>
-                        <p style={{ fontSize: 12.5, color: '#94A3B8', marginTop: 4, marginBottom: 8, lineHeight: 1.5 }}>{n.message}</p>
-                        <p style={{ fontSize: 10, color: '#64748B', margin: 0 }}>
+                        <p style={{ fontSize: 13.5, fontWeight: n.is_read ? 600 : 800, color: 'var(--color-text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>{n.title}</p>
+                        <p style={{ fontSize: 12.5, color: 'var(--color-text-secondary)', marginTop: 4, marginBottom: 8, lineHeight: 1.5 }}>{n.message}</p>
+                        <p style={{ fontSize: 10, color: 'var(--color-text-muted)', margin: 0, fontFamily: 'var(--font-mono)' }}>
                           {n.created_at ? formatDistanceToNow(parseISO(n.created_at), { addSuffix: true }) : ''}
                         </p>
                       </div>
@@ -168,19 +139,6 @@ export default function NotificationsPage() {
 
         </div>
       </div>
-
-      <style>{`
-        .skeleton {
-          background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
-          background-size: 200% 100%;
-          animation: loading-shimmer 1.5s infinite;
-        }
-
-        @keyframes loading-shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
-    </div>
+    </Layout>
   );
 }

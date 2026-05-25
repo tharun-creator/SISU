@@ -140,36 +140,71 @@ export default function BookingPage() {
   const steps = ['Meeting Info', 'Schedule', 'Review'];
 
   return (
-    <Layout>
-      <main className="main-content" style={{ marginTop: 0 }}>
-        <div className="ambient-bg" />
-        <div style={{ maxWidth: 680, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+    <Layout title="Book Meeting">
+      <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '10px 0' }}>
+        <div style={{ position: 'absolute', top: '10%', left: '30%', width: 400, height: 400, background: 'rgba(59,130,255,0.03)', borderRadius: '50%', filter: 'blur(100px)', zIndex: 0 }} />
+
+        <div style={{ width: '100%', maxWidth: 680, position: 'relative', zIndex: 1 }}>
           {/* Page header */}
-          <div className="page-header">
-            <a href="/" style={{ color: 'var(--color-text-muted)', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span> Dashboard
+          <div style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 16, marginBottom: 24 }}>
+            <a href="/" style={{ color: 'var(--color-text-muted)', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 12, fontWeight: 600 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_back</span> Back to Dashboard
             </a>
-            <h1 className="page-title">Book a Meeting</h1>
-            <p className="page-subtitle">Request a session with the executive team</p>
+            <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>Book a Meeting</h1>
+            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 4, marginBottom: 0 }}>Request a session with the executive mentorship team.</p>
           </div>
 
           {/* Step progress */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 36, overflowX: 'auto', paddingBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32, padding: '0 8px' }}>
             {steps.map((s, i) => (
               <React.Fragment key={i}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: i + 1 < step ? 'pointer' : 'default', flexShrink: 0 }} onClick={() => { if (i + 1 < step) setStep(i + 1); }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: step > i + 1 ? '#10b981' : step === i + 1 ? '#6C63FF' : 'rgba(255,255,255,0.08)', border: `2px solid ${step > i + 1 ? '#10b981' : step === i + 1 ? '#6C63FF' : 'var(--color-border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: step >= i + 1 ? 'white' : 'var(--color-text-muted)', transition: 'var(--transition)' }}>
-                    {step > i + 1 ? <span className="material-symbols-outlined" style={{ fontSize: 18 }}>check</span> : i + 1}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: i + 1 < step ? 'pointer' : 'default' }} onClick={() => { if (i + 1 < step) setStep(i + 1); }}>
+                  <div 
+                    style={{ 
+                      width: 28, 
+                      height: 28, 
+                      borderRadius: '50%', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justify: 'center', 
+                      justifyContent: 'center',
+                      background: step > i + 1 ? 'var(--color-green)' : step === i + 1 ? 'var(--color-accent)' : 'rgba(255,255,255,0.04)', 
+                      border: `1.5px solid ${step > i + 1 ? 'var(--color-green)' : step === i + 1 ? 'var(--color-accent)' : 'var(--color-border)'}`, 
+                      color: step >= i + 1 ? 'white' : 'var(--color-text-secondary)',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      fontFamily: 'var(--font-mono)'
+                    }}
+                  >
+                    {step > i + 1 ? <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check</span> : i + 1}
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: step === i + 1 ? 600 : 400, color: step === i + 1 ? 'var(--color-text-primary)' : 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>{s}</span>
+                  <span 
+                    style={{ 
+                      fontSize: 13,
+                      fontWeight: step === i + 1 ? 700 : 500, 
+                      color: step === i + 1 ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+                      fontFamily: 'var(--font-heading)'
+                    }}
+                  >
+                    {s}
+                  </span>
                 </div>
-                {i < steps.length - 1 && <div style={{ flex: 1, height: 1, background: step > i + 1 ? '#10b981' : 'var(--color-border)', margin: '0 16px', transition: 'var(--transition)', minWidth: 20 }} />}
+                {i < steps.length - 1 && (
+                  <div 
+                    style={{ 
+                      flex: 1,
+                      height: 1.5,
+                      margin: '0 16px',
+                      background: step > i + 1 ? 'var(--color-green)' : 'var(--color-border)' 
+                    }} 
+                  />
+                )}
               </React.Fragment>
             ))}
           </div>
 
           <form onSubmit={handleSubmit}>
-            <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="card" style={{ marginBottom: 20 }}>
+            <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="glass-premium" style={{ padding: 28, marginBottom: 20 }}>
               {error && (
                 <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 16px', color: '#f87171', fontSize: 14, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span className="material-symbols-outlined" style={{ fontSize: 18 }}>warning</span> {error}
@@ -179,18 +214,18 @@ export default function BookingPage() {
               {/* Step 1: Meeting Info */}
               {step === 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>Meeting Information</h2>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4, fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)' }}>Meeting Information</h2>
                   
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Meeting Title *</label>
-                    <input className="input" placeholder="e.g. Q4 Growth Strategy Discussion" value={form.title} onChange={(e) => field('title', e.target.value)} required />
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Meeting Title *</label>
+                    <input className="input-premium" placeholder="e.g. Q4 Growth Strategy Discussion" value={form.title} onChange={(e) => field('title', e.target.value)} required />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Meeting Type *</label>
-                    <div className="grid-3" style={{ gap: 8 }}>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Meeting Type *</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
                       {MEETING_TYPES.map(t => (
-                        <button key={t} type="button" onClick={() => field('meeting_type', t)} style={{ padding: '10px 8px', borderRadius: 10, border: `1px solid ${form.meeting_type === t ? 'rgba(108, 99, 255, 0.5)' : 'var(--color-border)'}`, background: form.meeting_type === t ? 'rgba(108, 99, 255, 0.12)' : 'rgba(255,255,255,0.03)', color: form.meeting_type === t ? '#6C63FF' : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'var(--transition)', textAlign: 'center' }}>
+                        <button key={t} type="button" onClick={() => field('meeting_type', t)} style={{ padding: '10px 8px', borderRadius: 10, border: `1px solid ${form.meeting_type === t ? 'rgba(59, 130, 246, 0.4)' : 'var(--color-border)'}`, background: form.meeting_type === t ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)', color: form.meeting_type === t ? 'var(--color-accent)' : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'var(--transition-fast)', textAlign: 'center' }}>
                           {t}
                         </button>
                       ))}
@@ -198,13 +233,13 @@ export default function BookingPage() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Priority</label>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Priority</label>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
                       {PRIORITIES.map(p => {
-                        const colors = { low: '#6ee7b7', normal: '#6C63FF', high: '#fb923c', urgent: '#ef4444' };
+                        const colors = { low: 'var(--color-green)', normal: 'var(--color-accent)', high: 'var(--color-accent-orange)', urgent: 'var(--color-red)' };
                         const c = colors[p];
                         return (
-                          <button key={p} type="button" onClick={() => field('priority', p)} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: `1px solid ${form.priority === p ? c : 'var(--color-border)'}`, background: form.priority === p ? `${c}18` : 'rgba(255,255,255,0.03)', color: form.priority === p ? c : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'var(--transition)', textTransform: 'capitalize' }}>
+                          <button key={p} type="button" onClick={() => field('priority', p)} style={{ padding: '10px 0', borderRadius: 10, border: `1px solid ${form.priority === p ? c : 'var(--color-border)'}`, background: form.priority === p ? `${c}15` : 'rgba(255,255,255,0.02)', color: form.priority === p ? c : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'var(--transition-fast)', textTransform: 'capitalize' }}>
                             {p}
                           </button>
                         );
@@ -213,20 +248,20 @@ export default function BookingPage() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reason for Meeting</label>
-                    <textarea className="input" placeholder="Briefly describe why you'd like this meeting..." value={form.reason} onChange={(e) => field('reason', e.target.value)} style={{ minHeight: 90 }} />
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Reason for Meeting</label>
+                    <textarea className="input-premium" placeholder="Briefly describe why you'd like this meeting..." value={form.reason} onChange={(e) => field('reason', e.target.value)} style={{ minHeight: 90 }} />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Additional Details</label>
-                    <textarea className="input" placeholder="Any context, agenda items, or documents to share..." value={form.description} onChange={(e) => field('description', e.target.value)} style={{ minHeight: 90 }} />
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Additional Details</label>
+                    <textarea className="input-premium" placeholder="Any context, agenda items, or documents to share..." value={form.description} onChange={(e) => field('description', e.target.value)} style={{ minHeight: 90 }} />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Preferred Communication</label>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Preferred Communication</label>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       {COMM_METHODS.map(m => (
-                        <button key={m} type="button" onClick={() => field('preferred_communication', m)} style={{ padding: '8px 16px', borderRadius: 100, border: `1px solid ${form.preferred_communication === m ? 'rgba(108, 99, 255, 0.5)' : 'var(--color-border)'}`, background: form.preferred_communication === m ? 'rgba(108, 99, 255, 0.12)' : 'rgba(255,255,255,0.03)', color: form.preferred_communication === m ? '#6C63FF' : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'var(--transition)' }}>
+                        <button key={m} type="button" onClick={() => field('preferred_communication', m)} style={{ padding: '8px 16px', borderRadius: 100, border: `1px solid ${form.preferred_communication === m ? 'rgba(59, 130, 246, 0.4)' : 'var(--color-border)'}`, background: form.preferred_communication === m ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)', color: form.preferred_communication === m ? 'var(--color-accent)' : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'var(--transition-fast)' }}>
                           {m}
                         </button>
                       ))}
@@ -238,18 +273,18 @@ export default function BookingPage() {
               {/* Step 2: Schedule */}
               {step === 2 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>Choose Date & Time</h2>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4, fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)' }}>Choose Date & Time</h2>
                   
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Preferred Date & Time *</label>
-                    <input className="input" type="datetime-local" value={form.start_time} onChange={(e) => handleStartTimeChange(e.target.value)} required min={new Date().toISOString().slice(0, 16)} />
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Preferred Date & Time *</label>
+                    <input className="input-premium" type="datetime-local" value={form.start_time} onChange={(e) => handleStartTimeChange(e.target.value)} required min={new Date().toISOString().slice(0, 16)} />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Duration</label>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Duration</label>
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                       {DURATIONS.map(d => (
-                        <button key={d} type="button" onClick={() => handleDurationChange(d)} style={{ padding: '10px 20px', borderRadius: 100, border: `1px solid ${form.duration_minutes === d ? 'rgba(108, 99, 255, 0.5)' : 'var(--color-border)'}`, background: form.duration_minutes === d ? 'rgba(108, 99, 255, 0.12)' : 'rgba(255,255,255,0.03)', color: form.duration_minutes === d ? '#6C63FF' : 'var(--color-text-secondary)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'var(--transition)' }}>
+                        <button key={d} type="button" onClick={() => handleDurationChange(d)} style={{ padding: '10px 20px', borderRadius: 100, border: `1px solid ${form.duration_minutes === d ? 'rgba(59, 130, 246, 0.4)' : 'var(--color-border)'}`, background: form.duration_minutes === d ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)', color: form.duration_minutes === d ? 'var(--color-accent)' : 'var(--color-text-secondary)', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'var(--transition-fast)' }}>
                           {d < 60 ? `${d}m` : `${d / 60}h${d % 60 ? ` ${d % 60}m` : ''}`}
                         </button>
                       ))}
@@ -257,14 +292,14 @@ export default function BookingPage() {
                   </div>
 
                   {form.start_time && (
-                    <div style={{ padding: 16, background: 'rgba(108, 99, 255, 0.06)', border: '1px solid rgba(108, 99, 255, 0.15)', borderRadius: 12 }}>
-                      <p style={{ fontSize: 13, color: '#6C63FF', fontWeight: 600, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <div style={{ padding: 16, background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.15)', borderRadius: 12 }}>
+                      <p style={{ fontSize: 13, color: 'var(--color-accent)', fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)' }}>
                         <span className="material-symbols-outlined" style={{ fontSize: 16 }}>schedule</span> Selected Time
                       </p>
-                      <p style={{ fontSize: 14, fontWeight: 700 }}>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text-primary)' }}>
                         {new Date(form.start_time).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                       </p>
-                      <p style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                      <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 2 }}>
                         {new Date(form.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} — {form.end_time && new Date(form.end_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} ({form.duration_minutes} min)
                       </p>
                     </div>
@@ -272,14 +307,14 @@ export default function BookingPage() {
 
                   {(alternatives.length > 0 || availableSlots.length > 0) && (
                     <div style={{ marginTop: 8 }}>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
                         {alternatives.length > 0 ? 'Suggested Alternatives' : 'Available Slots'}
                       </label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 10 }}>
                         {(alternatives.length > 0 ? alternatives : availableSlots).map((slot, i) => (
-                          <button key={i} type="button" onClick={() => selectSlot(slot)} style={{ textAlign: 'left', padding: '12px', borderRadius: 12, border: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'var(--transition)' }} className="slot-btn">
-                            <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 2 }}>{slot.display_time.split(' IST')[0]}</p>
-                            <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{slot.display_date}</p>
+                          <button key={i} type="button" onClick={() => selectSlot(slot)} style={{ textAlign: 'left', padding: '12px', borderRadius: 12, border: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.01)', cursor: 'pointer', transition: 'var(--transition-fast)' }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)'; e.currentTarget.style.background = 'rgba(59, 130, 246, 0.03)'; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.01)'; }}>
+                            <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 2, color: 'var(--color-text-primary)' }}>{slot.display_time.split(' IST')[0]}</p>
+                            <p style={{ fontSize: 11, color: 'var(--color-text-secondary)' }}>{slot.display_date}</p>
                           </button>
                         ))}
                       </div>
@@ -291,8 +326,8 @@ export default function BookingPage() {
               {/* Step 3: Review */}
               {step === 3 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>Review Your Request</h2>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--color-border)', borderRadius: 14, overflow: 'hidden' }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4, fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)' }}>Review Your Request</h2>
+                  <div style={{ background: 'rgba(255,255,255,0.01)', border: '1px solid var(--color-border)', borderRadius: 14, overflow: 'hidden' }}>
                     {[
                       { label: 'Meeting', value: form.title },
                       { label: 'Type', value: form.meeting_type },
@@ -302,19 +337,19 @@ export default function BookingPage() {
                       { label: 'Via', value: form.preferred_communication },
                     ].map(({ label, value }) => (
                       <div key={label} style={{ display: 'flex', padding: '14px 18px', borderBottom: '1px solid var(--color-border)' }}>
-                        <span style={{ width: 100, flexShrink: 0, fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
-                        <span style={{ fontSize: 14, fontWeight: 500 }}>{value}</span>
+                        <span style={{ width: 100, flexShrink: 0, fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>{label}</span>
+                        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)' }}>{value}</span>
                       </div>
                     ))}
                     {form.reason && (
                       <div style={{ padding: '14px 18px' }}>
-                        <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>Reason</p>
+                        <p style={{ fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Reason</p>
                         <p style={{ fontSize: 14, color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{form.reason}</p>
                       </div>
                     )}
                   </div>
-                  <div style={{ padding: 14, background: 'rgba(108, 99, 255, 0.06)', border: '1px solid rgba(108, 99, 255, 0.15)', borderRadius: 12 }}>
-                    <p style={{ fontSize: 13, color: '#6C63FF', lineHeight: 1.6, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ padding: 14, background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.15)', borderRadius: 12 }}>
+                    <p style={{ fontSize: 13, color: 'var(--color-accent)', lineHeight: 1.6, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
                       <span className="material-symbols-outlined" style={{ fontSize: 18 }}>mail</span> 
                       <span>A confirmation email will be sent to <strong>{user?.email}</strong> and you'll be notified once the admin reviews your request.</span>
                     </p>
@@ -324,14 +359,14 @@ export default function BookingPage() {
             </motion.div>
 
             {/* Navigation buttons */}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               {step > 1 ? (
-                <button type="button" className="btn btn-secondary" onClick={() => setStep(s => s - 1)}>← Back</button>
+                <button type="button" className="btn-premium btn-premium-secondary" onClick={() => setStep(s => s - 1)}>← Back</button>
               ) : (
-                <a href="/" className="btn btn-secondary">← Dashboard</a>
+                <a href="/" className="btn-premium btn-premium-secondary" style={{ textDecoration: 'none' }}>← Dashboard</a>
               )}
               {step < 3 ? (
-                <button type="button" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => {
+                <button type="button" className="btn-premium btn-premium-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => {
                   if (step === 1 && !form.title) { setError('Please enter a meeting title'); return; }
                   if (step === 2 && !form.start_time) { setError('Please select a date and time'); return; }
                   setError(''); setStep(s => s + 1);
@@ -339,14 +374,14 @@ export default function BookingPage() {
                   Continue <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
                 </button>
               ) : (
-                <button type="submit" className="btn btn-primary" disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <button type="submit" className="btn-premium btn-premium-primary" disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   {loading ? <><span className="material-symbols-outlined" style={{ fontSize: 18 }}>pending_actions</span> Submitting...</> : <><span className="material-symbols-outlined" style={{ fontSize: 18 }}>send</span> Submit Request</>}
                 </button>
               )}
             </div>
           </form>
         </div>
-      </main>
+      </div>
     </Layout>
   );
 }

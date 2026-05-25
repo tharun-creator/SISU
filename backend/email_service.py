@@ -206,3 +206,21 @@ def send_cancellation(to: str, client_name: str, meeting: dict) -> bool:
 
 def send_reminder(to: str, client_name: str, meeting: dict) -> bool:
     return _send(to, "Meeting reminder — SISU", _reminder_html(client_name, meeting))
+
+
+def send_password_reset(to: str, client_name: str, reset_link: str) -> bool:
+    content = f"""
+<h1 style="color:#fff;font-size:28px;font-weight:700;margin:0 0 8px;letter-spacing:-0.5px;">Reset Your Password</h1>
+<p style="color:rgba(255,255,255,0.6);font-size:15px;margin:0 0 24px;">Hi {client_name},</p>
+<p style="color:rgba(255,255,255,0.6);font-size:15px;margin:0 0 24px;">We received a request to reset your password. Click the button below to choose a new password. This link is valid for 60 minutes.</p>
+{_cta_button("Reset Password", reset_link)}
+<p style="color:rgba(255,255,255,0.4);font-size:13px;line-height:1.6;margin:24px 0 0;word-break:break-all;">
+  If the button above doesn't work, copy and paste this URL into your browser:<br>
+  <a href="{reset_link}" style="color:#818cf8;text-decoration:none;">{reset_link}</a>
+</p>
+<p style="color:rgba(255,255,255,0.4);font-size:13px;line-height:1.6;margin:16px 0 0;">
+  If you didn't request a password reset, you can safely ignore this email.
+</p>
+"""
+    return _send(to, "Reset your password — SISU", _base_template(content, "Password reset request for your SISU account"))
+

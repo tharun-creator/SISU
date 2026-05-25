@@ -69,6 +69,10 @@ export const api = {
   register: (data) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   login: (data) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
   me: () => request('/api/auth/me'),
+  forgotPassword: (email) => request('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+  resetPassword: (token, password) => request('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) }),
+  updateProfile: (data) => request('/api/auth/update-profile', { method: 'PUT', body: JSON.stringify(data) }),
+  changePassword: (data) => request('/api/auth/change-password', { method: 'PUT', body: JSON.stringify(data) }),
 
   // Chat
   chat: (message, history = []) => request('/api/chat', { method: 'POST', body: JSON.stringify({ message, history }) }),
@@ -79,11 +83,18 @@ export const api = {
   getMeeting: (id) => request(`/api/meetings/${id}`),
   cancelMeeting: (id) => request(`/api/meetings/${id}`, { method: 'DELETE' }),
   requestReschedule: (id, data) => request(`/api/meetings/${id}/reschedule`, { method: 'PUT', body: JSON.stringify(data) }),
-  updateOtterNotes: (id, otterNotes) => request(`/api/meetings/${id}/otter-notes`, { method: 'PUT', body: JSON.stringify({ otter_notes: otterNotes }) }),
 
   // Admin
   adminGetMeetings: (status) => request(`/api/admin/meetings${status ? `?status=${status}` : ''}`),
   adminUpdateStatus: (id, data) => request(`/api/admin/meetings/${id}/status`, { method: 'PUT', body: JSON.stringify(data) }),
+  adminGetUsers: () => request('/api/admin/users'),
+  adminCreateUser: (data) => request('/api/admin/users/create', { method: 'POST', body: JSON.stringify(data) }),
+  adminPromoteUser: (data) => request('/api/admin/users/promote', { method: 'POST', body: JSON.stringify(data) }),
+  adminDemoteUser: (data) => request('/api/admin/users/demote', { method: 'POST', body: JSON.stringify(data) }),
+  adminUpdateUserStatus: (id, data) => request(`/api/admin/users/${id}/status`, { method: 'PUT', body: JSON.stringify(data) }),
+  adminDeleteUser: (id) => request(`/api/admin/users/${id}`, { method: 'DELETE' }),
+  getCalendarSignals: () => request('/api/availability/calendar-signals'),
+  adminSetDateSignal: (data) => request('/api/admin/availability/date-signal', { method: 'POST', body: JSON.stringify(data) }),
 
   // Notifications
   getNotifications: () => request('/api/notifications'),
