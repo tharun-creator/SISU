@@ -84,4 +84,4 @@ for table_name in tables_order:
         
     print(f"Successfully migrated {len(rows)} rows for '{table_name}'!")
 
-print("\n🎉 Migration completed successfully! Your Aiven MySQL database is now fully set up and populated!")
+print("\nMigration completed successfully! Your Aiven MySQL database is now fully set up and populated!")
