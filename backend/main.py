@@ -213,6 +213,8 @@ def parse_dt_to_ist(s: str) -> datetime.datetime:
 
 def meeting_to_dict(m: Meeting) -> dict:
     """Simple serializer for Meeting model."""
+    local_start = to_local(m.start_time)
+    local_end = to_local(m.end_time)
     return {
         "id": m.id,
         "client_id": m.client_id,
@@ -224,10 +226,10 @@ def meeting_to_dict(m: Meeting) -> dict:
         "meeting_type": m.meeting_type,
         "status": m.status,
         "priority": m.priority,
-        "start_time": m.start_time.isoformat() if m.start_time else None,
-        "end_time": m.end_time.isoformat() if m.end_time else None,
-        "display_date": m.start_time.strftime("%b %d, %Y") if m.start_time else "N/A",
-        "display_time": m.start_time.strftime("%I:%M %p") if m.start_time else "N/A",
+        "start_time": local_start.isoformat() if local_start else None,
+        "end_time": local_end.isoformat() if local_end else None,
+        "display_date": local_start.strftime("%b %d, %Y") if local_start else "N/A",
+        "display_time": f"{local_start.strftime('%I:%M %p')} IST" if local_start else "N/A",
         "duration_minutes": m.duration_minutes,
         "google_event_id": m.google_event_id,
         "meet_link": m.meet_link,
@@ -467,7 +469,7 @@ async def get_meetings(
     current_user: User = Depends(get_current_user),
 ):
     q = db.query(Meeting).filter(Meeting.deleted_at == None)
-    if current_user.role == "client":
+    if current_user.email != "tharunriot@gmail.com":
         q = q.filter(Meeting.client_id == current_user.id)
     if status:
         q = q.filter(Meeting.status == status)
@@ -612,7 +614,7 @@ async def get_meeting(
     meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
-    if current_user.role == "client" and meeting.client_id != current_user.id:
+    if current_user.email != "tharunriot@gmail.com" and meeting.client_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     return meeting_to_dict(meeting)
 
@@ -628,7 +630,7 @@ async def cancel_meeting(
     meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
-    if current_user.role == "client" and meeting.client_id != current_user.id:
+    if current_user.email != "tharunriot@gmail.com" and meeting.client_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
 
     old_status = meeting.status
@@ -727,7 +729,7 @@ async def client_reschedule_request(
     log_status_change(db, meeting.id, old_status, "reschedule_requested", current_user.email, req.reason)
 
     # Notify Admin via DB Notification
-    admins = db.query(User).filter(User.role == "admin").all()
+    admins = db.query(User).filter(User.email == "tharunriot@gmail.com").all()
     for admin in admins:
         create_notification(
             db, admin.id, "reschedule_requested",
@@ -761,17 +763,20 @@ async def admin_create_user(
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    role = "admin" if req.email == "tharunriot@gmail.com" else "client"
+    
     new_user = User(
         name=req.name,
         email=req.email,
         password_hash=auth.hash_password(req.password),
-        role=req.role,
+        role=role,
         is_active=True
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return auth.user_to_dict(new_user)
+
 
 @app.post("/api/admin/users/promote")
 async def admin_promote_user(
@@ -783,6 +788,9 @@ async def admin_promote_user(
     if not email:
         raise HTTPException(status_code=400, detail="Email cannot be empty")
         
+    if email != "tharunriot@gmail.com":
+        raise HTTPException(status_code=400, detail="Only tharunriot@gmail.com can be promoted to admin.")
+        
     user = db.query(User).filter(User.email == email).first()
     if user:
         user.role = "admin"
@@ -790,7 +798,6 @@ async def admin_promote_user(
         db.refresh(user)
         return {"message": f"Successfully promoted {user.name} to admin", "user": auth.user_to_dict(user)}
     else:
-        # Create a new user with admin role and default temporary password
         temp_pass = "SisuAdmin@2026"
         new_admin = User(
             name="Pending Admin",
@@ -983,11 +990,54 @@ async def admin_update_meeting_status(
         # Mark the original availability slot as booked in the DB
         meeting_booking_service.mark_slot_as_booked(db, meeting.start_time, meeting.end_time)
 
-        # Trigger Zapier via the booking service (DB-sourced, IST-correct)
-        background_tasks.add_task(
-            _create_calendar_and_update,
-            meeting.id, client.email, client.name
-        )
+        # Sync directly with Google Calendar immediately
+        try:
+            print(f"[Calendar Direct Sync] Approving meeting #{meeting.id} - Title: '{meeting.title}'")
+            print(f"  Start Time (DB naive): {meeting.start_time}")
+            print(f"  End Time (DB naive): {meeting.end_time}")
+            print(f"  Start Time (IST local): {local_start.isoformat()}")
+            print(f"  Attendees: {[client.email]}")
+            event = calendar_service.create_event_direct(
+                title=meeting.title,
+                description=meeting.description or "Mentorship session booked on Sisu",
+                start=meeting.start_time,
+                end=meeting.end_time,
+                attendees=[client.email],
+                meeting_id=str(meeting.id),
+                preferred_communication=meeting.preferred_communication
+            )
+            if event:
+                meeting.google_event_id = event.get("id")
+                meet_link = None
+                if event.get("conferenceData") and event["conferenceData"].get("entryPoints"):
+                    for ep in event["conferenceData"]["entryPoints"]:
+                        if ep.get("entryPointType") == "video":
+                            meet_link = ep.get("uri")
+                            break
+                if meet_link:
+                    meeting.meet_link = meet_link
+                db.commit()
+                db.refresh(meeting)
+        except Exception as cal_err:
+            print(f"[Calendar Direct Sync Error] {cal_err}")
+
+        # Send approved email with updated details
+        try:
+            import email_service
+            fresh_dict = {
+                "title": meeting.title,
+                "date": local_start.strftime("%B %d, %Y"),
+                "time": f"{local_start.strftime('%I:%M %p')} IST",
+                "type": meeting.meeting_type,
+                "duration": f"{meeting.duration_minutes} mins",
+            }
+            background_tasks.add_task(
+                email_service.send_meeting_approved,
+                client.email, client.name, fresh_dict, meeting.meet_link or ""
+            )
+        except Exception as email_err:
+            print(f"[Email Send Error] {email_err}")
+
         create_notification(db, client.id, "approved", "Meeting Approved! 🎉", f"Your meeting '{meeting.title}' has been confirmed for {local_start.strftime('%B %d at %I:%M %p')}.", meeting.id)
 
     elif req.status == "rejected":
@@ -1002,48 +1052,6 @@ async def admin_update_meeting_status(
         create_notification(db, client.id, "rejected", "Meeting Request Declined", f"Your request for '{meeting.title}' was not approved. You may submit a new request.", meeting.id)
 
     return meeting_to_dict(meeting)
-
-
-def _create_calendar_and_update(
-    meeting_id: int,
-    client_email: str,
-    client_name: str,
-):
-    """
-    Background task: re-fetch meeting from DB, trigger Zapier, 
-    then send email with FRESH data from the DB.
-    """
-    import email_service
-    from database import SessionLocal, Meeting
-
-    new_db = SessionLocal()
-    try:
-        m = new_db.query(Meeting).filter(Meeting.id == meeting_id).first()
-        if not m:
-            return
-
-        # Trigger Zapier
-        meeting_booking_service.trigger_zapier_for_approved_meeting(
-            meeting=m,
-            client_name=client_name,
-            client_email=client_email,
-        )
-        
-        # Refresh the dictionary with the absolute latest DB values (e.g. if meet_link was added)
-        # We need this to ensure the email is accurate
-        fresh_dict = {
-            "title": m.title,
-            "date": to_local(m.start_time).strftime("%B %d, %Y"),
-            "time": f"{to_local(m.start_time).strftime('%I:%M %p')} IST",
-            "type": m.meeting_type,
-            "duration": f"{m.duration_minutes} mins",
-        }
-        meet_link = m.meet_link or ""
-        
-        email_service.send_meeting_approved(client_email, client_name, fresh_dict, meet_link)
-
-    finally:
-        new_db.close()
 
 
 

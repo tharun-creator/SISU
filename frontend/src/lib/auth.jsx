@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser, isAdmin: user?.role === 'admin' }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser, isAdmin: user?.email === 'tharunriot@gmail.com' }}>
       {children}
     </AuthContext.Provider>
   );
@@ -86,7 +86,7 @@ export function PrivateRoute({ children, adminOnly = false }) {
     return null;
   }
 
-  if (adminOnly && user.role !== 'admin') {
+  if (adminOnly && user.email !== 'tharunriot@gmail.com') {
     window.location.href = '/';
     return null;
   }

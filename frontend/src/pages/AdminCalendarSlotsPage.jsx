@@ -19,6 +19,11 @@ const TIME_SLOTS = [
 ];
 
 export default function AdminCalendarSlotsPage() {
+  const { user } = useAuth();
+  if (user?.email !== 'tharunriot@gmail.com') {
+    window.location.href = '/';
+    return null;
+  }
   const now = new Date();
   const [viewYear, setViewYear] = useState(now.getFullYear());
   const [viewMonth, setViewMonth] = useState(now.getMonth());

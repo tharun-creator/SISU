@@ -170,6 +170,58 @@ def create_event(
         return None
 
 
+def create_event_direct(
+    title: str,
+    description: str,
+    start: datetime.datetime,
+    end: datetime.datetime,
+    attendees: list[str],
+    meeting_id: str = None,
+    preferred_communication: str = "video",
+    timezone: str = "Asia/Kolkata",
+) -> Optional[dict]:
+    """Create an event directly in the Google Calendar using the Google API."""
+    try:
+        service = _get_service()
+        
+        # Add default admin guest
+        admin_email = "tharunriot@gmail.com"
+        guests = list(set(attendees + [admin_email]))
+        
+        event_body = {
+            "summary": title,
+            "description": description,
+            "start": _format_datetime(start, timezone),
+            "end": _format_datetime(end, timezone),
+            "attendees": [{"email": email} for email in guests],
+        }
+        
+        if preferred_communication == "video":
+            event_body["conferenceData"] = {
+                "createRequest": {
+                    "requestId": f"meet-{meeting_id or int(time.time())}",
+                    "conferenceSolutionKey": {
+                        "type": "hangoutsMeet"
+                    }
+                }
+            }
+            
+        def _insert():
+            return service.events().insert(
+                calendarId="primary",
+                body=event_body,
+                conferenceDataVersion=1 if preferred_communication == "video" else 0,
+                sendUpdates="all"
+            ).execute()
+            
+        event = _retry(_insert)
+        print(f"[Calendar] Event created directly: {event.get('id')}")
+        return event
+    except Exception as e:
+        print(f"[Calendar] create_event_direct failed: {e}")
+        return None
+
+
 def update_event(
     event_id: str,
     title: Optional[str] = None,
@@ -233,8 +285,11 @@ def check_conflicts(
     try:
         # Asia/Kolkata offset
         IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
-        if start.tzinfo is None: start = start.replace(tzinfo=IST)
-        if end.tzinfo is None: end = end.replace(tzinfo=IST)
+        if start.tzinfo is not None: start = start.astimezone(IST)
+        else: start = start.replace(tzinfo=IST)
+        
+        if end.tzinfo is not None: end = end.astimezone(IST)
+        else: end = end.replace(tzinfo=IST)
         
         service = _get_service()
 
@@ -265,12 +320,13 @@ def get_free_slots(
         # Asia/Kolkata offset
         IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
         
-        # Ensure input date is treated as local date boundaries
-        day_start = date.replace(hour=10, minute=0, second=0, microsecond=0)
-        day_end = date.replace(hour=20, minute=0, second=0, microsecond=0)
-        
-        if day_start.tzinfo is None: day_start = day_start.replace(tzinfo=IST)
-        if day_end.tzinfo is None: day_end = day_end.replace(tzinfo=IST)
+        # Convert date to IST context and strip tzinfo to avoid timezone shifts
+        if date.tzinfo is not None:
+            date = date.astimezone(IST).replace(tzinfo=None)
+            
+        # Ensure input date is treated as local date boundaries in IST
+        day_start = date.replace(hour=10, minute=0, second=0, microsecond=0).replace(tzinfo=IST)
+        day_end = date.replace(hour=20, minute=0, second=0, microsecond=0).replace(tzinfo=IST)
 
         service = _get_service()
 
@@ -306,7 +362,7 @@ def get_free_slots(
                 slots.append({
                     "start": current.strftime("%H:%M"),
                     "end": slot_end.strftime("%H:%M"),
-                    "label": current.strftime("%I:%M %p"),
+                    "label": current.strftime("%I:%M %p") + " IST",
                 })
             current += datetime.timedelta(minutes=60)
 
@@ -315,6 +371,9 @@ def get_free_slots(
         print(f"[Calendar] get_free_slots failed: {e}")
         # Return default slots as fallback
         slots = []
+        IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
+        if date.tzinfo is not None:
+            date = date.astimezone(IST).replace(tzinfo=None)
         c = date.replace(hour=10, minute=0, second=0, microsecond=0)
         end_time = date.replace(hour=20, minute=0, second=0, microsecond=0)
         while c + datetime.timedelta(minutes=duration_minutes) <= end_time:
@@ -322,7 +381,7 @@ def get_free_slots(
             slots.append({
                 "start": c.strftime("%H:%M"),
                 "end": se.strftime("%H:%M"),
-                "label": c.strftime("%I:%M %p"),
+                "label": c.strftime("%I:%M %p") + " IST",
             })
             c += datetime.timedelta(minutes=60)
         return slots

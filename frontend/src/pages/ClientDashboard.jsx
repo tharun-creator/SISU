@@ -208,13 +208,7 @@ export default function ClientDashboard() {
     {
       id: 1,
       sender: 'ai',
-      text: `Hello Vikas — I'm your SISU AI Concierge. 🌟 To book a mentorship session with Tharun, here is the seamless procedure:
-      
-1️⃣ Define your challenge in the **Agenda** field.
-2️⃣ Choose a duration, pick a date on our Smart Calendar, and select an available slot.
-3️⃣ Complete final details and click **Request Mentorship Session**!
-
-How can I help you scale today?`,
+      text: "Hi, how can I help you?",
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -771,6 +765,26 @@ Ready to launch Phase 3 during your next call!`
                                   <span>
                                     {STATUS_HELPER_CONFIG[m.status].text}
                                   </span>
+                                </div>
+                              )}
+
+                              {(m.description || m.reason || m.admin_notes) && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12, marginBottom: 16, padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: '1px solid var(--color-border)' }}>
+                                  {m.description && (
+                                    <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', margin: 0 }}>
+                                      <strong>Description:</strong> {m.description}
+                                    </p>
+                                  )}
+                                  {m.reason && (
+                                    <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', margin: 0 }}>
+                                      <strong>Reason/Agenda:</strong> {m.reason}
+                                    </p>
+                                  )}
+                                  {m.admin_notes && (
+                                    <p style={{ fontSize: 13, color: 'var(--color-accent-cyan)', margin: 0 }}>
+                                      <strong>Admin Feedback/Notes:</strong> {m.admin_notes}
+                                    </p>
+                                  )}
                                 </div>
                               )}
 

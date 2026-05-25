@@ -315,6 +315,10 @@ function BookingModal({ meeting, onClose, onAction }) {
 
 export default function AdminDashboard() {
   const { user } = useAuth();
+  if (user?.email !== 'tharunriot@gmail.com') {
+    window.location.href = '/';
+    return null;
+  }
   const [stats, setStats] = useState({});
   const [meetings, setMeetings] = useState([]);
   const [pendingMeetings, setPendingMeetings] = useState([]);

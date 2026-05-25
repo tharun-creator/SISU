@@ -104,7 +104,7 @@ def get_current_user(
 
 
 def require_admin(current_user: User = Depends(get_current_user)) -> User:
-    if current_user.role != "admin":
+    if current_user.email != "tharunriot@gmail.com":
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
@@ -115,9 +115,7 @@ def register_user(req: RegisterRequest, db: Session) -> TokenResponse:
     if existing:
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    # First registered user becomes admin automatically
-    count = db.query(User).count()
-    role = "admin" if count == 0 else req.role
+    role = "admin" if req.email == "tharunriot@gmail.com" else "client"
 
     user = User(
         name=req.name,
@@ -143,6 +141,18 @@ def login_user(req: LoginRequest, db: Session) -> TokenResponse:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is disabled")
+
+    # Enforce role logic
+    if user.email == "tharunriot@gmail.com":
+        if user.role != "admin":
+            user.role = "admin"
+            db.commit()
+            db.refresh(user)
+    else:
+        if user.role == "admin":
+            user.role = "client"
+            db.commit()
+            db.refresh(user)
 
     token = create_access_token({"sub": str(user.id), "role": user.role})
     return TokenResponse(access_token=token, user=user_to_dict(user))
