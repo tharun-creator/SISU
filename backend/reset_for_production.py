@@ -15,23 +15,37 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 def reset_database():
     print("--- Resetting Database ---")
     try:
-        # Connect to MySQL (without database name first)
-        # Assuming credentials from .env or default for root
-        # Extracting host, user, password from DATABASE_URL if needed, 
-        # but create_db.py used hardcoded root:tharun2004
+        # Connect to MySQL (without database name first) to drop and recreate it
+        from urllib.parse import urlparse
         
+        db_url = os.getenv("DATABASE_URL")
+        host = 'localhost'
+        user = 'root'
+        password = 'tharun2004'
+        port = 3306
+        db_name = 'sisu_db'
+        
+        if db_url and "mysql" in db_url:
+            cleaned_url = db_url.replace("mysql+pymysql://", "mysql://")
+            parsed = urlparse(cleaned_url)
+            host = parsed.hostname or host
+            user = parsed.username or user
+            password = parsed.password or ''
+            port = parsed.port or port
+            db_name = parsed.path.strip("/") or db_name
+            
         connection = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='tharun2004',
-            port=3306
+            host=host,
+            user=user,
+            password=password,
+            port=port
         )
         cursor = connection.cursor()
         
         # Drop and recreate database
-        cursor.execute("DROP DATABASE IF EXISTS sisu_db")
-        cursor.execute("CREATE DATABASE sisu_db")
-        print("Database 'sisu_db' dropped and recreated.")
+        cursor.execute(f"DROP DATABASE IF EXISTS {db_name}")
+        cursor.execute(f"CREATE DATABASE {db_name}")
+        print(f"Database '{db_name}' dropped and recreated.")
         
         connection.close()
         

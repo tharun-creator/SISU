@@ -147,12 +147,58 @@ function AnalyticsPieChart({ stats }) {
   );
 }
 
+const TIME_SLOTS = [
+  { value: '09:00', label: '09:00 AM' },
+  { value: '09:30', label: '09:30 AM' },
+  { value: '10:00', label: '10:00 AM' },
+  { value: '10:30', label: '10:30 AM' },
+  { value: '11:00', label: '11:00 AM' },
+  { value: '11:30', label: '11:30 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '12:30', label: '12:30 PM' },
+  { value: '13:00', label: '01:00 PM' },
+  { value: '13:30', label: '01:30 PM' },
+  { value: '14:00', label: '02:00 PM' },
+  { value: '14:30', label: '02:30 PM' },
+  { value: '15:00', label: '03:00 PM' },
+  { value: '15:30', label: '03:30 PM' },
+  { value: '16:00', label: '04:00 PM' },
+  { value: '16:30', label: '04:30 PM' },
+  { value: '17:00', label: '05:00 PM' },
+  { value: '17:30', label: '05:30 PM' },
+  { value: '18:00', label: '06:00 PM' },
+  { value: '18:30', label: '06:30 PM' },
+  { value: '19:00', label: '07:00 PM' },
+  { value: '19:30', label: '07:30 PM' },
+  { value: '20:00', label: '08:00 PM' },
+  { value: '20:30', label: '08:30 PM' },
+  { value: '21:00', label: '09:00 PM' },
+];
+
 function BookingModal({ meeting, onClose, onAction }) {
   const [status, setStatus] = useState(meeting.status === 'reschedule_requested' ? 'rescheduled' : 'approved');
   const [notes, setNotes] = useState('');
   const [meetLink, setMeetLink] = useState('');
-  const [newStart, setNewStart] = useState('');
-  const [newEnd, setNewEnd] = useState('');
+  
+  const getInitialDate = () => {
+    if (meeting.start_time) {
+      return meeting.start_time.split('T')[0];
+    }
+    return '';
+  };
+
+  const getInitialTime = () => {
+    if (meeting.start_time) {
+      const timePart = meeting.start_time.split('T')[1];
+      if (timePart) {
+        return timePart.slice(0, 5);
+      }
+    }
+    return '09:00';
+  };
+
+  const [rescheduleDate, setRescheduleDate] = useState(getInitialDate());
+  const [rescheduleTime, setRescheduleTime] = useState(getInitialTime());
   const [loading, setLoading] = useState(false);
 
   if (!meeting) return null;
@@ -160,7 +206,37 @@ function BookingModal({ meeting, onClose, onAction }) {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await onAction(meeting.id, { status, admin_notes: notes, meet_link: meetLink, new_start_time: newStart || undefined, new_end_time: newEnd || undefined });
+      let finalNewStart = undefined;
+      let finalNewEnd = undefined;
+      
+      if (status === 'rescheduled') {
+        if (!rescheduleDate || !rescheduleTime) {
+          alert('Please select both a date and time for rescheduling.');
+          setLoading(false);
+          return;
+        }
+        
+        const startStr = `${rescheduleDate}T${rescheduleTime}:00`;
+        finalNewStart = startStr;
+        
+        const duration = meeting.duration_minutes || 60;
+        const [year, month, day] = rescheduleDate.split('-').map(Number);
+        const [hour, min] = rescheduleTime.split(':').map(Number);
+        const startDate = new Date(year, month - 1, day, hour, min);
+        const endDate = new Date(startDate.getTime() + duration * 60 * 1000);
+        
+        const pad = (num) => String(num).padStart(2, '0');
+        const endStr = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:00`;
+        finalNewEnd = endStr;
+      }
+      
+      await onAction(meeting.id, { 
+        status, 
+        admin_notes: notes, 
+        meet_link: meetLink, 
+        new_start_time: finalNewStart, 
+        new_end_time: finalNewEnd 
+      });
       onClose();
     } catch (e) {
       alert(e.message);
@@ -228,6 +304,17 @@ function BookingModal({ meeting, onClose, onAction }) {
               <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>assignment</span> 
               <span>{meeting.meeting_type}</span> · <span>{meeting.duration_minutes} mins</span>
             </p>
+            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>
+                {meeting.preferred_communication === 'video' ? 'videocam' : 
+                 meeting.preferred_communication === 'in_person' ? 'home_pin' : 'location_on'}
+              </span>
+              <span>
+                {meeting.preferred_communication === 'video' ? 'Google Meet (Online Video)' : 
+                 meeting.preferred_communication === 'in_person' ? 'Spi Edge (In-Office Meet)' : 
+                 meeting.preferred_communication?.startsWith('custom_location:') ? meeting.preferred_communication.replace('custom_location:', '').trim() : 'In-Person'}
+              </span>
+            </p>
           </div>
           {meeting.reason && (
             <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
@@ -287,12 +374,29 @@ function BookingModal({ meeting, onClose, onAction }) {
         {status === 'rescheduled' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
             <div>
-              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>New Start Time</label>
-              <input className="input-premium" type="datetime-local" value={newStart} onChange={(e) => setNewStart(e.target.value)} style={{ padding: '10px 12px' }} />
+              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>New Date</label>
+              <input 
+                className="input-premium" 
+                type="date" 
+                value={rescheduleDate} 
+                onChange={(e) => setRescheduleDate(e.target.value)} 
+                style={{ padding: '10px 12px', width: '100%' }} 
+              />
             </div>
             <div>
-              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>New End Time</label>
-              <input className="input-premium" type="datetime-local" value={newEnd} onChange={(e) => setNewEnd(e.target.value)} style={{ padding: '10px 12px' }} />
+              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>New Start Time (IST)</label>
+              <select 
+                className="input-premium" 
+                value={rescheduleTime} 
+                onChange={(e) => setRescheduleTime(e.target.value)} 
+                style={{ padding: '10px 12px', width: '100%', appearance: 'none', cursor: 'pointer' }}
+              >
+                {TIME_SLOTS.map(slot => (
+                  <option key={slot.value} value={slot.value} style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>
+                    {slot.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         )}
@@ -634,21 +738,38 @@ export default function AdminDashboard() {
               style={{ padding: 24, borderRadius: 16, border: '1px solid var(--color-border)', background: 'var(--glass-bg)' }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>Decision Feed</h3>
-                {pendingMeetings.length > 0 && (
-                  <span style={{ 
-                    background: 'rgba(245,158,11,0.12)', 
-                    border: '1px solid rgba(245,158,11,0.2)', 
-                    borderRadius: 100, 
-                    padding: '2px 8px', 
-                    fontSize: 10, 
-                    fontWeight: 800, 
-                    color: 'var(--color-amber)',
-                    fontFamily: 'var(--font-mono)'
-                  }}>
-                    {pendingMeetings.length} ACTIVE
-                  </span>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>Decision Feed</h3>
+                  {pendingMeetings.length > 0 && (
+                    <span style={{ 
+                      background: 'rgba(245,158,11,0.12)', 
+                      border: '1px solid rgba(245,158,11,0.2)', 
+                      borderRadius: 100, 
+                      padding: '2px 8px', 
+                      fontSize: 10, 
+                      fontWeight: 800, 
+                      color: 'var(--color-amber)',
+                      fontFamily: 'var(--font-mono)'
+                    }}>
+                      {pendingMeetings.length} ACTIVE
+                    </span>
+                  )}
+                </div>
+                <a 
+                  href="/admin/pending" 
+                  style={{ 
+                    fontSize: 11, 
+                    fontWeight: 700, 
+                    color: 'var(--color-accent)', 
+                    textDecoration: 'none', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 4 
+                  }}
+                >
+                  <span>Open Stack</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>layers</span>
+                </a>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

@@ -195,6 +195,12 @@ def create_event_direct(
             "end": _format_datetime(end, timezone),
             "attendees": [{"email": email} for email in guests],
         }
+
+        # Set location in Google Calendar event
+        if preferred_communication.startswith("custom_location:"):
+            event_body["location"] = preferred_communication.replace("custom_location:", "").strip()
+        elif preferred_communication == "in_person":
+            event_body["location"] = "Spi Edge Office"
         
         if preferred_communication == "video":
             event_body["conferenceData"] = {

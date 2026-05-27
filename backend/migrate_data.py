@@ -3,10 +3,11 @@ import sqlalchemy
 from sqlalchemy import create_engine, MetaData
 from dotenv import load_dotenv
 
-# Local DB URL
-local_url = "mysql+pymysql://root:tharun2004@localhost:3306/sisu_db"
-
 load_dotenv()
+
+# Local DB URL with fallback
+local_url = os.getenv("LOCAL_DATABASE_URL", "mysql+pymysql://root:tharun2004@localhost:3306/sisu_db")
+
 aiven_url = os.getenv("DATABASE_URL")
 if not aiven_url or "<your_password>" in aiven_url:
     print("ERROR: Please set your Aiven DATABASE_URL in your backend/.env file first (replace <your_password> with your actual Aiven password!).")
@@ -16,7 +17,7 @@ if not aiven_url or "<your_password>" in aiven_url:
 if "?" in aiven_url:
     aiven_url = aiven_url.split("?")[0]
 
-print("Connecting to local database...")
+print(f"Connecting to local database at: {local_url.split('@')[-1] if '@' in local_url else 'configured path'}...")
 local_engine = create_engine(local_url)
 print("Connecting to Aiven database...")
 aiven_engine = create_engine(aiven_url, connect_args={"ssl": {}})

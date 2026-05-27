@@ -11,7 +11,7 @@ const clientNav = [
 const adminNav = [
   { icon: 'grid_view', label: 'Dashboard', path: '/admin' },
   { icon: 'calendar_today', label: 'All Meetings', path: '/admin/meetings' },
-  { icon: 'pending_actions', label: 'Pending', path: '/admin/pending' },
+  { icon: 'pending_actions', label: 'Decision Feed', path: '/admin/pending' },
   { icon: 'calendar_month', label: 'Calendar Slots', path: '/admin/calendar-slots' },
   { icon: 'admin_panel_settings', label: 'Manage Users', path: '/admin/users' },
   { icon: 'notifications', label: 'Notifications', path: '/notifications' },

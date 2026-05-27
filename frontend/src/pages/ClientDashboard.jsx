@@ -4,6 +4,34 @@ import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { format, parseISO } from 'date-fns';
 
+const TIME_SLOTS = [
+  { value: '09:00', label: '09:00 AM' },
+  { value: '09:30', label: '09:30 AM' },
+  { value: '10:00', label: '10:00 AM' },
+  { value: '10:30', label: '10:30 AM' },
+  { value: '11:00', label: '11:00 AM' },
+  { value: '11:30', label: '11:30 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '12:30', label: '12:30 PM' },
+  { value: '13:00', label: '01:00 PM' },
+  { value: '13:30', label: '01:30 PM' },
+  { value: '14:00', label: '02:00 PM' },
+  { value: '14:30', label: '02:30 PM' },
+  { value: '15:00', label: '03:00 PM' },
+  { value: '15:30', label: '03:30 PM' },
+  { value: '16:00', label: '04:00 PM' },
+  { value: '16:30', label: '04:30 PM' },
+  { value: '17:00', label: '05:00 PM' },
+  { value: '17:30', label: '05:30 PM' },
+  { value: '18:00', label: '06:00 PM' },
+  { value: '18:30', label: '06:30 PM' },
+  { value: '19:00', label: '07:00 PM' },
+  { value: '19:30', label: '07:30 PM' },
+  { value: '20:00', label: '08:00 PM' },
+  { value: '20:30', label: '08:30 PM' },
+  { value: '21:00', label: '09:00 PM' },
+];
+
 const STATUS_CONFIG = {
   pending:              { color: '#fb923c', bg: 'rgba(251,146,60,0.12)', label: 'Pending Approval', border: 'rgba(251,146,60,0.2)' },
   approved:             { color: '#22c55e', bg: 'rgba(34,197,94,0.12)', label: 'Confirmed', border: 'rgba(34,197,94,0.2)' },
@@ -11,6 +39,7 @@ const STATUS_CONFIG = {
   cancelled:            { color: '#8e8e93', bg: 'rgba(142,142,147,0.1)', label: 'Cancelled', border: 'rgba(142,142,147,0.15)' },
   rescheduled:          { color: '#38bdf8', bg: 'rgba(56,189,248,0.12)', label: 'Rescheduled', border: 'rgba(56,189,248,0.2)' },
   reschedule_requested: { color: '#fb923c', bg: 'rgba(251,146,60,0.12)', label: 'Reschedule Requested', border: 'rgba(251,146,60,0.3)' },
+  reschedule_proposed:  { color: '#fb923c', bg: 'rgba(251,146,60,0.12)', label: 'Proposed Reschedule', border: 'rgba(251,146,60,0.3)' },
   completed:            { color: '#a855f7', bg: 'rgba(168,85,247,0.12)', label: 'Completed', border: 'rgba(168,85,247,0.2)' },
 };
 
@@ -42,6 +71,13 @@ const STATUS_HELPER_CONFIG = {
     border: '1px solid rgba(251, 146, 60, 0.15)',
     color: '#fb923c',
     icon: 'history'
+  },
+  reschedule_proposed: {
+    text: "The admin has proposed a new date and time for this session. Review details below to Accept & Block or call to negotiate.",
+    bg: 'rgba(251, 146, 60, 0.05)',
+    border: '1px solid rgba(251, 146, 60, 0.25)',
+    color: '#fb923c',
+    icon: 'pending'
   },
   cancelled: {
     text: "This session has been cancelled. Please schedule a new slot if you would like to reconnect.",
@@ -137,6 +173,7 @@ export default function ClientDashboard() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [description, setDescription] = useState('');
   const [meetType, setMeetType] = useState('video'); // 'video' (Google Meet) or 'in_person' (Office)
+  const [customLocationAddress, setCustomLocationAddress] = useState('');
   const [priority, setPriority] = useState('normal');
   const [phone, setPhone] = useState(user?.phone || '');
   const [submitting, setSubmitting] = useState(false);
@@ -170,7 +207,8 @@ export default function ClientDashboard() {
 
   // Reschedule modal states
   const [rescheduleMeeting, setRescheduleMeeting] = useState(null);
-  const [newDateTime, setNewDateTime] = useState('');
+  const [clientRescheduleDate, setClientRescheduleDate] = useState('');
+  const [clientRescheduleTime, setClientRescheduleTime] = useState('09:00');
   const [rescheduleReason, setRescheduleReason] = useState('');
 
   // Profile Customization States
@@ -452,6 +490,10 @@ Ready to launch Phase 3 during your next call!`
       setValidationError("Please lock in a coaching date and slot.");
       return;
     }
+    if (meetType === 'custom_location' && !customLocationAddress.trim()) {
+      setValidationError("Please specify your Preferred Location Address.");
+      return;
+    }
     setSubmitting(true);
     
     const startStr = `${selectedDate.year}-${String(selectedDate.month + 1).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}T${selectedSlot.start}:00`;
@@ -470,7 +512,7 @@ Ready to launch Phase 3 during your next call!`
         start_time: startStr,
         end_time: endStr,
         duration_minutes: dur,
-        preferred_communication: meetType,
+        preferred_communication: meetType === 'custom_location' ? `custom_location: ${customLocationAddress.trim()}` : meetType,
         phone: phone || 'N/A'
       });
 
@@ -494,6 +536,8 @@ Ready to launch Phase 3 during your next call!`
     setSelectedDate(null);
     setSelectedSlot(null);
     setDescription('');
+    setMeetType('video');
+    setCustomLocationAddress('');
     setPrepChecklist({ crm: false, metrics: false, funnel: false, scripts: false });
   };
 
@@ -507,29 +551,58 @@ Ready to launch Phase 3 during your next call!`
     }
   };
 
+  const handleAcceptReschedule = async (id) => {
+    if (!window.confirm('Accept this proposed reschedule time and block the slot?')) return;
+    setSubmitting(true);
+    try {
+      await api.confirmReschedule(id);
+      alert('Reschedule confirmed! Calendar synced and slot blocked.');
+      await fetchData();
+    } catch (e) {
+      alert(e.message || 'Failed to accept reschedule.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleRescheduleClick = (meeting) => {
     setRescheduleMeeting(meeting);
-    const defaultTime = meeting.start_time ? meeting.start_time.slice(0, 16) : '';
-    setNewDateTime(defaultTime);
     setRescheduleReason('');
     setRescheduleError('');
+    if (meeting.start_time) {
+      setClientRescheduleDate(meeting.start_time.split('T')[0]);
+      const timePart = meeting.start_time.split('T')[1];
+      if (timePart) {
+        setClientRescheduleTime(timePart.slice(0, 5));
+      }
+    } else {
+      setClientRescheduleDate('');
+      setClientRescheduleTime('09:00');
+    }
   };
 
   const submitReschedule = async () => {
-    if (!newDateTime) {
-      setRescheduleError('Please choose a valid reschedule slot.');
+    if (!clientRescheduleDate || !clientRescheduleTime) {
+      setRescheduleError('Please choose a valid reschedule date and time.');
       return;
     }
     setSubmitting(true);
     setRescheduleError('');
     try {
       const duration = rescheduleMeeting.duration_minutes || 60;
-      const startDt = new Date(newDateTime);
-      const endDt = new Date(startDt.getTime() + duration * 60 * 1000);
+      const startStr = `${clientRescheduleDate}T${clientRescheduleTime}:00`;
       
+      const [year, month, day] = clientRescheduleDate.split('-').map(Number);
+      const [hour, min] = clientRescheduleTime.split(':').map(Number);
+      const startDate = new Date(year, month - 1, day, hour, min);
+      const endDate = new Date(startDate.getTime() + duration * 60 * 1000);
+      
+      const pad = (num) => String(num).padStart(2, '0');
+      const endStr = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:00`;
+
       await api.requestReschedule(rescheduleMeeting.id, {
-        new_start_time: startDt.toISOString(),
-        new_end_time: endDt.toISOString(),
+        new_start_time: startStr,
+        new_end_time: endStr,
         reason: rescheduleReason,
       });
 
@@ -748,6 +821,17 @@ Ready to launch Phase 3 during your next call!`
                                     {m.phone}
                                   </p>
                                 )}
+                                <p style={{ fontSize: 12.5, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>
+                                    {m.preferred_communication === 'video' ? 'videocam' : 
+                                     m.preferred_communication === 'in_person' ? 'home_pin' : 'location_on'}
+                                  </span>
+                                  <span>
+                                    {m.preferred_communication === 'video' ? 'Google Meet' : 
+                                     m.preferred_communication === 'in_person' ? 'Spi Edge (In-Office)' : 
+                                     m.preferred_communication?.startsWith('custom_location:') ? m.preferred_communication.replace('custom_location:', '').trim() : 'In-Person'}
+                                  </span>
+                                </p>
                               </div>
 
                               {STATUS_HELPER_CONFIG[m.status] && (
@@ -806,6 +890,46 @@ Ready to launch Phase 3 during your next call!`
                                     <>
                                       <button onClick={() => handleRescheduleClick(m)} className="btn-premium btn-premium-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 8, color: 'var(--color-accent-orange)', borderColor: 'rgba(255, 122, 0, 0.15)' }}>Reschedule</button>
                                       <button onClick={() => handleCancelMeeting(m.id)} className="btn-premium btn-premium-danger" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 8 }}>Cancel</button>
+                                    </>
+                                  )}
+                                  {m.status === 'reschedule_proposed' && (
+                                    <>
+                                      <button 
+                                        onClick={() => handleAcceptReschedule(m.id)} 
+                                        disabled={submitting}
+                                        className="btn-premium btn-premium-primary" 
+                                        style={{ 
+                                          padding: '6px 14px', 
+                                          fontSize: 12, 
+                                          borderRadius: 8, 
+                                          background: 'var(--color-green)', 
+                                          borderColor: 'var(--color-green)',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 4
+                                        }}
+                                      >
+                                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check_circle</span>
+                                        Accept & Block
+                                      </button>
+                                      <a 
+                                        href="tel:+919876543210" 
+                                        className="btn-premium btn-premium-secondary" 
+                                        style={{ 
+                                          padding: '6px 12px', 
+                                          fontSize: 12, 
+                                          borderRadius: 8, 
+                                          display: 'inline-flex', 
+                                          alignItems: 'center', 
+                                          gap: 4, 
+                                          textDecoration: 'none', 
+                                          color: 'var(--color-accent-orange)', 
+                                          borderColor: 'rgba(255, 122, 0, 0.15)' 
+                                        }}
+                                      >
+                                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>call</span>
+                                        Call (+91 98765 43210)
+                                      </a>
                                     </>
                                   )}
                                 </div>
@@ -1113,7 +1237,21 @@ Ready to launch Phase 3 during your next call!`
                           <select className="input-premium" value={meetType} onChange={(e) => setMeetType(e.target.value)} style={{ appearance: 'none', cursor: 'pointer' }}>
                             <option value="video" style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>Google Meet (Online Video)</option>
                             <option value="in_person" style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>Spi Edge (Inoffice Meet)</option>
+                            <option value="custom_location" style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>Preferred Location</option>
                           </select>
+                          {meetType === 'custom_location' && (
+                            <div style={{ marginTop: 12 }}>
+                              <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 800, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Address / Location Name *</label>
+                              <input
+                                type="text"
+                                className="input-premium"
+                                placeholder="e.g. Starbucks, Jubilee Hills, Hyderabad..."
+                                value={customLocationAddress}
+                                onChange={(e) => setCustomLocationAddress(e.target.value)}
+                                required
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1269,7 +1407,11 @@ Ready to launch Phase 3 during your next call!`
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, borderBottom: '1px solid var(--color-border)', paddingBottom: 10, gap: 12 }}>
                             <span style={{ color: 'var(--color-text-muted)' }}>Channel</span>
-                            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{meetType === 'video' ? 'Google Meet' : 'Spi Edge (In-Office)'}</span>
+                            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {meetType === 'video' ? 'Google Meet' : 
+                               meetType === 'in_person' ? 'Spi Edge (In-Office)' : 
+                               `Custom: ${customLocationAddress || 'Preferred Location'}`}
+                            </span>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, borderBottom: '1px solid var(--color-border)', paddingBottom: 10, gap: 12 }}>
                             <span style={{ color: 'var(--color-text-muted)' }}>Phone</span>
@@ -1319,15 +1461,33 @@ Ready to launch Phase 3 during your next call!`
             <h3 style={{ fontSize: 19, fontWeight: 800, marginBottom: 4, letterSpacing: '-0.02em', color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>Request Reschedule</h3>
             <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginBottom: 20 }}>Proposed for "{rescheduleMeeting.title}"</p>
 
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Select New Date & Time</label>
-              <input
-                className="input-premium"
-                type="datetime-local"
-                value={newDateTime}
-                onChange={(e) => setNewDateTime(e.target.value)}
-                style={{ width: '100%', background: 'rgba(0,0,0,0.2)' }}
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+              <div>
+                <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>New Date</label>
+                <input
+                  className="input-premium"
+                  type="date"
+                  value={clientRescheduleDate}
+                  onChange={(e) => setClientRescheduleDate(e.target.value)}
+                  style={{ width: '100%', background: 'rgba(0,0,0,0.2)' }}
+                  required
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>New Start Time (IST)</label>
+                <select
+                  className="input-premium"
+                  value={clientRescheduleTime}
+                  onChange={(e) => setClientRescheduleTime(e.target.value)}
+                  style={{ width: '100%', background: 'rgba(0,0,0,0.2)', appearance: 'none', cursor: 'pointer' }}
+                >
+                  {TIME_SLOTS.map(slot => (
+                    <option key={slot.value} value={slot.value} style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>
+                      {slot.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div style={{ marginBottom: 24 }}>
