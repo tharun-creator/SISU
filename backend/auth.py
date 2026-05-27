@@ -3,6 +3,7 @@ auth.py — JWT-based authentication for the Sisu platform
 """
 import os
 import datetime
+import re
 from typing import Optional
 
 import bcrypt
@@ -36,6 +37,9 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: str
     password: str
+    captcha_id: Optional[str] = None
+    captcha_answer: Optional[str] = None
+
 
 
 class TokenResponse(BaseModel):
@@ -95,11 +99,15 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Not authenticated")
     payload = decode_token(credentials.credentials)
     user_id = payload.get("sub")
+    pwd_check = payload.get("pwd")
     if not user_id:
         raise HTTPException(status_code=401, detail="Invalid token payload")
     user = db.query(User).filter(User.id == int(user_id)).first()
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="User not found or inactive")
+    # If the user changed their password, invalidate any JWTs generated with the old password hash
+    if pwd_check and user.password_hash[-10:] != pwd_check:
+        raise HTTPException(status_code=401, detail="Session expired. Please log in again.")
     return user
 
 
@@ -112,16 +120,17 @@ def require_admin(current_user: User = Depends(get_current_user), db: Session = 
 
 # ── Route Handlers (to be registered in main.py) ────────────────────────────
 def register_user(req: RegisterRequest, db: Session) -> TokenResponse:
-    existing = db.query(User).filter(User.email == req.email).first()
+    email_clean = req.email.strip()
+    existing = db.query(User).filter(User.email.ilike(email_clean)).first()
     if existing:
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    is_admin = db.query(AdminEmail).filter(AdminEmail.email == req.email).first() is not None or req.email == "tharunriot@gmail.com"
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(email_clean)).first() is not None or email_clean.lower() == "tharunriot@gmail.com"
     role = "admin" if is_admin else "client"
 
     user = User(
         name=req.name,
-        email=req.email,
+        email=email_clean,
         phone=req.phone,
         password_hash=hash_password(req.password),
         role=role,
@@ -133,19 +142,20 @@ def register_user(req: RegisterRequest, db: Session) -> TokenResponse:
     db.commit()
     db.refresh(user)
 
-    token = create_access_token({"sub": str(user.id), "role": user.role})
+    token = create_access_token({"sub": str(user.id), "role": user.role, "pwd": user.password_hash[-10:]})
     return TokenResponse(access_token=token, user=user_to_dict(user))
 
 
 def login_user(req: LoginRequest, db: Session) -> TokenResponse:
-    user = db.query(User).filter(User.email == req.email).first()
+    email_clean = req.email.strip()
+    user = db.query(User).filter(User.email.ilike(email_clean)).first()
     if not user or not verify_password(req.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is disabled")
 
     # Enforce role logic
-    is_admin = db.query(AdminEmail).filter(AdminEmail.email == user.email).first() is not None or user.email == "tharunriot@gmail.com"
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(user.email)).first() is not None or user.email.lower() == "tharunriot@gmail.com"
     if is_admin:
         if user.role != "admin":
             user.role = "admin"
@@ -157,5 +167,19 @@ def login_user(req: LoginRequest, db: Session) -> TokenResponse:
             db.commit()
             db.refresh(user)
 
-    token = create_access_token({"sub": str(user.id), "role": user.role})
+    token = create_access_token({"sub": str(user.id), "role": user.role, "pwd": user.password_hash[-10:]})
     return TokenResponse(access_token=token, user=user_to_dict(user))
+
+
+def validate_password_strength(password: str) -> None:
+    """Validate password strength based on standard policies."""
+    if len(password) < 8:
+        raise ValueError("Password must be at least 8 characters long")
+    if not re.search(r"[A-Z]", password):
+        raise ValueError("Password must contain at least one uppercase letter")
+    if not re.search(r"[a-z]", password):
+        raise ValueError("Password must contain at least one lowercase letter")
+    if not re.search(r"\d", password):
+        raise ValueError("Password must contain at least one digit")
+    if not re.search(r"[ !@#$%^&*()_+=\-\[\]{}|;:'\",.<>?/`~]", password):
+        raise ValueError("Password must contain at least one special character")

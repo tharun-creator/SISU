@@ -166,12 +166,36 @@ class AvailabilitySlot(Base):
 # ── Password Reset Tokens ──────────────────────────────────────────────────────
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
-
+    
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    token = Column(String(255), unique=True, nullable=False, index=True)
+    hashed_token = Column(String(255), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime, nullable=False)
     is_used = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+# ── Security Logs ──────────────────────────────────────────────────────────────
+class SecurityLog(Base):
+    __tablename__ = "security_logs"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    ip_address = Column(String(50), nullable=True)
+    email = Column(String(255), nullable=True, index=True)
+    event_type = Column(String(100), nullable=False)  # "login_failed", "forgot_password_requested", "password_changed", etc.
+    user_agent = Column(String(512), nullable=True)
+    details = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+# ── Captcha Challenges ─────────────────────────────────────────────────────────
+class CaptchaChallenge(Base):
+    __tablename__ = "captcha_challenges"
+    
+    id = Column(String(50), primary_key=True, index=True)  # UUID
+    answer = Column(String(50), nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    is_verified = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 
@@ -191,6 +215,20 @@ class AdminEmail(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
 
+
+# Self-migrating database logic: drop old password_reset_tokens table if it uses legacy column schema
+try:
+    from sqlalchemy import inspect, text
+    inspector = inspect(engine)
+    if "password_reset_tokens" in inspector.get_table_names():
+        columns = [col["name"] for col in inspector.get_columns("password_reset_tokens")]
+        if "token" in columns and "hashed_token" not in columns:
+            print("Old password_reset_tokens table found (with 'token' column). Dropping it to migrate.")
+            with engine.connect() as conn:
+                conn.execute(text("DROP TABLE password_reset_tokens"))
+                conn.commit()
+except Exception as e:
+    print(f"Error checking/migrating password_reset_tokens: {e}")
 
 # Create all tables
 Base.metadata.create_all(bind=engine)

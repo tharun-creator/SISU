@@ -30,8 +30,9 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const login = async (email, password) => {
-    const res = await api.login({ email, password });
+  const login = async (emailOrPayload, password) => {
+    const payload = typeof emailOrPayload === 'string' ? { email: emailOrPayload, password } : emailOrPayload;
+    const res = await api.login(payload);
     localStorage.setItem('sisu_token', res.access_token);
     localStorage.setItem('sisu_user', JSON.stringify(res.user));
     setUser(res.user);

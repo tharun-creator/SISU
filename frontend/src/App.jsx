@@ -6,11 +6,13 @@ import AdminDashboard from './pages/AdminDashboard.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
 import BookingPage from './pages/BookingPage.jsx';
 import NotificationsPage from './pages/NotificationsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import AdminUsersPage from './pages/AdminUsersPage.jsx';
 import AdminCalendarSlotsPage from './pages/AdminCalendarSlotsPage.jsx';
+import AdminDecisionFeed from './pages/AdminDecisionFeed.jsx';
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
           {/* Client */}
           <Route path="/" element={<PrivateRoute><ClientDashboard /></PrivateRoute>} />
@@ -32,7 +36,7 @@ function App() {
           {/* Admin */}
           <Route path="/admin" element={<PrivateRoute adminOnly><AdminDashboard /></PrivateRoute>} />
           <Route path="/admin/meetings" element={<PrivateRoute adminOnly><AdminDashboard /></PrivateRoute>} />
-          <Route path="/admin/pending" element={<PrivateRoute adminOnly><AdminDashboard /></PrivateRoute>} />
+          <Route path="/admin/pending" element={<PrivateRoute adminOnly><AdminDecisionFeed /></PrivateRoute>} />
           <Route path="/admin/users" element={<PrivateRoute adminOnly><AdminUsersPage /></PrivateRoute>} />
           <Route path="/admin/calendar-slots" element={<PrivateRoute adminOnly><AdminCalendarSlotsPage /></PrivateRoute>} />
 

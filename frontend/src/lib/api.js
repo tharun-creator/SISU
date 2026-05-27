@@ -69,10 +69,18 @@ export const api = {
   register: (data) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(data) }),
   login: (data) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(data) }),
   me: () => request('/api/auth/me'),
-  forgotPassword: (email) => request('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
-  resetPassword: (token, password) => request('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) }),
+  forgotPassword: (data) => {
+    const body = typeof data === 'string' ? { email: data } : data;
+    return request('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify(body) });
+  },
+  resetPassword: (tokenOrData, password) => {
+    const body = typeof tokenOrData === 'string' ? { token: tokenOrData, password } : tokenOrData;
+    return request('/api/auth/reset-password', { method: 'POST', body: JSON.stringify(body) });
+  },
+  getCaptcha: () => request('/api/auth/captcha'),
   updateProfile: (data) => request('/api/auth/update-profile', { method: 'PUT', body: JSON.stringify(data) }),
   changePassword: (data) => request('/api/auth/change-password', { method: 'PUT', body: JSON.stringify(data) }),
+
 
   // Chat
   chat: (message, history = []) => request('/api/chat', { method: 'POST', body: JSON.stringify({ message, history }) }),
@@ -83,6 +91,8 @@ export const api = {
   getMeeting: (id) => request(`/api/meetings/${id}`),
   cancelMeeting: (id) => request(`/api/meetings/${id}`, { method: 'DELETE' }),
   requestReschedule: (id, data) => request(`/api/meetings/${id}/reschedule`, { method: 'PUT', body: JSON.stringify(data) }),
+  confirmReschedule: (id) => request(`/api/meetings/${id}/confirm-reschedule`, { method: 'PUT' }),
+
 
   // Admin
   adminGetMeetings: (status) => request(`/api/admin/meetings${status ? `?status=${status}` : ''}`),

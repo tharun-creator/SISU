@@ -13,19 +13,23 @@ import requests
 import time
 import re
 import secrets
+import uuid
+import random
+import hashlib
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from database import get_db, Booking as DBBooking, Meeting, User, Notification, MeetingStatusLog, AvailabilitySlot, PasswordResetToken, DateAvailabilitySignal, AdminEmail
+from database import get_db, Booking as DBBooking, Meeting, User, Notification, MeetingStatusLog, AvailabilitySlot, PasswordResetToken, DateAvailabilitySignal, AdminEmail, SecurityLog, CaptchaChallenge
 from llm import generate_chat_response
 import auth
 from auth import get_current_user, require_admin, RegisterRequest, LoginRequest
 import email_service
 import calendar_service
 import meeting_booking_service
+
 
 import logging
 
@@ -136,10 +140,21 @@ class RescheduleRequest(BaseModel):
 
 class ForgotPasswordRequest(BaseModel):
     email: str
+    captcha_id: Optional[str] = None
+    captcha_answer: Optional[str] = None
 
 class ResetPasswordRequest(BaseModel):
     token: str
     password: str
+    captcha_id: Optional[str] = None
+    captcha_answer: Optional[str] = None
+
+
+class CaptchaResponse(BaseModel):
+    captcha_id: str
+    question: str
+
+
 
 class UpdateProfileRequest(BaseModel):
     name: Optional[str] = None
@@ -299,22 +314,161 @@ def trigger_zapier_webhook(payload: dict):
     except Exception as e:
         print(f"Background webhook error: {e}")
 
+# ── Security & CAPTCHA Helpers ────────────────────────────────────────────────
+def log_security_event(db: Session, ip_address: str, email: Optional[str], event_type: str, details: str = None, request: Request = None):
+    user_agent = None
+    if request:
+        user_agent = request.headers.get("user-agent")
+    log = SecurityLog(
+        ip_address=ip_address,
+        email=email,
+        event_type=event_type,
+        user_agent=user_agent,
+        details=details
+    )
+    db.add(log)
+    db.commit()
+
+
+def check_brute_force_and_verify_captcha(
+    db: Session,
+    ip_address: str,
+    email: str,
+    event_type: str,
+    captcha_id: Optional[str] = None,
+    captcha_answer: Optional[str] = None
+):
+    # Count failed attempts in the last 15 minutes for this IP or email
+    time_window = datetime.datetime.utcnow() - datetime.timedelta(minutes=15)
+    failed_attempts = db.query(SecurityLog).filter(
+        (SecurityLog.ip_address == ip_address) | (SecurityLog.email == email),
+        SecurityLog.event_type.in_([f"{event_type}_failed", f"{event_type}_captcha_failed"]),
+        SecurityLog.created_at >= time_window
+    ).count()
+
+    if failed_attempts >= 3:
+        if not captcha_id or not captcha_answer:
+            raise HTTPException(
+                status_code=400,
+                detail={"message": "Multiple failed attempts. CAPTCHA verification required.", "captcha_required": True}
+            )
+            
+        challenge = db.query(CaptchaChallenge).filter(
+            CaptchaChallenge.id == captcha_id,
+            CaptchaChallenge.is_verified == False,
+            CaptchaChallenge.expires_at >= datetime.datetime.utcnow()
+        ).first()
+
+        if not challenge or challenge.answer.strip() != captcha_answer.strip():
+            log_security_event(db, ip_address, email, f"{event_type}_captcha_failed", "Failed CAPTCHA response")
+            raise HTTPException(
+                status_code=400,
+                detail={"message": "Invalid or expired CAPTCHA answer. Please try again.", "captcha_required": True}
+            )
+
+        challenge.is_verified = True
+        db.commit()
+
+
+@app.get("/api/auth/captcha", response_model=CaptchaResponse)
+@app.get("/auth/captcha", response_model=CaptchaResponse)
+@limiter.limit("30/minute")
+async def get_captcha(request: Request, db: Session = Depends(get_db)):
+    num1 = random.randint(1, 15)
+    num2 = random.randint(1, 10)
+    op = random.choice(["+", "-", "*"])
+    
+    if op == "+":
+        ans = num1 + num2
+    elif op == "-":
+        ans = num1 - num2
+    else:
+        ans = num1 * num2
+        
+    challenge_id = str(uuid.uuid4())
+    expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+    
+    db_challenge = CaptchaChallenge(
+        id=challenge_id,
+        answer=str(ans),
+        expires_at=expires_at,
+        is_verified=False
+    )
+    db.add(db_challenge)
+    db.commit()
+    
+    return CaptchaResponse(
+        captcha_id=challenge_id,
+        question=f"Solve: {num1} {op} {num2}"
+    )
+
+
 # ── Auth Routes ────────────────────────────────────────────────────────────────
 @app.post("/api/auth/register")
-async def register(req: RegisterRequest, db: Session = Depends(get_db)):
-    return auth.register_user(req, db)
+@app.post("/auth/register")
+@limiter.limit("5/minute")
+async def register(req: RegisterRequest, request: Request, db: Session = Depends(get_db)):
+    ip = get_remote_address(request)
+    try:
+        res = auth.register_user(req, db)
+        log_security_event(db, ip, req.email.strip(), "register_success", request=request)
+        return res
+    except HTTPException as e:
+        log_security_event(db, ip, req.email.strip(), "register_failed", e.detail, request=request)
+        raise e
+
 
 @app.post("/api/auth/login")
-async def login(req: LoginRequest, db: Session = Depends(get_db)):
-    return auth.login_user(req, db)
+@app.post("/auth/login")
+@limiter.limit("10/minute")
+async def login(req: LoginRequest, request: Request, db: Session = Depends(get_db)):
+    ip = get_remote_address(request)
+    email_clean = req.email.strip()
+    
+    # Check brute force and captcha
+    check_brute_force_and_verify_captcha(
+        db=db,
+        ip_address=ip,
+        email=email_clean,
+        event_type="login",
+        captcha_id=req.captcha_id,
+        captcha_answer=req.captcha_answer
+    )
+    
+    try:
+        res = auth.login_user(req, db)
+        log_security_event(db, ip, email_clean, "login_success", request=request)
+        return res
+    except HTTPException as e:
+        if e.status_code == 401:
+            log_security_event(db, ip, email_clean, "login_failed", "Invalid credentials", request=request)
+        raise e
+
 
 @app.get("/api/auth/me")
+@app.get("/auth/me")
 async def me(current_user: User = Depends(get_current_user)):
     return auth.user_to_dict(current_user)
 
+
 @app.post("/api/auth/forgot-password")
-async def forgot_password(req: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == req.email).first()
+@app.post("/auth/forgot-password")
+@limiter.limit("5/minute")
+async def forgot_password(req: ForgotPasswordRequest, request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    ip = get_remote_address(request)
+    email_clean = req.email.strip()
+    
+    # Check brute force and CAPTCHA
+    check_brute_force_and_verify_captcha(
+        db=db,
+        ip_address=ip,
+        email=email_clean,
+        event_type="forgot_password",
+        captcha_id=req.captcha_id,
+        captcha_answer=req.captcha_answer
+    )
+    
+    user = db.query(User).filter(User.email.ilike(email_clean)).first()
     if user:
         # Invalidate existing active tokens
         db.query(PasswordResetToken).filter(
@@ -323,12 +477,13 @@ async def forgot_password(req: ForgotPasswordRequest, background_tasks: Backgrou
         ).update({"is_used": True})
         
         # Create a new secure token
-        token = secrets.token_urlsafe(32)
-        expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
+        raw_token = secrets.token_urlsafe(32)
+        hashed_token = hashlib.sha256(raw_token.encode('utf-8')).hexdigest()
+        expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
         
         reset_token_obj = PasswordResetToken(
             user_id=user.id,
-            token=token,
+            hashed_token=hashed_token,
             expires_at=expires_at,
             is_used=False
         )
@@ -337,36 +492,85 @@ async def forgot_password(req: ForgotPasswordRequest, background_tasks: Backgrou
         
         # Build reset link
         frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
-        reset_link = f"{frontend_url.rstrip('/')}/reset-password?token={token}"
+        reset_link = f"{frontend_url.rstrip('/')}/reset-password?token={raw_token}"
+        
+        # Log the reset link clearly so developers/admins can see it in console/logs
+        print("\n" + "="*80)
+        print(f" PASSWORD RESET REQUESTED FOR: {user.email}")
+        print(f" RESET LINK: {reset_link}")
+        print("="*80 + "\n")
         
         # Send password reset email
+        user_agent = request.headers.get("user-agent")
         background_tasks.add_task(
             email_service.send_password_reset,
-            user.email, user.name, reset_link
+            user.email, user.name, reset_link, ip, user_agent
         )
+        
+        log_security_event(db, ip, email_clean, "forgot_password_success", "Token generated and sent", request=request)
+    else:
+        log_security_event(db, ip, email_clean, "forgot_password_success", "Non-existent email requested", request=request)
         
     return {"detail": "If an account exists, a link has been sent."}
 
+
 @app.post("/api/auth/reset-password")
-async def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
+@app.post("/auth/reset-password")
+@limiter.limit("5/minute")
+async def reset_password(req: ResetPasswordRequest, request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    ip = get_remote_address(request)
+    
+    # Check brute force and CAPTCHA
+    check_brute_force_and_verify_captcha(
+        db=db,
+        ip_address=ip,
+        email="",
+        event_type="reset_password",
+        captcha_id=req.captcha_id,
+        captcha_answer=req.captcha_answer
+    )
+    
+    # Hash token sent by user to match database column
+    token_hash = hashlib.sha256(req.token.encode('utf-8')).hexdigest()
+    
     reset_token = db.query(PasswordResetToken).filter(
-        PasswordResetToken.token == req.token
+        PasswordResetToken.hashed_token == token_hash
     ).first()
     
     if not reset_token or reset_token.is_used or reset_token.expires_at < datetime.datetime.utcnow():
+        log_security_event(db, ip, None, "reset_password_failed", "Invalid or expired token", request=request)
         raise HTTPException(status_code=400, detail="Invalid or expired reset token")
         
     user = db.query(User).filter(User.id == reset_token.user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
         
+    # Check password strength
+    try:
+        auth.validate_password_strength(req.password)
+    except ValueError as e:
+        log_security_event(db, ip, user.email, "reset_password_failed", f"Weak password: {str(e)}", request=request)
+        raise HTTPException(status_code=400, detail=str(e))
+        
+    # Update password and invalidate token
     user.password_hash = auth.hash_password(req.password)
     reset_token.is_used = True
     db.commit()
     
+    user_agent = request.headers.get("user-agent")
+    log_security_event(db, ip, user.email, "reset_password_success", "Password reset successfully", request=request)
+    
+    # Dispatch confirmation email
+    background_tasks.add_task(
+        email_service.send_password_changed,
+        user.email, user.name, ip, user_agent
+    )
+    
     return {"detail": "Your password has been reset successfully."}
 
+
 @app.put("/api/auth/update-profile")
+@app.put("/auth/update-profile")
 async def update_profile(
     req: UpdateProfileRequest,
     db: Session = Depends(get_db),
@@ -390,21 +594,36 @@ async def update_profile(
     db.refresh(current_user)
     return auth.user_to_dict(current_user)
 
+
 @app.put("/api/auth/change-password")
+@app.post("/api/auth/change-password")
+@app.post("/auth/change-password")
+@limiter.limit("5/minute")
 async def change_password(
     req: ChangePasswordRequest,
+    request: Request,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    ip = get_remote_address(request)
+    
     if not auth.verify_password(req.current_password, current_user.password_hash):
+        log_security_event(db, ip, current_user.email, "change_password_failed", "Incorrect current password", request=request)
         raise HTTPException(status_code=400, detail="Incorrect current password")
     
-    if len(req.new_password) < 6:
-        raise HTTPException(status_code=400, detail="New password must be at least 6 characters long")
+    try:
+        auth.validate_password_strength(req.new_password)
+    except ValueError as e:
+        log_security_event(db, ip, current_user.email, "change_password_failed", f"Weak password: {str(e)}", request=request)
+        raise HTTPException(status_code=400, detail=str(e))
         
     current_user.password_hash = auth.hash_password(req.new_password)
     db.commit()
+    
+    # Log password change
+    log_security_event(db, ip, current_user.email, "change_password_success", "Password updated successfully", request=request)
     return {"detail": "Password updated successfully"}
+
 
 
 # ── Chat Route ─────────────────────────────────────────────────────────────────
@@ -741,7 +960,119 @@ async def client_reschedule_request(
     return meeting_to_dict(meeting)
 
 
+@app.put("/api/meetings/{meeting_id}/confirm-reschedule")
+async def client_confirm_reschedule(
+    meeting_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
+    if not meeting:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+    if meeting.client_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    if meeting.status != "reschedule_proposed":
+        raise HTTPException(status_code=400, detail="No reschedule proposal exists for this meeting")
+
+    old_status = meeting.status
+    meeting.status = "rescheduled"
+
+    # Mark the slot as booked in the local DB
+    meeting_booking_service.mark_slot_as_booked(db, meeting.start_time, meeting.end_time)
+
+    client_email = current_user.email
+    client_name = current_user.name
+    local_start = to_local(meeting.start_time)
+
+    if meeting.google_event_id:
+        background_tasks.add_task(
+            calendar_service.update_event,
+            meeting.google_event_id,
+            start=meeting.start_time,
+            end=meeting.end_time,
+        )
+    else:
+        # Sync directly with Google Calendar immediately
+        try:
+            event = calendar_service.create_event_direct(
+                title=meeting.title,
+                description=meeting.description or "Mentorship session booked on Sisu",
+                start=meeting.start_time,
+                end=meeting.end_time,
+                attendees=[client_email],
+                meeting_id=str(meeting.id),
+                preferred_communication=meeting.preferred_communication
+            )
+            if event:
+                meeting.google_event_id = event.get("id")
+                meet_link = None
+                if event.get("conferenceData") and event["conferenceData"].get("entryPoints"):
+                    for ep in event["conferenceData"]["entryPoints"]:
+                        if ep.get("entryPointType") == "video":
+                            meet_link = ep.get("uri")
+                            break
+                if meet_link:
+                    meeting.meet_link = meet_link
+        except Exception as cal_err:
+            print(f"[Calendar Direct Sync Error] {cal_err}")
+
+    db.commit()
+    log_status_change(db, meeting.id, old_status, "rescheduled", current_user.email)
+
+    # Send rescheduled confirmation email
+    try:
+        new_dict = {
+            "title": meeting.title,
+            "date": local_start.strftime("%B %d, %Y"),
+            "time": f"{local_start.strftime('%I:%M %p')} IST",
+            "type": meeting.meeting_type,
+            "duration": f"{meeting.duration_minutes} mins",
+        }
+        old_dict = {
+            "title": meeting.title,
+            "date": "Previously Scheduled Time",
+            "time": "Previous Slot",
+            "type": meeting.meeting_type,
+            "duration": f"{meeting.duration_minutes} mins",
+        }
+        background_tasks.add_task(
+            email_service.send_meeting_rescheduled,
+            client_email, client_name, old_dict, new_dict
+        )
+    except Exception as email_err:
+        print(f"[Email Send Error] {email_err}")
+
+    # Trigger Zapier webhook
+    try:
+        background_tasks.add_task(
+            meeting_booking_service.trigger_zapier_for_approved_meeting,
+            meeting, client_name, client_email
+        )
+    except Exception as zap_err:
+        print(f"[Zapier Send Error] {zap_err}")
+
+    # Create notification for client
+    create_notification(
+        db, current_user.id, "rescheduled", "Meeting Reschedule Confirmed! 🎉",
+        f"Your meeting '{meeting.title}' has been successfully locked in for {local_start.strftime('%B %d at %I:%M %p')} IST.",
+        meeting.id
+    )
+
+    # Create notification for admin
+    admins = db.query(User).filter(User.role == "admin").all()
+    for admin in admins:
+        create_notification(
+            db, admin.id, "rescheduled", "Client Accepted Reschedule",
+            f"{client_name} has accepted the proposed reschedule for '{meeting.title}' to {local_start.strftime('%B %d at %I:%M %p')} IST.",
+            meeting.id
+        )
+
+    return meeting_to_dict(meeting)
+
+
 # ── Admin Routes ───────────────────────────────────────────────────────────────
+
 
 # ── Admin User Management Endpoints ──
 
@@ -944,7 +1275,10 @@ async def admin_update_meeting_status(
         raise HTTPException(status_code=404, detail="Meeting not found")
 
     old_status = meeting.status
-    meeting.status = req.status
+    if req.status == "rescheduled":
+        meeting.status = "reschedule_proposed"
+    else:
+        meeting.status = req.status
     if req.admin_notes:
         meeting.admin_notes = req.admin_notes
     if req.meet_link:
@@ -963,24 +1297,19 @@ async def admin_update_meeting_status(
 
             # If it's specifically a reschedule (not just an approval with a minor tweak)
             if req.status == "rescheduled":
-                if meeting.google_event_id:
-                    background_tasks.add_task(
-                        calendar_service.update_event,
-                        meeting.google_event_id,
-                        start=new_start,
-                        end=new_end,
-                    )
-
+                # Do NOT sync directly to calendar or send final rescheduled emails yet.
+                # We send the reschedule proposed notification and email to client.
                 client = db.query(User).filter(User.id == meeting.client_id).first()
                 if client:
                     local_old = to_local(old_start)
                     local_new = to_local(new_start)
                     old_dict = {"title": meeting.title, "date": local_old.strftime("%B %d, %Y"), "time": f"{local_old.strftime('%I:%M %p')} IST", "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
                     new_dict = {"title": meeting.title, "date": local_new.strftime("%B %d, %Y"), "time": f"{local_new.strftime('%I:%M %p')} IST", "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
-                    background_tasks.add_task(email_service.send_meeting_rescheduled, client.email, client.name, old_dict, new_dict)
-                    create_notification(db, client.id, "rescheduled", "Meeting Rescheduled", f"Your meeting has been rescheduled to {local_new.strftime('%B %d at %I:%M %p')}", meeting.id)
+                    background_tasks.add_task(email_service.send_reschedule_proposed, client.email, client.name, old_dict, new_dict)
+                    create_notification(db, client.id, "reschedule_proposed", "Reschedule Proposed", f"Admin proposed to reschedule '{meeting.title}' to {local_new.strftime('%B %d at %I:%M %p')} IST.", meeting.id)
 
     db.commit()
+
     log_status_change(db, meeting.id, old_status, req.status, admin.email, req.admin_notes)
 
     client = db.query(User).filter(User.id == meeting.client_id).first()
@@ -1035,7 +1364,6 @@ async def admin_update_meeting_status(
 
         # Send approved email with updated details
         try:
-            import email_service
             fresh_dict = {
                 "title": meeting.title,
                 "date": local_start.strftime("%B %d, %Y"),
@@ -1049,6 +1377,15 @@ async def admin_update_meeting_status(
             )
         except Exception as email_err:
             print(f"[Email Send Error] {email_err}")
+
+        # Trigger Zapier webhook for approved meeting
+        try:
+            background_tasks.add_task(
+                meeting_booking_service.trigger_zapier_for_approved_meeting,
+                meeting, client.name, client.email
+            )
+        except Exception as zap_err:
+            print(f"[Zapier Send Error] {zap_err}")
 
         create_notification(db, client.id, "approved", "Meeting Approved! 🎉", f"Your meeting '{meeting.title}' has been confirmed for {local_start.strftime('%B %d at %I:%M %p')}.", meeting.id)
 
