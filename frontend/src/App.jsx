@@ -13,6 +13,7 @@ import SettingsPage from './pages/SettingsPage.jsx';
 import AdminUsersPage from './pages/AdminUsersPage.jsx';
 import AdminCalendarSlotsPage from './pages/AdminCalendarSlotsPage.jsx';
 import AdminDecisionFeed from './pages/AdminDecisionFeed.jsx';
+import AdminSlotsBookedPage from './pages/AdminSlotsBookedPage.jsx';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/admin/pending" element={<PrivateRoute adminOnly><AdminDecisionFeed /></PrivateRoute>} />
           <Route path="/admin/users" element={<PrivateRoute adminOnly><AdminUsersPage /></PrivateRoute>} />
           <Route path="/admin/calendar-slots" element={<PrivateRoute adminOnly><AdminCalendarSlotsPage /></PrivateRoute>} />
+          <Route path="/admin/slots-booked" element={<PrivateRoute adminOnly><AdminSlotsBookedPage /></PrivateRoute>} />
 
         </Routes>
       </Router>

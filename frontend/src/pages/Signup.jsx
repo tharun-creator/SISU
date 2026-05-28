@@ -4,7 +4,7 @@ import { useAuth } from '../lib/auth';
 
 export default function Signup() {
   const { register } = useAuth();
-  const [form, setForm] = useState({ name: '', email: '', password: '', company: '', job_title: '', timezone: 'Asia/Kolkata' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', company: '', job_title: '', timezone: 'Asia/Kolkata' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -13,10 +13,12 @@ export default function Signup() {
     e.preventDefault();
     setError('');
     if (form.password.length < 8) { setError('Password must be at least 8 characters'); return; }
+    if (!form.company.trim()) { setError('Company name is required'); return; }
+    if (!form.phone.trim()) { setError('Mobile number is required'); return; }
     setLoading(true);
     try {
       const user = await register({ ...form, role: 'client' });
-      window.location.href = (user.role === 'admin' || user.email === 'tharunriot@gmail.com') ? '/admin' : '/';
+      window.location.href = (user.role?.toLowerCase() === 'admin' || user.email?.toLowerCase() === 'tharunriot@gmail.com') ? '/admin' : '/';
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {
@@ -39,7 +41,6 @@ export default function Signup() {
         {/* Logo and title */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', boxShadow: '0 0 16px var(--color-accent)' }} />
             <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.5px', color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>SISU</span>
           </div>
           <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 8, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>
@@ -115,40 +116,50 @@ export default function Signup() {
 
             <div className="layout-grid grid-cols-2" style={{ gap: 16 }}>
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Company</label>
-                <input id="signup-company" className="input-premium" type="text" placeholder="Acme Corp" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                  Company <span style={{ color: 'var(--color-red)' }}>*</span>
+                </label>
+                <input id="signup-company" className="input-premium" type="text" placeholder="Acme Corp" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} required />
               </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                  Mobile Number <span style={{ color: 'var(--color-red)' }}>*</span>
+                </label>
+                <input id="signup-phone" className="input-premium" type="tel" placeholder="e.g. +91 9876543210" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required />
+              </div>
+            </div>
+
+            <div className="layout-grid grid-cols-2" style={{ gap: 16 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Role / Title</label>
                 <input id="signup-title" className="input-premium" type="text" placeholder="CEO, Founder…" value={form.job_title} onChange={(e) => setForm({ ...form, job_title: e.target.value })} />
               </div>
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Timezone</label>
-              <div style={{ position: 'relative' }}>
-                <select
-                  id="signup-tz"
-                  className="input-premium"
-                  value={form.timezone}
-                  onChange={(e) => setForm({ ...form, timezone: e.target.value })}
-                  style={{
-                    appearance: 'none',
-                    paddingRight: 40,
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="Asia/Kolkata">India (IST, UTC+5:30)</option>
-                  <option value="America/New_York">New York (EST, UTC-5)</option>
-                  <option value="America/Los_Angeles">Los Angeles (PST, UTC-8)</option>
-                  <option value="Europe/London">London (GMT, UTC+0)</option>
-                  <option value="Asia/Dubai">Dubai (GST, UTC+4)</option>
-                  <option value="Asia/Singapore">Singapore (SGT, UTC+8)</option>
-                  <option value="Australia/Sydney">Sydney (AEDT, UTC+11)</option>
-                </select>
-                <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', display: 'flex', alignItems: 'center', color: 'var(--color-text-muted)' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>expand_more</span>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Timezone</label>
+                <div style={{ position: 'relative' }}>
+                  <select
+                    id="signup-tz"
+                    className="input-premium"
+                    value={form.timezone}
+                    onChange={(e) => setForm({ ...form, timezone: e.target.value })}
+                    style={{
+                      appearance: 'none',
+                      paddingRight: 40,
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="Asia/Kolkata">India (IST)</option>
+                    <option value="America/New_York">New York (EST)</option>
+                    <option value="America/Los_Angeles">Los Angeles (PST)</option>
+                    <option value="Europe/London">London (GMT)</option>
+                    <option value="Asia/Dubai">Dubai (GST)</option>
+                    <option value="Asia/Singapore">Singapore (SGT)</option>
+                    <option value="Australia/Sydney">Sydney (AEDT)</option>
+                  </select>
+                  <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', display: 'flex', alignItems: 'center', color: 'var(--color-text-muted)' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>expand_more</span>
+                  </div>
                 </div>
               </div>
             </div>

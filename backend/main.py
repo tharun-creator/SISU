@@ -126,6 +126,7 @@ class MeetingStatusUpdate(BaseModel):
     meet_link: Optional[str] = None
     new_start_time: Optional[str] = None
     new_end_time: Optional[str] = None
+    priority: Optional[str] = None
 
 class AvailabilityCreate(BaseModel):
     start_time: str
@@ -576,23 +577,27 @@ async def update_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    user = db.query(User).filter(User.id == current_user.id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
     if req.name is not None:
         name_val = req.name.strip()
         if not name_val:
             raise HTTPException(status_code=400, detail="Name cannot be empty")
-        current_user.name = name_val
+        user.name = name_val
     if req.phone is not None:
-        current_user.phone = req.phone.strip()
+        user.phone = req.phone.strip()
     if req.company is not None:
-        current_user.company = req.company.strip()
+        user.company = req.company.strip()
     if req.job_title is not None:
-        current_user.job_title = req.job_title.strip()
+        user.job_title = req.job_title.strip()
     if req.timezone is not None:
-        current_user.timezone = req.timezone.strip()
+        user.timezone = req.timezone.strip()
     
     db.commit()
-    db.refresh(current_user)
-    return auth.user_to_dict(current_user)
+    db.refresh(user)
+    return auth.user_to_dict(user)
 
 
 @app.put("/api/auth/change-password")
@@ -726,7 +731,7 @@ async def create_meeting(
         Meeting.start_time < end,
         Meeting.end_time > start,
         Meeting.deleted_at == None,
-        Meeting.status.in_(["pending", "approved"]),
+        Meeting.status.in_(["pending", "approved", "rescheduled", "reschedule_proposed", "reschedule_requested"]),
     ).first()
     if global_conflict:
         # Return alternatives instead of bare 409
@@ -894,7 +899,7 @@ async def client_reschedule_request(
     meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
-    if meeting.client_id != current_user.id:
+    if current_user.role != "admin" and meeting.client_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
 
     start = parse_dt_to_ist(req.new_start_time)
@@ -909,7 +914,7 @@ async def client_reschedule_request(
         Meeting.end_time > start,
         Meeting.id != meeting.id,
         Meeting.deleted_at == None,
-        Meeting.status.in_(["pending", "approved"]),
+        Meeting.status.in_(["pending", "approved", "rescheduled", "reschedule_proposed", "reschedule_requested"]),
     ).first()
     if conflict:
         # Use meeting_booking_service to find alternatives and raise conflict
@@ -970,7 +975,7 @@ async def client_confirm_reschedule(
     meeting = db.query(Meeting).filter(Meeting.id == meeting_id, Meeting.deleted_at == None).first()
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
-    if meeting.client_id != current_user.id:
+    if current_user.role != "admin" and meeting.client_id != current_user.id:
         raise HTTPException(status_code=403, detail="Access denied")
     if meeting.status != "reschedule_proposed":
         raise HTTPException(status_code=400, detail="No reschedule proposal exists for this meeting")
@@ -1094,7 +1099,7 @@ async def admin_create_user(
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    is_admin = db.query(AdminEmail).filter(AdminEmail.email == req.email).first() is not None or req.email == "tharunriot@gmail.com"
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(req.email)).first() is not None or req.email.lower() == "tharunriot@gmail.com"
     role = "admin" if is_admin else "client"
     
     new_user = User(
@@ -1167,13 +1172,13 @@ async def admin_demote_user(
     if email == admin.email:
         raise HTTPException(status_code=400, detail="You cannot demote yourself.")
         
-    if email == "tharunriot@gmail.com":
+    if email.lower() == "tharunriot@gmail.com":
         raise HTTPException(status_code=400, detail="The default admin tharunriot@gmail.com cannot be demoted.")
 
     # Remove from admin_emails table
-    db.query(AdminEmail).filter(AdminEmail.email == email).delete()
+    db.query(AdminEmail).filter(AdminEmail.email.ilike(email)).delete(synchronize_session=False)
     
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(User).filter(User.email.ilike(email)).first()
     if user:
         user.role = "client"
         db.commit()
@@ -1283,6 +1288,8 @@ async def admin_update_meeting_status(
         meeting.admin_notes = req.admin_notes
     if req.meet_link:
         meeting.meet_link = req.meet_link
+    if req.priority:
+        meeting.priority = req.priority.lower()
 
     # Handle time update if provided (regardless of status)
     if req.new_start_time and req.new_end_time:
@@ -1590,7 +1597,7 @@ async def get_free_slots(date: str, duration: int = 60, db: Session = Depends(ge
             local_meetings = db.query(Meeting).filter(
                 Meeting.start_time >= day_start,
                 Meeting.start_time < day_end,
-                Meeting.status.in_(["pending", "approved"]),
+                Meeting.status.in_(["pending", "approved", "rescheduled", "reschedule_proposed", "reschedule_requested"]),
                 Meeting.deleted_at == None
             ).all()
             
@@ -1641,7 +1648,7 @@ async def get_free_slots(date: str, duration: int = 60, db: Session = Depends(ge
     local_meetings = db.query(Meeting).filter(
         Meeting.start_time >= day_start,
         Meeting.start_time < day_end,
-        Meeting.status.in_(["pending", "approved"]),
+        Meeting.status.in_(["pending", "approved", "rescheduled", "reschedule_proposed", "reschedule_requested"]),
         Meeting.deleted_at == None
     ).all()
 

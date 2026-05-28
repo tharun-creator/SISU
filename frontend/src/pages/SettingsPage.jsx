@@ -12,10 +12,20 @@ export default function SettingsPage() {
   const [form, setForm] = useState({
     name: user?.name || '',
     company: user?.company || '',
-    job_title: user?.job_title || '',
     timezone: user?.timezone || 'Asia/Kolkata',
     phone: user?.phone || '',
   });
+
+  React.useEffect(() => {
+    if (user) {
+      setForm({
+        name: user.name || '',
+        company: user.company || '',
+        timezone: user.timezone || 'Asia/Kolkata',
+        phone: user.phone || '',
+      });
+    }
+  }, [user]);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -26,7 +36,12 @@ export default function SettingsPage() {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const updatedUser = await api.updateProfile(form);
+      const updatedUser = await api.updateProfile({
+        name: form.name,
+        phone: form.phone,
+        company: form.company,
+        timezone: form.timezone
+      });
       updateUser(updatedUser);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -97,22 +112,24 @@ export default function SettingsPage() {
 
                 <div className="divider-premium" />
 
-                <div className="layout-grid grid-cols-2" style={{ gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Full Name</label>
-                    <input className="input-premium" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                      Full Name <span style={{ color: 'var(--color-red)' }}>*</span>
+                    </label>
+                    <input className="input-premium" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Company</label>
-                    <input className="input-premium" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Your company" />
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                      Phone Number <span style={{ color: 'var(--color-red)' }}>*</span>
+                    </label>
+                    <input className="input-premium" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 98765 43210" required />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Job Title</label>
-                    <input className="input-premium" value={form.job_title} onChange={(e) => setForm({ ...form, job_title: e.target.value })} placeholder="CEO, Founder..." />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Phone</label>
-                    <input className="input-premium" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 98765 43210" />
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                      Company <span style={{ color: 'var(--color-red)' }}>*</span>
+                    </label>
+                    <input className="input-premium" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Your company" required />
                   </div>
                 </div>
 

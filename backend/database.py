@@ -23,14 +23,72 @@ if "mysql" in db_url:
         db_url = db_url.split("?")[0]
     connect_args = {"ssl": {}}
 
-engine = create_engine(
-    db_url,
-    connect_args=connect_args,
-    pool_size=10,
-    max_overflow=20,
-    pool_recycle=3600,
-    pool_pre_ping=True
-)
+fallback_to_sqlite = False
+if "mysql" in db_url:
+    try:
+        # Create a temporary engine with pool_pre_ping to check connectivity
+        temp_engine = create_engine(
+            db_url,
+            connect_args=connect_args,
+            pool_pre_ping=True
+        )
+        with temp_engine.connect() as conn:
+            pass
+        temp_engine.dispose()
+    except Exception as e:
+        # Check if the error is "Unknown database" (MySQL error 1049)
+        if "1049" in str(e) or "Unknown database" in str(e):
+            db_name = "sisu_db"
+            try:
+                # Parse base URL and DB name
+                parts = db_url.split("/")
+                base_url = "/".join(parts[:-1]) + "/"
+                db_name = parts[-1].split("?")[0]
+                
+                print(f"\n[Database Init] Database '{db_name}' does not exist on your MySQL server.")
+                print(f"Attempting to automatically create it...")
+                
+                # Connect to server without database specified
+                from sqlalchemy import text
+                sys_engine = create_engine(base_url, connect_args=connect_args)
+                with sys_engine.connect() as conn:
+                    conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {db_name}"))
+                    conn.commit()
+                sys_engine.dispose()
+                print(f"[Database Init] Database '{db_name}' successfully created!")
+                
+                # Retry connection test
+                with temp_engine.connect() as conn:
+                    pass
+                temp_engine.dispose()
+            except Exception as creation_err:
+                print(f"\n[Database Warning] Failed to connect to MySQL and failed to auto-create database '{db_name}'.")
+                print(f"Creation Error detail: {creation_err}")
+                print("-> Falling back to local SQLite database 'sqlite:///sisu.db' to keep the system running...\n")
+                fallback_to_sqlite = True
+        else:
+            print(f"\n[Database Warning] Failed to connect to MySQL database.")
+            print(f"Error detail: {e}")
+            print("-> Falling back to local SQLite database 'sqlite:///sisu.db' to keep the system running...\n")
+            fallback_to_sqlite = True
+
+if fallback_to_sqlite:
+    db_url = "sqlite:///sisu.db"
+    connect_args = {"check_same_thread": False}
+    engine = create_engine(
+        db_url,
+        connect_args=connect_args
+    )
+else:
+    engine = create_engine(
+        db_url,
+        connect_args=connect_args,
+        pool_size=10,
+        max_overflow=20,
+        pool_recycle=3600,
+        pool_pre_ping=True
+    )
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -51,6 +109,7 @@ class MeetingStatus(str, enum.Enum):
 
 class MeetingPriority(str, enum.Enum):
     low = "low"
+    medium = "medium"
     normal = "normal"
     high = "high"
     urgent = "urgent"

@@ -84,7 +84,7 @@ def check_slot_available(
     """
     q = db.query(Meeting).filter(
         Meeting.deleted_at == None,
-        Meeting.status.in_(["pending", "approved"]),
+        Meeting.status.in_(["pending", "approved", "rescheduled", "reschedule_proposed", "reschedule_requested"]),
         Meeting.start_time < end,
         Meeting.end_time > start,
     )

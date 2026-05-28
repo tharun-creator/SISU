@@ -193,134 +193,7 @@ export default function AdminUsersPage() {
           )}
         </AnimatePresence>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', gap: 24, alignItems: 'start', position: 'relative', zIndex: 1 }}>
-          {/* Left Column: Promote Admin & Create Client forms */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {/* Promote Admin card */}
-            <div className="glass-premium" style={{ padding: 24 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 8, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>
-                Add or Promote Admin
-              </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--color-text-secondary)', marginBottom: 20, lineHeight: 1.5 }}>
-                Grant admin permissions to an email address. If the user doesn't exist, a new profile will be created.
-              </p>
-
-              <form onSubmit={handlePromoteAdmin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
-                    Admin Email Address
-                  </label>
-                  <input
-                    type="email"
-                    className="input-premium"
-                    placeholder="e.g. admin@example.com"
-                    value={adminEmailInput}
-                    onChange={(e) => setAdminEmailInput(e.target.value)}
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={actionLoading || !adminEmailInput}
-                  className="btn-premium btn-premium-primary"
-                  style={{ alignSelf: 'stretch', justifyContent: 'center' }}
-                >
-                  {actionLoading ? 'Processing...' : 'Grant Admin Access'}
-                </button>
-              </form>
-            </div>
-
-            {/* Create Client card */}
-            <div className="glass-premium" style={{ padding: 24 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 8, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>
-                Create Client Account
-              </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--color-text-secondary)', marginBottom: 20, lineHeight: 1.5 }}>
-                Add a new client manually. A new account will be created with the specified details.
-              </p>
-
-              <form onSubmit={handleCreateClient} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    className="input-premium"
-                    placeholder="e.g. John Doe"
-                    value={clientName}
-                    onChange={(e) => setClientName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    className="input-premium"
-                    placeholder="e.g. client@example.com"
-                    value={clientEmail}
-                    onChange={(e) => setClientEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    className="input-premium"
-                    placeholder="e.g. SecurePass123"
-                    value={clientPassword}
-                    onChange={(e) => setClientPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={actionLoading || !clientName || !clientEmail || !clientPassword}
-                  className="btn-premium btn-premium-primary"
-                  style={{ alignSelf: 'stretch', justifyContent: 'center' }}
-                >
-                  {actionLoading ? 'Processing...' : 'Create Client'}
-                </button>
-              </form>
-            </div>
-
-            {/* Temporary Credentials Box */}
-            <AnimatePresence>
-              {newClientCreds && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="glass-premium"
-                  style={{ padding: 20, border: '1px solid rgba(132,204,22,0.2)', background: 'rgba(132,204,22,0.02)' }}
-                >
-                  <h4 style={{ fontSize: 13, color: '#84cc16', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12, fontFamily: 'var(--font-mono)' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>lock</span> 
-                    {newClientCreds.isAdmin ? 'Admin' : 'Client'} Credentials Created
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5, borderBottom: '1px solid var(--color-border)', paddingBottom: 6 }}>
-                      <span style={{ color: 'var(--color-text-muted)' }}>Email:</span>
-                      <strong style={{ color: 'var(--color-text-primary)' }}>{newClientCreds.email}</strong>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5 }}>
-                      <span style={{ color: 'var(--color-text-muted)' }}>Password:</span>
-                      <strong style={{ color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>{newClientCreds.password}</strong>
-                    </div>
-                  </div>
-                  <div style={{ marginTop: 14, fontSize: 11.5, color: 'var(--color-text-secondary)', lineHeight: 1.5, background: 'rgba(255,255,255,0.01)', padding: 10, borderRadius: 8, border: '1px solid var(--color-border)' }}>
-                    ℹ️ Provide these details to the user so they can log in.
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+        <div style={{ position: 'relative', zIndex: 1 }}>
 
           {/* Right Column: User list Table */}
           <div className="glass-premium" style={{ padding: 0, overflow: 'hidden' }}>
@@ -428,7 +301,7 @@ export default function AdminUsersPage() {
                               <>
                                 {/* Promote / Demote Action */}
                                 {isAdmin ? (
-                                  u.email !== 'tharunriot@gmail.com' && (
+                                  u.email?.toLowerCase() !== 'tharunriot@gmail.com' && (
                                     <button
                                       onClick={() => handleDemoteUser(u.email)}
                                       className="btn-premium btn-premium-ghost"

@@ -112,7 +112,7 @@ def get_current_user(
 
 
 def require_admin(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> User:
-    is_admin = db.query(AdminEmail).filter(AdminEmail.email == current_user.email).first() is not None or current_user.email == "tharunriot@gmail.com"
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(current_user.email)).first() is not None or current_user.email.lower() == "tharunriot@gmail.com"
     if not is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user

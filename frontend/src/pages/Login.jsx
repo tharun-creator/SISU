@@ -41,21 +41,8 @@ export default function Login() {
         payload.captcha_answer = captchaAnswer;
       }
 
-      const user = await login(payload.email, payload.password); // Note: standard useAuth's login expects email, password but wait! Let's check how login works in auth.jsx.
-      // Ah! In auth.jsx, login is:
-      // const login = async (email, password) => {
-      //   const res = await api.login({ email, password }); ...
-      // Wait! If our check_brute_force_and_verify_captcha expects captcha_id and captcha_answer in api.login, we should make sure that the api.login receives them!
-      // In auth.jsx, `login(email, password)` calls `api.login({ email, password })`. It doesn't pass captcha fields!
-      // To fix this, let's support passing the whole object or adding captcha fields to the useAuth login signature!
-      // Let's check: in auth.jsx, we can update login to accept a payload object instead of email, password or verify:
-      // "login = async (emailOrPayload, password) => {
-      //    const payload = typeof emailOrPayload === 'string' ? { email: emailOrPayload, password } : emailOrPayload;
-      //    const res = await api.login(payload); ..."
-      // Yes! That's incredibly elegant and allows us to pass captcha answers easily.
-      // Let's implement this check: if we pass captcha fields:
-      // await login(payload); (Wait, we will edit frontend/src/lib/auth.jsx in a moment!)
-      window.location.href = (user.role === 'admin' || user.email === 'tharunriot@gmail.com') ? '/admin' : '/';
+      const user = await login(payload);
+      window.location.href = (user.role?.toLowerCase() === 'admin' || user.email?.toLowerCase() === 'tharunriot@gmail.com') ? '/admin' : '/';
     } catch (err) {
       if (err.detail && err.detail.captcha_required) {
         setCaptchaRequired(true);

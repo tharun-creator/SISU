@@ -174,7 +174,7 @@ export default function ClientDashboard() {
   const [description, setDescription] = useState('');
   const [meetType, setMeetType] = useState('video'); // 'video' (Google Meet) or 'in_person' (Office)
   const [customLocationAddress, setCustomLocationAddress] = useState('');
-  const [priority, setPriority] = useState('normal');
+  const [priority, setPriority] = useState('medium');
   const [phone, setPhone] = useState(user?.phone || '');
   const [submitting, setSubmitting] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -494,6 +494,14 @@ Ready to launch Phase 3 during your next call!`
       setValidationError("Please specify your Preferred Location Address.");
       return;
     }
+    if (!phone.trim() || phone.trim() === 'N/A') {
+      setValidationError("Please provide your Phone Number to complete the booking.");
+      return;
+    }
+    if ((description || '').length > 500) {
+      setValidationError("Description cannot exceed 500 characters.");
+      return;
+    }
     setSubmitting(true);
     
     const startStr = `${selectedDate.year}-${String(selectedDate.month + 1).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}T${selectedSlot.start}:00`;
@@ -640,8 +648,7 @@ Ready to launch Phase 3 during your next call!`
       const updatedUser = await api.updateProfile({
         name: profileName,
         phone: profilePhone,
-        company: profileCompany,
-        job_title: profileJobTitle
+        company: profileCompany
       });
       updateUser(updatedUser);
       setProfileSuccess(true);
@@ -1116,22 +1123,24 @@ Ready to launch Phase 3 during your next call!`
                     </div>
                   )}
                   <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Full Name</label>
+                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                          Full Name <span style={{ color: 'var(--color-red)' }}>*</span>
+                        </label>
                         <input type="text" className="input-premium" value={profileName} onChange={(e) => setProfileName(e.target.value)} required />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Phone Number</label>
-                        <input type="text" className="input-premium" value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} placeholder="+91 XXXXX XXXXX" />
+                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                          Phone Number <span style={{ color: 'var(--color-red)' }}>*</span>
+                        </label>
+                        <input type="text" className="input-premium" value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} placeholder="+91 XXXXX XXXXX" required />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Company</label>
-                        <input type="text" className="input-premium" value={profileCompany} onChange={(e) => setProfileCompany(e.target.value)} placeholder="e.g. Sisu Enterprises" />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Job Title</label>
-                        <input type="text" className="input-premium" value={profileJobTitle} onChange={(e) => setProfileJobTitle(e.target.value)} placeholder="e.g. Managing Director" />
+                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                          Company <span style={{ color: 'var(--color-red)' }}>*</span>
+                        </label>
+                        <input type="text" className="input-premium" value={profileCompany} onChange={(e) => setProfileCompany(e.target.value)} placeholder="e.g. Sisu Enterprises" required />
                       </div>
                     </div>
                     <button type="submit" disabled={updatingProfile} className="btn-premium btn-premium-primary" style={{ alignSelf: 'flex-start', minWidth: 140 }}>
@@ -1356,33 +1365,43 @@ Ready to launch Phase 3 during your next call!`
                         </div>
                       </div>
 
-                      <div className="apple-form-footer-grid">
+                    </div>
+
+                    {/* RIGHT SIDE: LIVE SUMMARY & ACTION BUTTON */}
+                    <div className="booking-summary-side" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                      <div className="glass-premium" style={{ borderRadius: 'var(--radius-lg)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
                         <div>
-                          <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 700, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>5. Description</label>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                            <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>5. Description</label>
+                            <span style={{ fontSize: 10, color: (description || '').length >= 500 ? 'var(--color-red)' : 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
+                              {(description || '').length}/500
+                            </span>
+                          </div>
                           <textarea
                             className="input-premium"
-                            style={{ height: 38, minHeight: 38, maxHeight: 120, resize: 'vertical' }}
+                            style={{ height: 120, minHeight: 80, maxHeight: 200, resize: 'vertical', width: '100%', boxSizing: 'border-box', lineHeight: 1.5, padding: '10px 14px' }}
                             placeholder="e.g. Discussing outbound roadmap & scaling SDR metrics..."
                             value={description}
+                            maxLength={500}
                             onChange={(e) => setDescription(e.target.value)}
                           />
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 700, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>6. Phone Number</label>
+                          <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 700, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>
+                            6. Phone Number <span style={{ color: 'var(--color-red)' }}>*</span>
+                          </label>
                           <input
                             type="tel"
                             className="input-premium"
+                            style={{ width: '100%', boxSizing: 'border-box' }}
                             placeholder="e.g. +91 9876543210..."
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                           />
                         </div>
                       </div>
-                    </div>
 
-                    {/* RIGHT SIDE: LIVE SUMMARY & ACTION BUTTON */}
-                    <div className="booking-summary-side">
                       <div className="summary-sticky-card glass-premium">
                         <p className="summary-title" style={{ fontFamily: 'var(--font-mono)' }}>Mentorship Call Summary</p>
                         
@@ -2047,28 +2066,56 @@ Ready to launch Phase 3 during your next call!`
           border-radius: var(--radius-xl);
           padding: 32px;
           box-shadow: var(--shadow-lg);
+          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+        }
+
+        .apple-booking-card label,
+        .apple-booking-card .summary-title,
+        .apple-booking-card .summary-details span:not(.material-symbols-outlined),
+        .apple-booking-card .apple-form-header-grid label,
+        .apple-booking-card .booking-form-side label,
+        .apple-booking-card .apple-calendar-grid-container p,
+        .apple-booking-card .apple-calendar-grid-container span:not(.material-symbols-outlined) {
+          color: #000000 !important;
+          font-weight: normal !important;
+          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+        }
+
+        .apple-booking-card input,
+        .apple-booking-card select,
+        .apple-booking-card textarea {
+          color: #000000 !important;
+          font-weight: normal !important;
+          border-color: rgba(0, 0, 0, 0.15) !important;
+          background: rgba(0, 0, 0, 0.02) !important;
+          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+        }
+
+        .apple-booking-card input::placeholder,
+        .apple-booking-card textarea::placeholder {
+          color: rgba(0, 0, 0, 0.4) !important;
         }
 
         .apple-slot-pill {
           width: 100%;
           padding: 10px 16px;
           border-radius: 10px;
-          border: 1px solid var(--color-border);
-          background: rgba(255, 255, 255, 0.01);
-          color: var(--color-text-secondary);
+          border: 1px solid rgba(0, 0, 0, 0.15) !important;
+          background: rgba(0, 0, 0, 0.02) !important;
+          color: #000000 !important;
           display: flex;
           justify-content: space-between;
           align-items: center;
           cursor: pointer;
-          font-weight: 600;
+          font-weight: normal !important;
           font-size: 13px;
           transition: var(--transition-fast);
+          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
         }
 
         .apple-slot-pill:hover {
-          background: rgba(255, 255, 255, 0.03);
-          border-color: var(--color-border-hover);
-          color: var(--color-text-primary);
+          background: rgba(0, 0, 0, 0.05) !important;
+          border-color: rgba(0, 0, 0, 0.3) !important;
         }
 
         .apple-slot-pill.selected {
@@ -2356,12 +2403,12 @@ function AppleCalendarWidget({ onDateSelect, selectedDate }) {
         }
 
         .apple-month-title {
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 800;
-          color: var(--color-text-primary);
+          color: #000000 !important;
           margin: 0;
           letter-spacing: -0.01em;
-          font-family: var(--font-heading);
+          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
         }
 
         .apple-cal-grid {
@@ -2372,21 +2419,21 @@ function AppleCalendarWidget({ onDateSelect, selectedDate }) {
 
         .apple-header-day {
           font-size: 10px;
-          font-weight: 700;
-          color: var(--color-text-muted);
+          font-weight: normal;
+          color: #000000 !important;
           text-transform: uppercase;
           padding-bottom: 8px;
           text-align: center;
-          font-family: var(--font-mono);
+          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
         }
 
         .apple-day-btn {
           aspect-ratio: 1.1;
           border: 1px solid transparent;
           background: transparent;
-          color: var(--color-text-secondary);
+          color: #000000 !important;
           font-size: 12.5px;
-          font-weight: 600;
+          font-weight: normal;
           border-radius: 8px;
           cursor: pointer;
           transition: var(--transition-fast);
@@ -2395,32 +2442,33 @@ function AppleCalendarWidget({ onDateSelect, selectedDate }) {
           align-items: center;
           justify-content: center;
           gap: 3px;
+          font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
         }
 
         .apple-day-btn:hover:not(.past) {
-          background: rgba(255, 255, 255, 0.03);
-          border-color: var(--color-border);
-          color: var(--color-text-primary);
+          background: rgba(59, 130, 246, 0.08) !important;
+          border-color: rgba(59, 130, 246, 0.2) !important;
+          color: var(--color-accent) !important;
         }
 
         .apple-day-btn.past {
-          color: var(--color-text-muted);
+          color: var(--color-text-muted) !important;
           cursor: default;
           opacity: 0.25;
         }
 
         .apple-day-btn.today {
-          border-color: var(--color-accent);
-          color: var(--color-accent);
+          border-color: var(--color-accent) !important;
+          color: var(--color-accent) !important;
           font-weight: 800;
         }
 
         .apple-day-btn.selected {
-          background: var(--color-text-primary) !important;
-          color: var(--color-bg) !important;
+          background: var(--color-accent) !important;
+          color: #ffffff !important;
           border-color: transparent !important;
-          font-weight: 800;
-          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+          font-weight: normal;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25) !important;
         }
 
         .apple-dot {

@@ -19,6 +19,7 @@ const STATUS_COLORS = {
 const PRIORITY_COLORS = {
   urgent: 'var(--color-red)',
   high: 'var(--color-accent-orange)',
+  medium: 'var(--color-accent)',
   normal: 'var(--color-accent)',
   low: 'var(--color-green)'
 };
@@ -179,6 +180,7 @@ function BookingModal({ meeting, onClose, onAction }) {
   const [status, setStatus] = useState(meeting.status === 'reschedule_requested' ? 'rescheduled' : 'approved');
   const [notes, setNotes] = useState('');
   const [meetLink, setMeetLink] = useState('');
+  const [selectedPriority, setSelectedPriority] = useState(meeting.priority || 'medium');
   
   const getInitialDate = () => {
     if (meeting.start_time) {
@@ -235,7 +237,8 @@ function BookingModal({ meeting, onClose, onAction }) {
         admin_notes: notes, 
         meet_link: meetLink, 
         new_start_time: finalNewStart, 
-        new_end_time: finalNewEnd 
+        new_end_time: finalNewEnd,
+        priority: selectedPriority
       });
       onClose();
     } catch (e) {
@@ -364,6 +367,37 @@ function BookingModal({ meeting, onClose, onAction }) {
           </div>
         </div>
 
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10, fontFamily: 'var(--font-mono)' }}>Set Priority</label>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+            {['low', 'medium', 'high'].map(p => {
+              const isActive = selectedPriority === p;
+              const col = p === 'low' ? 'var(--color-green)' : p === 'medium' ? 'var(--color-accent)' : 'var(--color-accent-orange)';
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setSelectedPriority(p)}
+                  style={{
+                    padding: '10px 0',
+                    borderRadius: 10,
+                    border: `1px solid ${isActive ? col : 'var(--color-border)'}`,
+                    background: isActive ? `${col}15` : 'transparent',
+                    color: isActive ? col : 'var(--color-text-secondary)',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'var(--transition-fast)',
+                    textTransform: 'capitalize'
+                  }}
+                >
+                  {p}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {status === 'approved' && (
           <div style={{ marginBottom: 20 }}>
             <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Meeting Link (optional)</label>
@@ -432,6 +466,99 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('all');
   const [dateFilter, setDateFilter] = useState('all time');
 
+  // Decision Feed states
+  const [decisionActiveIndex, setDecisionActiveIndex] = useState(0);
+  const [decisionActionType, setDecisionActionType] = useState(null); // 'approve' | 'reject' | 'reschedule' | null
+  const [decisionNotes, setDecisionNotes] = useState('');
+  const [decisionMeetLink, setDecisionMeetLink] = useState('');
+  const [decisionRescheduleDate, setDecisionRescheduleDate] = useState('');
+  const [decisionRescheduleTime, setDecisionRescheduleTime] = useState('09:00');
+  const [decisionProcessing, setDecisionProcessing] = useState(false);
+
+  const decisionRequests = meetings.filter(
+    m => m.status === 'pending' || m.status === 'reschedule_requested'
+  );
+
+  const approvedMeetings = meetings.filter(
+    m => m.status === 'approved' || m.status === 'rescheduled' || m.status === 'completed'
+  );
+
+  useEffect(() => {
+    if (decisionActiveIndex >= decisionRequests.length && decisionRequests.length > 0) {
+      setDecisionActiveIndex(0);
+    }
+  }, [decisionRequests.length, decisionActiveIndex]);
+
+  const getConflict = (meeting) => {
+    if (!meeting || !meeting.start_time || !meeting.end_time) return null;
+    const currentStart = new Date(meeting.start_time).getTime();
+    const currentEnd = new Date(meeting.end_time).getTime();
+
+    return approvedMeetings.find(m => {
+      if (!m.start_time || !m.end_time || m.id === meeting.id) return false;
+      const mStart = new Date(m.start_time).getTime();
+      const mEnd = new Date(m.end_time).getTime();
+      return currentStart < mEnd && currentEnd > mStart;
+    });
+  };
+
+  const getClientSessionCount = (clientEmail) => {
+    return meetings.filter(
+      m => m.client_email === clientEmail && (m.status === 'approved' || m.status === 'completed')
+    ).length;
+  };
+
+  const handleDecision = async (id, status, details = {}) => {
+    setDecisionProcessing(true);
+    try {
+      await api.adminUpdateStatus(id, {
+        status,
+        admin_notes: details.notes || undefined,
+        meet_link: details.meetLink || undefined,
+        new_start_time: details.newStart || undefined,
+        new_end_time: details.newEnd || undefined
+      });
+      
+      setDecisionActionType(null);
+      setDecisionNotes('');
+      setDecisionMeetLink('');
+      setDecisionRescheduleDate('');
+      setDecisionRescheduleTime('09:00');
+      
+      await fetchData();
+      
+      if (decisionActiveIndex >= decisionRequests.length - 1) {
+        setDecisionActiveIndex(0);
+      }
+    } catch (e) {
+      alert('Error updating status: ' + e.message);
+    } finally {
+      setDecisionProcessing(false);
+    }
+  };
+
+  const handleDecisionSkip = () => {
+    if (decisionRequests.length <= 1) return;
+    if (decisionActiveIndex >= decisionRequests.length - 1) {
+      setDecisionActiveIndex(0);
+    } else {
+      setDecisionActiveIndex(decisionActiveIndex + 1);
+    }
+    setDecisionActionType(null);
+  };
+
+  const handleRescheduleClick = (m) => {
+    setDecisionActionType('reschedule');
+    if (m && m.start_time) {
+      const dt = parseISO(m.start_time);
+      setDecisionRescheduleDate(format(dt, 'yyyy-MM-dd'));
+      setDecisionRescheduleTime(format(dt, 'HH:mm'));
+    } else {
+      setDecisionRescheduleDate(format(new Date(), 'yyyy-MM-dd'));
+      setDecisionRescheduleTime('09:00');
+    }
+  };
+
   const fetchData = useCallback(async () => {
     try {
       const [statsData, allMeetings, pending, notifs] = await Promise.all([
@@ -480,6 +607,10 @@ export default function AdminDashboard() {
   });
 
   const pendingAndRejectedMeetings = meetings.filter(m => m.status === 'pending' || m.status === 'reschedule_requested' || m.status === 'rejected');
+
+  const activeMeeting = decisionRequests[decisionActiveIndex];
+  const conflict = activeMeeting ? getConflict(activeMeeting) : null;
+  const clientCount = activeMeeting ? getClientSessionCount(activeMeeting.client_email) : 0;
 
   return (
     <Layout title="Executive Dashboard" notifCount={notifications.length}>
@@ -710,11 +841,578 @@ export default function AdminDashboard() {
                 </table>
               </div>
             </motion.div>
-          </div>
-
-          {/* Right Column: Analytics & Pending list feed */}
+          </div>          {/* Right Column: Analytics */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            
+            {/* Decision Feed */}
+            {decisionRequests.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="glass-premium"
+                style={{
+                  padding: 24,
+                  borderRadius: 16,
+                  border: '1px solid var(--color-border)',
+                  background: 'var(--glass-bg)',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: 280,
+                }}
+              >
+                <div style={{
+                  width: 54,
+                  height: 54,
+                  borderRadius: '50%',
+                  background: 'rgba(16, 185, 129, 0.08)',
+                  border: '1px solid rgba(16, 185, 129, 0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 16,
+                  color: 'var(--color-green)'
+                }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 28 }}>verified</span>
+                </div>
+                <h4 style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: 6, fontFamily: 'var(--font-heading)' }}>Inbox Zero</h4>
+                <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', maxWidth: 200, lineHeight: 1.5, margin: 0 }}>
+                  No pending meeting requests requiring approval. Excellent!
+                </p>
+              </motion.div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <h3 style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.01em', color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)', margin: 0 }}>
+                      Decision Feed
+                    </h3>
+                    <span style={{ 
+                      fontSize: 10, 
+                      fontWeight: 800, 
+                      padding: '2px 8px', 
+                      borderRadius: 100, 
+                      background: 'rgba(245, 158, 11, 0.08)', 
+                      color: 'var(--color-amber)', 
+                      border: '1px solid rgba(245, 158, 11, 0.15)',
+                      fontFamily: 'var(--font-mono)' 
+                    }}>
+                      {decisionRequests.length} PENDING
+                    </span>
+                  </div>
+                  {decisionRequests.length > 1 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--color-text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                      <span>{decisionActiveIndex + 1} of {decisionRequests.length}</span>
+                      <button 
+                        onClick={handleDecisionSkip}
+                        style={{ 
+                          background: 'rgba(255,255,255,0.03)', 
+                          border: '1px solid var(--color-border)', 
+                          borderRadius: 6, 
+                          padding: '2px 6px', 
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          color: 'var(--color-text-primary)'
+                        }}
+                        title="Skip to next request"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>skip_next</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeMeeting.id}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.25 }}
+                    className="glass-premium"
+                    style={{
+                      padding: 20,
+                      borderRadius: 16,
+                      border: '1px solid var(--color-border)',
+                      background: 'var(--glass-bg)',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 14
+                    }}
+                  >
+                    {/* Card Accent Glow based on priority */}
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 3,
+                      background: activeMeeting.priority === 'urgent' || activeMeeting.priority === 'high' 
+                        ? 'linear-gradient(90deg, var(--color-red) 0%, var(--color-accent-orange) 100%)'
+                        : 'linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)'
+                    }} />
+
+                    {/* Client Profile Row */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ 
+                        width: 38, 
+                        height: 38, 
+                        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', 
+                        borderRadius: '50%', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        fontSize: 13, 
+                        fontWeight: 800, 
+                        color: 'white',
+                        boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15)'
+                      }}>
+                        {activeMeeting.client_name?.charAt(0) || '?'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                          <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {activeMeeting.client_name}
+                          </h4>
+                          <span style={{
+                            fontSize: 9,
+                            fontWeight: 800,
+                            padding: '1px 6px',
+                            borderRadius: 6,
+                            background: clientCount === 0 ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255, 255, 255, 0.04)',
+                            color: clientCount === 0 ? 'var(--color-green)' : 'var(--color-text-secondary)',
+                            border: `1px solid ${clientCount === 0 ? 'rgba(16, 185, 129, 0.15)' : 'var(--color-border)'}`,
+                            fontFamily: 'var(--font-mono)',
+                            textTransform: 'uppercase'
+                          }}>
+                            {clientCount === 0 ? 'New Client' : `${clientCount + 1}th Session`}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: 11, color: 'var(--color-text-muted)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {activeMeeting.client_email}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Meeting Details Info */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: 'rgba(255,255,255,0.01)', border: '1px solid var(--color-border)', borderRadius: 12, padding: 12 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+                          {activeMeeting.title}
+                        </p>
+                        <span className={`badge-priority badge-priority-${activeMeeting.priority || 'medium'}`} style={{ flexShrink: 0 }}>
+                          {activeMeeting.priority || 'medium'}
+                        </span>
+                      </div>
+                      
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px', fontSize: 11, color: 'var(--color-text-secondary)' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>video_call</span>
+                          {activeMeeting.meeting_type}
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>schedule</span>
+                          {activeMeeting.duration_minutes} mins
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>
+                            {activeMeeting.preferred_communication === 'video' ? 'videocam' : 
+                             activeMeeting.preferred_communication === 'in_person' ? 'home_pin' : 'location_on'}
+                          </span>
+                          {activeMeeting.preferred_communication === 'video' ? 'Google Meet' : 
+                           activeMeeting.preferred_communication === 'in_person' ? 'Spi Edge Office' : 'In-Person'}
+                        </span>
+                      </div>
+
+                      {/* Time Slot Box */}
+                      <div style={{ 
+                        marginTop: 4, 
+                        padding: '8px 10px', 
+                        background: 'rgba(59, 130, 246, 0.03)', 
+                        border: '1px solid rgba(59, 130, 246, 0.1)', 
+                        borderRadius: 8,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8
+                      }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--color-accent)' }}>event_available</span>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                            {activeMeeting.display_date || (activeMeeting.start_time ? format(parseISO(activeMeeting.start_time), 'EEEE, MMM dd, yyyy') : 'TBD')}
+                          </span>
+                          <span style={{ fontSize: 11, color: 'var(--color-text-secondary)' }}>
+                            {activeMeeting.display_time || (activeMeeting.start_time ? format(parseISO(activeMeeting.start_time), 'hh:mm a') : 'TBD')} (IST)
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Client Reason / Description */}
+                    {activeMeeting.reason && (
+                      <div style={{ 
+                        fontSize: 12, 
+                        color: 'var(--color-text-secondary)', 
+                        borderLeft: '2px solid rgba(255,255,255,0.06)', 
+                        paddingLeft: 10, 
+                        fontStyle: 'italic',
+                        lineHeight: 1.4
+                      }}>
+                        "{activeMeeting.reason}"
+                      </div>
+                    )}
+
+                    {/* Conflict warning */}
+                    {conflict && (
+                      <div style={{ 
+                        display: 'flex', 
+                        gap: 8, 
+                        alignItems: 'flex-start',
+                        background: 'rgba(239, 68, 68, 0.06)', 
+                        border: '1px solid rgba(239, 68, 68, 0.15)', 
+                        borderRadius: 10, 
+                        padding: 10, 
+                        color: 'var(--color-red)',
+                        fontSize: 11,
+                        lineHeight: 1.4
+                      }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 16, marginTop: 1, flexShrink: 0 }}>warning</span>
+                        <div>
+                          <span style={{ fontWeight: 700 }}>Time Conflict:</span> Overlaps with approved session <strong>"{conflict.title}"</strong> ({format(parseISO(conflict.start_time), 'hh:mm a')}).
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Drawers */}
+                    <AnimatePresence>
+                      {decisionActionType === 'approve' && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          style={{ overflow: 'hidden', borderTop: '1px solid var(--color-border)', paddingTop: 14, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 12 }}
+                        >
+                          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-green)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>check_circle</span>
+                            Approve Session
+                          </div>
+                          
+                          <div>
+                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>MEETING LINK (OPTIONAL)</label>
+                            <input 
+                              className="input-premium" 
+                              placeholder="https://meet.google.com/..." 
+                              value={decisionMeetLink} 
+                              onChange={(e) => setDecisionMeetLink(e.target.value)} 
+                              style={{ padding: '8px 10px', fontSize: 12, width: '100%', boxSizing: 'border-box' }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>NOTES TO CLIENT (OPTIONAL)</label>
+                            <textarea 
+                              className="input-premium" 
+                              placeholder="Add dynamic notes or instructions..." 
+                              value={decisionNotes} 
+                              onChange={(e) => setDecisionNotes(e.target.value)} 
+                              style={{ minHeight: 60, padding: '8px 10px', fontSize: 12, resize: 'vertical', width: '100%', boxSizing: 'border-box' }}
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                            <button 
+                              className="btn-premium btn-premium-secondary" 
+                              onClick={() => setDecisionActionType(null)} 
+                              style={{ flex: 1, padding: '6px 12px', fontSize: 11, minWidth: 'auto' }}
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              className="btn-premium" 
+                              onClick={() => handleDecision(activeMeeting.id, 'approved', { meetLink: decisionMeetLink, notes: decisionNotes })} 
+                              disabled={decisionProcessing}
+                              style={{ 
+                                flex: 1, 
+                                padding: '6px 12px', 
+                                fontSize: 11,
+                                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: 8,
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                minWidth: 'auto'
+                              }}
+                            >
+                              {decisionProcessing ? 'Approving...' : 'Confirm Approve'}
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {decisionActionType === 'reject' && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          style={{ overflow: 'hidden', borderTop: '1px solid var(--color-border)', paddingTop: 14, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 12 }}
+                        >
+                          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-red)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>cancel</span>
+                            Decline Session
+                          </div>
+
+                          <div>
+                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>REASON FOR DECLINING (RECOMMENDED)</label>
+                            <textarea 
+                              className="input-premium" 
+                              placeholder="Please provide details for the cancellation email..." 
+                              value={decisionNotes} 
+                              onChange={(e) => setDecisionNotes(e.target.value)} 
+                              style={{ minHeight: 60, padding: '8px 10px', fontSize: 12, resize: 'vertical', width: '100%', boxSizing: 'border-box' }}
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                            <button 
+                              className="btn-premium btn-premium-secondary" 
+                              onClick={() => setDecisionActionType(null)} 
+                              style={{ flex: 1, padding: '6px 12px', fontSize: 11, minWidth: 'auto' }}
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              className="btn-premium" 
+                              onClick={() => handleDecision(activeMeeting.id, 'rejected', { notes: decisionNotes })} 
+                              disabled={decisionProcessing}
+                              style={{ 
+                                flex: 1, 
+                                padding: '6px 12px', 
+                                fontSize: 11,
+                                background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: 8,
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                minWidth: 'auto'
+                              }}
+                            >
+                              {decisionProcessing ? 'Declining...' : 'Confirm Decline'}
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {decisionActionType === 'reschedule' && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          style={{ overflow: 'hidden', borderTop: '1px solid var(--color-border)', paddingTop: 14, marginTop: 4, display: 'flex', flexDirection: 'column', gap: 12 }}
+                        >
+                          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-accent-orange)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>update</span>
+                            Propose Reschedule
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                            <div>
+                              <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>NEW DATE</label>
+                              <input 
+                                className="input-premium" 
+                                type="date" 
+                                value={decisionRescheduleDate} 
+                                onChange={(e) => setDecisionRescheduleDate(e.target.value)} 
+                                style={{ padding: '8px 10px', fontSize: 12, width: '100%', boxSizing: 'border-box' }} 
+                              />
+                            </div>
+                            <div>
+                              <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>START TIME (IST)</label>
+                              <select 
+                                className="input-premium" 
+                                value={decisionRescheduleTime} 
+                                onChange={(e) => setDecisionRescheduleTime(e.target.value)} 
+                                style={{ padding: '8px 10px', fontSize: 12, width: '100%', appearance: 'none', cursor: 'pointer', boxSizing: 'border-box' }}
+                              >
+                                {TIME_SLOTS.map(slot => (
+                                  <option key={slot.value} value={slot.value} style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>
+                                    {slot.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          <div>
+                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>REASON/MESSAGE (OPTIONAL)</label>
+                            <textarea 
+                              className="input-premium" 
+                              placeholder="Explain why you are rescheduling..." 
+                              value={decisionNotes} 
+                              onChange={(e) => setDecisionNotes(e.target.value)} 
+                              style={{ minHeight: 60, padding: '8px 10px', fontSize: 12, resize: 'vertical', width: '100%', boxSizing: 'border-box' }}
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                            <button 
+                              className="btn-premium btn-premium-secondary" 
+                              onClick={() => setDecisionActionType(null)} 
+                              style={{ flex: 1, padding: '6px 12px', fontSize: 11, minWidth: 'auto' }}
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              className="btn-premium" 
+                              onClick={() => {
+                                if (!decisionRescheduleDate || !decisionRescheduleTime) {
+                                  alert('Please select both a date and time for rescheduling.');
+                                  return;
+                                }
+                                const combinedString = `${decisionRescheduleDate}T${decisionRescheduleTime}:00`;
+                                const startDt = new Date(combinedString);
+                                const endDt = new Date(startDt.getTime() + (activeMeeting.duration_minutes || 60) * 60 * 1000);
+                                handleDecision(activeMeeting.id, 'rescheduled', {
+                                  newStart: startDt.toISOString(),
+                                  newEnd: endDt.toISOString(),
+                                  notes: decisionNotes
+                                });
+                              }} 
+                              disabled={decisionProcessing}
+                              style={{ 
+                                flex: 1, 
+                                padding: '6px 12px', 
+                                fontSize: 11,
+                                background: 'linear-gradient(135deg, var(--color-accent-orange) 0%, #EA580C 100%)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: 8,
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                minWidth: 'auto'
+                              }}
+                            >
+                              {decisionProcessing ? 'Sending Proposal...' : 'Send Proposal'}
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Control Row (Approve / Decline / Reschedule / Skip) */}
+                    {decisionActionType === null && (
+                      <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                        <button 
+                          onClick={() => setDecisionActionType('approve')}
+                          style={{
+                            flex: 1.2,
+                            padding: '8px 0',
+                            borderRadius: 8,
+                            border: '1px solid rgba(16, 185, 129, 0.15)',
+                            background: 'rgba(16, 185, 129, 0.06)',
+                            color: 'var(--color-green)',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 4,
+                            transition: 'var(--transition-fast)'
+                          }}
+                          className="feed-action-btn-approve"
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 15 }}>check_circle</span>
+                          Approve
+                        </button>
+                        
+                        <button 
+                          onClick={() => handleRescheduleClick(activeMeeting)}
+                          style={{
+                            flex: 1.2,
+                            padding: '8px 0',
+                            borderRadius: 8,
+                            border: '1px solid rgba(245, 158, 11, 0.15)',
+                            background: 'rgba(245, 158, 11, 0.06)',
+                            color: 'var(--color-amber)',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 4,
+                            transition: 'var(--transition-fast)'
+                          }}
+                          className="feed-action-btn-reschedule"
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 15 }}>update</span>
+                          Resched
+                        </button>
+
+                        <button 
+                          onClick={() => setDecisionActionType('reject')}
+                          style={{
+                            flex: 1,
+                            padding: '8px 0',
+                            borderRadius: 8,
+                            border: '1px solid rgba(239, 68, 68, 0.15)',
+                            background: 'rgba(239, 68, 68, 0.06)',
+                            color: 'var(--color-red)',
+                            fontSize: 12,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 4,
+                            transition: 'var(--transition-fast)'
+                          }}
+                          className="feed-action-btn-decline"
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: 15 }}>cancel</span>
+                          Decline
+                        </button>
+
+                        {decisionRequests.length > 1 && (
+                          <button 
+                            onClick={handleDecisionSkip}
+                            style={{
+                              flex: 0.8,
+                              padding: '8px 0',
+                              borderRadius: 8,
+                              border: '1px solid var(--color-border)',
+                              background: 'rgba(255, 255, 255, 0.02)',
+                              color: 'var(--color-text-secondary)',
+                              fontSize: 12,
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 4,
+                              transition: 'var(--transition-fast)'
+                            }}
+                            className="feed-action-btn-skip"
+                          >
+                            Skip
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            )}
+
             {/* Analytics Summary */}
             <motion.div 
               initial={{ opacity: 0, x: 16 }} 
@@ -728,118 +1426,31 @@ export default function AdminDashboard() {
               </h3>
               <AnalyticsPieChart stats={stats} />
             </motion.div>
-
-            {/* Pending requests feed */}
-            <motion.div 
-              initial={{ opacity: 0, x: 16 }} 
-              animate={{ opacity: 1, x: 0 }} 
-              transition={{ delay: 0.25 }}
-              className="glass-premium"
-              style={{ padding: 24, borderRadius: 16, border: '1px solid var(--color-border)', background: 'var(--glass-bg)' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>Decision Feed</h3>
-                  {pendingMeetings.length > 0 && (
-                    <span style={{ 
-                      background: 'rgba(245,158,11,0.12)', 
-                      border: '1px solid rgba(245,158,11,0.2)', 
-                      borderRadius: 100, 
-                      padding: '2px 8px', 
-                      fontSize: 10, 
-                      fontWeight: 800, 
-                      color: 'var(--color-amber)',
-                      fontFamily: 'var(--font-mono)'
-                    }}>
-                      {pendingMeetings.length} ACTIVE
-                    </span>
-                  )}
-                </div>
-                <a 
-                  href="/admin/pending" 
-                  style={{ 
-                    fontSize: 11, 
-                    fontWeight: 700, 
-                    color: 'var(--color-accent)', 
-                    textDecoration: 'none', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 4 
-                  }}
-                >
-                  <span>Open Stack</span>
-                  <span className="material-symbols-outlined" style={{ fontSize: 14 }}>layers</span>
-                </a>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {pendingAndRejectedMeetings.length === 0 ? (
-                  <div style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 13, padding: '32px 0' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 24, color: 'var(--color-green)', marginBottom: 6, display: 'block' }}>check_circle</span>
-                    All requests completed!
-                  </div>
-                ) : pendingAndRejectedMeetings.slice(0, 5).map((m) => {
-                  const priorityColor = PRIORITY_COLORS[m.priority] || 'var(--color-accent)';
-                  const isRejected = m.status === 'rejected';
-                  return (
-                    <div 
-                      key={m.id} 
-                      style={{ 
-                        padding: 16, 
-                        background: 'rgba(255,255,255,0.01)', 
-                        border: '1px solid var(--color-border)', 
-                        borderRadius: 14,
-                        transition: 'var(--transition-fast)'
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                        <div style={{ width: 30, height: 30, background: isRejected ? 'linear-gradient(135deg, var(--color-red) 0%, #fb7171 100%)' : 'linear-gradient(135deg, var(--color-amber) 0%, var(--color-accent-orange) 100%)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: 'white', flexShrink: 0 }}>
-                          {m.client_name?.charAt(0) || '?'}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.client_name}</p>
-                          <p style={{ fontSize: 11, color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.title}</p>
-                        </div>
-                        <span className={`badge-priority badge-priority-${m.priority}`} style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4 }}>
-                          {m.priority}
-                        </span>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--color-text-secondary)', marginBottom: 14 }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>schedule</span>
-                        <span>{m.display_date || (m.start_time ? format(parseISO(m.start_time), 'MMM dd, yyyy') : 'TBD')}</span>
-                        <span>·</span>
-                        <span>{m.display_time || (m.start_time ? format(parseISO(m.start_time), 'hh:mm a') : 'TBD')}</span>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        {!isRejected && (
-                          <button 
-                            className="btn-premium btn-premium-primary" 
-                            style={{ flex: 1, padding: '6px 12px', fontSize: 11, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
-                            onClick={() => handleAction(m.id, { status: 'approved' })}
-                          >
-                            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>check</span> Approve
-                          </button>
-                        )}
-                        <button 
-                          className="btn-premium btn-premium-secondary" 
-                          onClick={() => setSelectedMeeting(m)}
-                          style={{ flex: isRejected ? 1 : 'none', padding: '6px 12px', fontSize: 11, borderRadius: 8 }}
-                        >
-                          Review
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
           </div>
         </div>
       </div>
 
       <style>{`
+        .feed-action-btn-approve:hover {
+          background: rgba(16, 185, 129, 0.16) !important;
+          border-color: rgba(16, 185, 129, 0.3) !important;
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+        .feed-action-btn-reschedule:hover {
+          background: rgba(245, 158, 11, 0.16) !important;
+          border-color: rgba(245, 158, 11, 0.3) !important;
+          box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+        }
+        .feed-action-btn-decline:hover {
+          background: rgba(239, 68, 68, 0.16) !important;
+          border-color: rgba(239, 68, 68, 0.3) !important;
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+        }
+        .feed-action-btn-skip:hover {
+          background: rgba(255, 255, 255, 0.06) !important;
+          border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+
         .admin-dashboard-grid {
           display: grid;
           grid-template-columns: 2.2fr 1fr;
@@ -878,6 +1489,11 @@ export default function AdminDashboard() {
           background: rgba(249, 115, 22, 0.1);
           color: var(--color-accent-orange);
           border: 1px solid rgba(249, 115, 22, 0.15);
+        }
+        .badge-priority-medium {
+          background: rgba(59, 130, 246, 0.1);
+          color: var(--color-accent);
+          border: 1px solid rgba(59, 130, 246, 0.15);
         }
         .badge-priority-normal {
           background: rgba(59, 130, 246, 0.1);

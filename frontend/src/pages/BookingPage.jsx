@@ -9,7 +9,7 @@ const MEETING_TYPES = [
   'Mentorship Session', 'Strategy Review', 'Business Consultation', 
   'Investment Meeting', 'Partnership Discussion', 'Product Review', 'Other'
 ];
-const PRIORITIES = ['low', 'normal', 'high', 'urgent'];
+const PRIORITIES = ['low', 'medium', 'high'];
 const DURATIONS = [30, 45, 60, 90, 120];
 const COMM_METHODS = ['Video Call', 'Phone Call', 'In-Person', 'Email'];
 
@@ -25,7 +25,7 @@ export default function BookingPage() {
     description: '',
     reason: '',
     meeting_type: 'Mentorship Session',
-    priority: 'normal',
+    priority: 'medium',
     start_time: '',
     end_time: '',
     duration_minutes: 60,
@@ -131,7 +131,7 @@ export default function BookingPage() {
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
               <a href="/" className="btn btn-secondary">← Back to Dashboard</a>
-              <button className="btn btn-primary" onClick={() => { setSuccess(false); setStep(1); setForm({ title: '', description: '', reason: '', meeting_type: 'Mentorship Session', priority: 'normal', start_time: '', end_time: '', duration_minutes: 60, preferred_communication: 'Video Call' }); }}>
+              <button className="btn btn-primary" onClick={() => { setSuccess(false); setStep(1); setForm({ title: '', description: '', reason: '', meeting_type: 'Mentorship Session', priority: 'medium', start_time: '', end_time: '', duration_minutes: 60, preferred_communication: 'Video Call' }); }}>
                 Book Another
               </button>
             </div>
@@ -238,9 +238,9 @@ export default function BookingPage() {
 
                   <div>
                     <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Priority</label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                       {PRIORITIES.map(p => {
-                        const colors = { low: 'var(--color-green)', normal: 'var(--color-accent)', high: 'var(--color-accent-orange)', urgent: 'var(--color-red)' };
+                        const colors = { low: 'var(--color-green)', medium: 'var(--color-accent)', high: 'var(--color-accent-orange)' };
                         const c = colors[p];
                         return (
                           <button key={p} type="button" onClick={() => field('priority', p)} style={{ padding: '10px 0', borderRadius: 10, border: `1px solid ${form.priority === p ? c : 'var(--color-border)'}`, background: form.priority === p ? `${c}15` : 'rgba(255,255,255,0.02)', color: form.priority === p ? c : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 700, cursor: 'pointer', transition: 'var(--transition-fast)', textTransform: 'capitalize' }}>
