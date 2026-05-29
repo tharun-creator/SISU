@@ -10,9 +10,10 @@ const clientNav = [
 
 const adminNav = [
   { icon: 'grid_view', label: 'Dashboard', path: '/admin' },
-  { icon: 'calendar_today', label: 'All Meetings', path: '/admin/meetings' },
   { icon: 'calendar_month', label: 'Calendar Slots', path: '/admin/calendar-slots' },
   { icon: 'event_available', label: 'Slots Booked', path: '/admin/slots-booked' },
+  { icon: 'pending_actions', label: 'Pending Requests', path: '/admin/pending' },
+  { icon: 'update', label: 'Rescheduled', path: '/admin/rescheduled' },
   { icon: 'admin_panel_settings', label: 'Manage Users', path: '/admin/users' },
   { icon: 'notifications', label: 'Notifications', path: '/notifications' },
   { icon: 'settings', label: 'Settings', path: '/settings' },

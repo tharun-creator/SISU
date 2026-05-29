@@ -343,6 +343,12 @@ export default function AdminDecisionFeed() {
                               <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 2 }}>{meeting.client_name}</h4>
                               <p style={{ fontSize: 11, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
                                 <span>{meeting.client_email}</span>
+                                {meeting.phone && meeting.phone !== 'N/A' && (
+                                  <>
+                                    <span>·</span>
+                                    <span>{meeting.phone}</span>
+                                  </>
+                                )}
                               </p>
                             </div>
                           </div>
@@ -385,6 +391,12 @@ export default function AdminDecisionFeed() {
                                   meeting.preferred_communication?.startsWith('custom_location:') ? meeting.preferred_communication.replace('custom_location:', '').trim() : 'In-Person'
                                 }
                               </p>
+                              {meeting.phone && meeting.phone !== 'N/A' && (
+                                <p style={{ fontSize: 12, color: 'var(--color-text-primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+                                  <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>phone</span>
+                                  Contact Phone: {meeting.phone}
+                                </p>
+                              )}
 
                               {/* Proposed Slot Info */}
                               <div style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '14px 16px', marginBottom: 14 }}>
@@ -441,32 +453,15 @@ export default function AdminDecisionFeed() {
                                 <span className="material-symbols-outlined">check_circle</span> Confirm Approval
                               </h3>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
-                                <div>
-                                  <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Google Meet / Call Link (optional)</label>
-                                  <input 
-                                    className="input-premium" 
-                                    placeholder="https://meet.google.com/..." 
-                                    value={meetLink} 
-                                    onChange={(e) => setMeetLink(e.target.value)} 
-                                    style={{ fontSize: 12, padding: '8px 12px' }}
-                                  />
-                                </div>
-                                <div>
-                                  <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Notes for Client (optional)</label>
-                                  <textarea 
-                                    className="input-premium" 
-                                    placeholder="Include any instructions, preparation guidelines, or notes..." 
-                                    value={notes} 
-                                    onChange={(e) => setNotes(e.target.value)} 
-                                    style={{ minHeight: 65, resize: 'vertical', fontSize: 12, padding: '8px 12px' }}
-                                  />
-                                </div>
+                                <p style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                                  Are you sure you want to approve this mentorship session?
+                                </p>
                               </div>
                               <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
                                 <button className="btn-premium btn-premium-secondary" onClick={() => setActionType(null)} style={{ flex: 1, padding: '8px 0', fontSize: 12 }}>Back</button>
                                 <button 
                                   className="btn-premium btn-premium-primary" 
-                                  onClick={() => handleDecision(meeting.id, 'approved', { notes, meetLink })} 
+                                  onClick={() => handleDecision(meeting.id, 'approved', { notes: '', meetLink: '' })} 
                                   disabled={processing}
                                   style={{ flex: 2, background: 'var(--color-green)', borderColor: 'var(--color-green)', padding: '8px 0', fontSize: 12 }}
                                 >
@@ -488,22 +483,15 @@ export default function AdminDecisionFeed() {
                                 <span className="material-symbols-outlined">cancel</span> Decline Request
                               </h3>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
-                                <div>
-                                  <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Reason for Declining (sent to client)</label>
-                                  <textarea 
-                                    className="input-premium" 
-                                    placeholder="Explain why this request is declined or suggest alternatives..." 
-                                    value={notes} 
-                                    onChange={(e) => setNotes(e.target.value)} 
-                                    style={{ minHeight: 120, resize: 'vertical', fontSize: 12, padding: '8px 12px' }}
-                                  />
-                                </div>
+                                <p style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                                  Are you sure you want to decline this mentorship request?
+                                </p>
                               </div>
                               <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
                                 <button className="btn-premium btn-premium-secondary" onClick={() => setActionType(null)} style={{ flex: 1, padding: '8px 0', fontSize: 12 }}>Back</button>
                                 <button 
                                   className="btn-premium btn-premium-primary" 
-                                  onClick={() => handleDecision(meeting.id, 'rejected', { notes })} 
+                                  onClick={() => handleDecision(meeting.id, 'rejected', { notes: '' })} 
                                   disabled={processing}
                                   style={{ flex: 2, background: 'var(--color-red)', borderColor: 'var(--color-red)', padding: '8px 0', fontSize: 12 }}
                                 >
@@ -552,16 +540,6 @@ export default function AdminDecisionFeed() {
                                     </select>
                                   </div>
                                 </div>
-                                <div>
-                                  <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Message / Reason (optional)</label>
-                                  <textarea 
-                                    className="input-premium" 
-                                    placeholder="Explain why you are rescheduling..." 
-                                    value={notes} 
-                                    onChange={(e) => setNotes(e.target.value)} 
-                                    style={{ minHeight: 65, resize: 'vertical', fontSize: 12, padding: '8px 12px' }}
-                                  />
-                                </div>
                               </div>
                               <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
                                 <button className="btn-premium btn-premium-secondary" onClick={() => setActionType(null)} style={{ flex: 1, padding: '8px 0', fontSize: 12 }}>Back</button>
@@ -578,7 +556,7 @@ export default function AdminDecisionFeed() {
                                     const pad = (num) => String(num).padStart(2, '0');
                                     const endStr = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:00`;
                                     
-                                    handleDecision(meeting.id, 'rescheduled', { notes, newStart: startStr, newEnd: endStr });
+                                    handleDecision(meeting.id, 'rescheduled', { notes: '', newStart: startStr, newEnd: endStr });
                                   }}
                                   disabled={processing || !rescheduleDate || !rescheduleTime}
                                   style={{ flex: 2, background: 'var(--color-accent-orange)', borderColor: 'var(--color-accent-orange)', padding: '8px 0', fontSize: 12 }}

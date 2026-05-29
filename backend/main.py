@@ -1637,9 +1637,9 @@ async def get_free_slots(date: str, duration: int = 60, db: Session = Depends(ge
             slots.append({
                 "start": c.strftime("%H:%M"),
                 "end": se.strftime("%H:%M"),
-                "label": c.strftime("%I:%M %p"),
+                "label": f"{c.strftime('%I:%M %p')} - {se.strftime('%I:%M %p')} IST",
             })
-            c += datetime.timedelta(minutes=60)
+            c += datetime.timedelta(minutes=30)
             
     # Filter out locally booked meetings (global conflict check)
     day_start = dt.replace(hour=0, minute=0, second=0, microsecond=0)

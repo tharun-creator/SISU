@@ -135,21 +135,24 @@ def find_next_available_slots(
         if check_slot_available(db, slot.start_time, slot.end_time):
             results.append(_slot_to_dict(slot.start_time, slot.end_time))
 
-    # Fallback: generate synthetic hourly slots if admin hasn't configured any
+    # Fallback: generate synthetic slots if admin hasn't configured any
     if not results:
         logger.info("[BookingService] No admin slots found – generating fallback slots")
-        candidate = after.replace(minute=0, second=0, microsecond=0)
-        candidate += datetime.timedelta(hours=1)
+        rem = after.minute % 30
+        if rem == 0 and after.second == 0 and after.microsecond == 0:
+            candidate = after + datetime.timedelta(minutes=30)
+        else:
+            candidate = after.replace(second=0, microsecond=0) + datetime.timedelta(minutes=(30 - rem))
         limit = after + datetime.timedelta(days=7)
 
         while candidate < limit and len(results) < count:
             # Working hours: 10:00–20:00 IST
             if 10 <= candidate.hour < 20:
                 slot_end = candidate + duration
-                if slot_end.hour <= 20:
+                if slot_end <= candidate.replace(hour=20, minute=0, second=0, microsecond=0):
                     if check_slot_available(db, candidate, slot_end):
                         results.append(_slot_to_dict(candidate, slot_end))
-            candidate += datetime.timedelta(hours=1)
+            candidate += datetime.timedelta(minutes=30)
 
     return results
 

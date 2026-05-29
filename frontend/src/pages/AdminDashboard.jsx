@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import Layout from '../components/Layout';
+import BookingModal from '../components/BookingModal';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { format, parseISO, isToday, isThisWeek, isThisMonth } from 'date-fns';
@@ -18,9 +19,9 @@ const STATUS_COLORS = {
 
 const PRIORITY_COLORS = {
   urgent: 'var(--color-red)',
-  high: 'var(--color-accent-orange)',
-  medium: 'var(--color-accent)',
-  normal: 'var(--color-accent)',
+  high: 'var(--color-red)',
+  medium: 'var(--color-amber)',
+  normal: 'var(--color-amber)',
   low: 'var(--color-green)'
 };
 
@@ -176,280 +177,7 @@ const TIME_SLOTS = [
   { value: '21:00', label: '09:00 PM' },
 ];
 
-function BookingModal({ meeting, onClose, onAction }) {
-  const [status, setStatus] = useState(meeting.status === 'reschedule_requested' ? 'rescheduled' : 'approved');
-  const [notes, setNotes] = useState('');
-  const [meetLink, setMeetLink] = useState('');
-  const [selectedPriority, setSelectedPriority] = useState(meeting.priority || 'medium');
-  
-  const getInitialDate = () => {
-    if (meeting.start_time) {
-      return meeting.start_time.split('T')[0];
-    }
-    return '';
-  };
-
-  const getInitialTime = () => {
-    if (meeting.start_time) {
-      const timePart = meeting.start_time.split('T')[1];
-      if (timePart) {
-        return timePart.slice(0, 5);
-      }
-    }
-    return '09:00';
-  };
-
-  const [rescheduleDate, setRescheduleDate] = useState(getInitialDate());
-  const [rescheduleTime, setRescheduleTime] = useState(getInitialTime());
-  const [loading, setLoading] = useState(false);
-
-  if (!meeting) return null;
-
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      let finalNewStart = undefined;
-      let finalNewEnd = undefined;
-      
-      if (status === 'rescheduled') {
-        if (!rescheduleDate || !rescheduleTime) {
-          alert('Please select both a date and time for rescheduling.');
-          setLoading(false);
-          return;
-        }
-        
-        const startStr = `${rescheduleDate}T${rescheduleTime}:00`;
-        finalNewStart = startStr;
-        
-        const duration = meeting.duration_minutes || 60;
-        const [year, month, day] = rescheduleDate.split('-').map(Number);
-        const [hour, min] = rescheduleTime.split(':').map(Number);
-        const startDate = new Date(year, month - 1, day, hour, min);
-        const endDate = new Date(startDate.getTime() + duration * 60 * 1000);
-        
-        const pad = (num) => String(num).padStart(2, '0');
-        const endStr = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:00`;
-        finalNewEnd = endStr;
-      }
-      
-      await onAction(meeting.id, { 
-        status, 
-        admin_notes: notes, 
-        meet_link: meetLink, 
-        new_start_time: finalNewStart, 
-        new_end_time: finalNewEnd,
-        priority: selectedPriority
-      });
-      onClose();
-    } catch (e) {
-      alert(e.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div 
-      style={{ 
-        position: 'fixed', 
-        inset: 0, 
-        zIndex: 500, 
-        background: 'rgba(0, 0, 0, 0.65)', 
-        backdropFilter: 'blur(12px)', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        padding: 24 
-      }} 
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <motion.div 
-        className="glass-premium-strong" 
-        initial={{ scale: 0.95, opacity: 0, y: 12 }} 
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 12 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        style={{ 
-          width: '100%', 
-          maxWidth: 540, 
-          padding: 32, 
-          borderRadius: 24,
-          background: 'var(--color-surface-2)',
-          boxShadow: 'var(--shadow-lg), 0 0 80px rgba(0,0,0,0.5)',
-          border: '1px solid rgba(255,255,255,0.08)'
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>Review Meeting Request</h2>
-          <button 
-            className="btn-premium btn-premium-ghost" 
-            onClick={onClose} 
-            style={{ padding: 4, minWidth: 'auto', borderRadius: '50%', width: 32, height: 32 }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-          </button>
-        </div>
-
-        {/* Meeting Details Summary */}
-        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--color-border)', borderRadius: 16, padding: 18, marginBottom: 20 }}>
-          <p style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text-primary)', marginBottom: 12 }}>{meeting.title}</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>person</span> 
-              <span style={{ fontWeight: 500, color: 'var(--color-text-primary)' }}>{meeting.client_name}</span> · <span style={{ color: 'var(--color-text-muted)' }}>{meeting.client_email}</span>
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>schedule</span> 
-              <span>{meeting.display_date || (meeting.start_time ? format(parseISO(meeting.start_time), 'MMM dd, yyyy') : 'TBD')}</span> · 
-              <span>{meeting.display_time || (meeting.start_time ? format(parseISO(meeting.start_time), 'hh:mm a') : 'TBD')}</span>
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>assignment</span> 
-              <span>{meeting.meeting_type}</span> · <span>{meeting.duration_minutes} mins</span>
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>
-                {meeting.preferred_communication === 'video' ? 'videocam' : 
-                 meeting.preferred_communication === 'in_person' ? 'home_pin' : 'location_on'}
-              </span>
-              <span>
-                {meeting.preferred_communication === 'video' ? 'Google Meet (Online Video)' : 
-                 meeting.preferred_communication === 'in_person' ? 'Spi Edge (In-Office Meet)' : 
-                 meeting.preferred_communication?.startsWith('custom_location:') ? meeting.preferred_communication.replace('custom_location:', '').trim() : 'In-Person'}
-              </span>
-            </p>
-          </div>
-          {meeting.reason && (
-            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
-              <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontStyle: 'italic', lineHeight: 1.5 }}>"{meeting.reason}"</p>
-            </div>
-          )}
-        </div>
-
-        {/* Action Selection Pills */}
-        <div style={{ marginBottom: 20 }}>
-          <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10, fontFamily: 'var(--font-mono)' }}>Select Decision</label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-            {['approved', 'rejected', 'rescheduled', 'cancelled'].map(s => {
-              const isActive = status === s;
-              const col = STATUS_COLORS[s];
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setStatus(s)}
-                  style={{
-                    padding: '10px 0',
-                    borderRadius: 10,
-                    border: `1px solid ${isActive ? col : 'var(--color-border)'}`,
-                    background: isActive ? `${col}15` : 'transparent',
-                    color: isActive ? col : 'var(--color-text-secondary)',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    transition: 'var(--transition-fast)',
-                    textTransform: 'capitalize',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 4
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                    {s === 'approved' ? 'check_circle' : 
-                     s === 'rejected' ? 'cancel' : 
-                     s === 'cancelled' ? 'block' : 'update'}
-                  </span>
-                  <span>{s === 'rescheduled' ? 'Resched' : s}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div style={{ marginBottom: 20 }}>
-          <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 10, fontFamily: 'var(--font-mono)' }}>Set Priority</label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-            {['low', 'medium', 'high'].map(p => {
-              const isActive = selectedPriority === p;
-              const col = p === 'low' ? 'var(--color-green)' : p === 'medium' ? 'var(--color-accent)' : 'var(--color-accent-orange)';
-              return (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setSelectedPriority(p)}
-                  style={{
-                    padding: '10px 0',
-                    borderRadius: 10,
-                    border: `1px solid ${isActive ? col : 'var(--color-border)'}`,
-                    background: isActive ? `${col}15` : 'transparent',
-                    color: isActive ? col : 'var(--color-text-secondary)',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    transition: 'var(--transition-fast)',
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {p}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {status === 'approved' && (
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Meeting Link (optional)</label>
-            <input className="input-premium" placeholder="https://meet.google.com/..." value={meetLink} onChange={(e) => setMeetLink(e.target.value)} />
-          </div>
-        )}
-
-        {status === 'rescheduled' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
-            <div>
-              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>New Date</label>
-              <input 
-                className="input-premium" 
-                type="date" 
-                value={rescheduleDate} 
-                onChange={(e) => setRescheduleDate(e.target.value)} 
-                style={{ padding: '10px 12px', width: '100%' }} 
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>New Start Time (IST)</label>
-              <select 
-                className="input-premium" 
-                value={rescheduleTime} 
-                onChange={(e) => setRescheduleTime(e.target.value)} 
-                style={{ padding: '10px 12px', width: '100%', appearance: 'none', cursor: 'pointer' }}
-              >
-                {TIME_SLOTS.map(slot => (
-                  <option key={slot.value} value={slot.value} style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>
-                    {slot.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
-        <div style={{ marginBottom: 28 }}>
-          <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Notes to Client (optional)</label>
-          <textarea className="input-premium" placeholder="Include custom notes or guidelines..." value={notes} onChange={(e) => setNotes(e.target.value)} style={{ minHeight: 80, resize: 'vertical' }} />
-        </div>
-
-        <div style={{ display: 'flex', gap: 12 }}>
-          <button className="btn-premium btn-premium-secondary" onClick={onClose} style={{ flex: 1 }}>Cancel</button>
-          <button className="btn-premium btn-premium-primary" onClick={handleSubmit} disabled={loading} style={{ flex: 1 }}>
-            {loading ? 'Processing...' : `Confirm ${status.charAt(0).toUpperCase() + status.slice(1)}`}
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
+// Reusable BookingModal imported from ../components/BookingModal
 
 export default function AdminDashboard() {
   const { user, isAdmin } = useAuth();
@@ -993,8 +721,14 @@ export default function AdminDashboard() {
                             {clientCount === 0 ? 'New Client' : `${clientCount + 1}th Session`}
                           </span>
                         </div>
-                        <p style={{ fontSize: 11, color: 'var(--color-text-muted)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {activeMeeting.client_email}
+                        <p style={{ fontSize: 11, color: 'var(--color-text-muted)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span>{activeMeeting.client_email}</span>
+                          {activeMeeting.phone && activeMeeting.phone !== 'N/A' && (
+                            <>
+                              <span>·</span>
+                              <span>{activeMeeting.phone}</span>
+                            </>
+                          )}
                         </p>
                       </div>
                     </div>
@@ -1027,6 +761,12 @@ export default function AdminDashboard() {
                           {activeMeeting.preferred_communication === 'video' ? 'Google Meet' : 
                            activeMeeting.preferred_communication === 'in_person' ? 'Spi Edge Office' : 'In-Person'}
                         </span>
+                        {activeMeeting.phone && activeMeeting.phone !== 'N/A' && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>phone</span>
+                            {activeMeeting.phone}
+                          </span>
+                        )}
                       </div>
 
                       {/* Time Slot Box */}
@@ -1102,26 +842,8 @@ export default function AdminDashboard() {
                             Approve Session
                           </div>
                           
-                          <div>
-                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>MEETING LINK (OPTIONAL)</label>
-                            <input 
-                              className="input-premium" 
-                              placeholder="https://meet.google.com/..." 
-                              value={decisionMeetLink} 
-                              onChange={(e) => setDecisionMeetLink(e.target.value)} 
-                              style={{ padding: '8px 10px', fontSize: 12, width: '100%', boxSizing: 'border-box' }}
-                            />
-                          </div>
-
-                          <div>
-                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>NOTES TO CLIENT (OPTIONAL)</label>
-                            <textarea 
-                              className="input-premium" 
-                              placeholder="Add dynamic notes or instructions..." 
-                              value={decisionNotes} 
-                              onChange={(e) => setDecisionNotes(e.target.value)} 
-                              style={{ minHeight: 60, padding: '8px 10px', fontSize: 12, resize: 'vertical', width: '100%', boxSizing: 'border-box' }}
-                            />
+                          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
+                            Are you sure you want to approve this mentorship session?
                           </div>
 
                           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
@@ -1134,7 +856,7 @@ export default function AdminDashboard() {
                             </button>
                             <button 
                               className="btn-premium" 
-                              onClick={() => handleDecision(activeMeeting.id, 'approved', { meetLink: decisionMeetLink, notes: decisionNotes })} 
+                              onClick={() => handleDecision(activeMeeting.id, 'approved', { meetLink: '', notes: '' })} 
                               disabled={decisionProcessing}
                               style={{ 
                                 flex: 1, 
@@ -1168,15 +890,8 @@ export default function AdminDashboard() {
                             Decline Session
                           </div>
 
-                          <div>
-                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>REASON FOR DECLINING (RECOMMENDED)</label>
-                            <textarea 
-                              className="input-premium" 
-                              placeholder="Please provide details for the cancellation email..." 
-                              value={decisionNotes} 
-                              onChange={(e) => setDecisionNotes(e.target.value)} 
-                              style={{ minHeight: 60, padding: '8px 10px', fontSize: 12, resize: 'vertical', width: '100%', boxSizing: 'border-box' }}
-                            />
+                          <div style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
+                            Are you sure you want to decline this mentorship request?
                           </div>
 
                           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
@@ -1189,7 +904,7 @@ export default function AdminDashboard() {
                             </button>
                             <button 
                               className="btn-premium" 
-                              onClick={() => handleDecision(activeMeeting.id, 'rejected', { notes: decisionNotes })} 
+                              onClick={() => handleDecision(activeMeeting.id, 'rejected', { notes: '' })} 
                               disabled={decisionProcessing}
                               style={{ 
                                 flex: 1, 
@@ -1251,17 +966,6 @@ export default function AdminDashboard() {
                             </div>
                           </div>
 
-                          <div>
-                            <label style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6, fontFamily: 'var(--font-mono)' }}>REASON/MESSAGE (OPTIONAL)</label>
-                            <textarea 
-                              className="input-premium" 
-                              placeholder="Explain why you are rescheduling..." 
-                              value={decisionNotes} 
-                              onChange={(e) => setDecisionNotes(e.target.value)} 
-                              style={{ minHeight: 60, padding: '8px 10px', fontSize: 12, resize: 'vertical', width: '100%', boxSizing: 'border-box' }}
-                            />
-                          </div>
-
                           <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                             <button 
                               className="btn-premium btn-premium-secondary" 
@@ -1283,7 +987,7 @@ export default function AdminDashboard() {
                                 handleDecision(activeMeeting.id, 'rescheduled', {
                                   newStart: startDt.toISOString(),
                                   newEnd: endDt.toISOString(),
-                                  notes: decisionNotes
+                                  notes: ''
                                 });
                               }} 
                               disabled={decisionProcessing}

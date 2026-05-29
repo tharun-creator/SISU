@@ -368,9 +368,9 @@ def get_free_slots(
                 slots.append({
                     "start": current.strftime("%H:%M"),
                     "end": slot_end.strftime("%H:%M"),
-                    "label": current.strftime("%I:%M %p") + " IST",
+                    "label": f"{current.strftime('%I:%M %p')} - {slot_end.strftime('%I:%M %p')} IST",
                 })
-            current += datetime.timedelta(minutes=60)
+            current += datetime.timedelta(minutes=30)
 
         return slots
     except Exception as e:
@@ -387,7 +387,7 @@ def get_free_slots(
             slots.append({
                 "start": c.strftime("%H:%M"),
                 "end": se.strftime("%H:%M"),
-                "label": c.strftime("%I:%M %p") + " IST",
+                "label": f"{c.strftime('%I:%M %p')} - {se.strftime('%I:%M %p')} IST",
             })
-            c += datetime.timedelta(minutes=60)
+            c += datetime.timedelta(minutes=30)
         return slots

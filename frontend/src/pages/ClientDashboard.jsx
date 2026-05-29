@@ -105,17 +105,20 @@ const STATUS_HELPER_CONFIG = {
 const SESSION_TYPES = [
   { id: 'strategy', label: '30 Min Strategy', duration: 30, desc: 'Tactical alignment & playbook quick-wins.', icon: 'bolt' },
   { id: 'mentorship', label: '60 Min Mentorship', duration: 60, desc: 'Deep strategic dive & playbook audit.', icon: 'hub' },
-  { id: 'custom', label: 'Custom Duration / Time (IST)', duration: 60, desc: 'Specify custom duration and slot.', icon: 'more_time' }
+  { id: 'custom', label: 'Custom Time (IST)', duration: 60, desc: 'Specify custom time slot.', icon: 'more_time' }
 ];
 
 const parseCustomTimeToSlot = (timeStr, duration = 60) => {
   if (!timeStr) return null;
-  let match = timeStr.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+  let match = timeStr.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
   if (!match) return null;
   
   let hours = parseInt(match[1], 10);
   let minutes = match[2] ? parseInt(match[2], 10) : 0;
-  let ampm = match[3] ? match[3].toLowerCase() : null;
+  let ampm = match[3].toLowerCase();
+  
+  if (hours < 1 || hours > 12) return null;
+  if (minutes < 0 || minutes > 59) return null;
   
   if (ampm === 'pm' && hours < 12) hours += 12;
   if (ampm === 'am' && hours === 12) hours = 0;
@@ -130,7 +133,7 @@ const parseCustomTimeToSlot = (timeStr, duration = 60) => {
   const endStr = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
   
   return {
-    label: `${timeStr} IST`,
+    label: `${timeStr.trim().toUpperCase()} IST`,
     start: startStr,
     end: endStr
   };
@@ -168,7 +171,6 @@ export default function ClientDashboard() {
   const [agenda, setAgenda] = useState('');
   const [sessionType, setSessionType] = useState(SESSION_TYPES[1]); // Default 60m
   const [customTime, setCustomTime] = useState('');
-  const [customDuration, setCustomDuration] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [description, setDescription] = useState('');
@@ -316,10 +318,10 @@ export default function ClientDashboard() {
   // Load available time slots when date or duration changes
   useEffect(() => {
     if (selectedDate && sessionType) {
-      const dur = sessionType.id === 'custom' ? (parseFloat(customDuration) * 60 || 60) : sessionType.duration;
+      const dur = sessionType.id === 'custom' ? 60 : sessionType.duration;
       loadSlots(selectedDate, dur);
     }
-  }, [selectedDate, sessionType, customDuration]);
+  }, [selectedDate, sessionType]);
 
   const loadSlots = async (d, duration) => {
     setLoadingSlots(true);
@@ -468,7 +470,6 @@ Ready to launch Phase 3 during your next call!`
     setSessionType(type);
     setSelectedSlot(null);
     setCustomTime('');
-    setCustomDuration('');
   };
 
   const handleSelectDate = (year, month, day) => {
@@ -507,8 +508,8 @@ Ready to launch Phase 3 during your next call!`
     const startStr = `${selectedDate.year}-${String(selectedDate.month + 1).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}T${selectedSlot.start}:00`;
     const endStr = `${selectedDate.year}-${String(selectedDate.month + 1).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}T${selectedSlot.end}:00`;
 
-    const dur = sessionType.id === 'custom' ? (parseFloat(customDuration) * 60 || 60) : sessionType.duration;
-    const typeLabel = sessionType.id === 'custom' ? `Custom: ${customDuration} hrs` : sessionType.label;
+    const dur = sessionType.id === 'custom' ? 60 : sessionType.duration;
+    const typeLabel = sessionType.id === 'custom' ? 'Custom Time Slot' : sessionType.label;
 
     try {
       const res = await api.createMeeting({
@@ -691,7 +692,6 @@ Ready to launch Phase 3 during your next call!`
       <aside className={`sisu-sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <h1 className="sidebar-logo">SISU</h1>
-          <p className="sidebar-subtitle">ELITE MENTORSHIP</p>
         </div>
 
         <nav className="sidebar-nav">
@@ -748,7 +748,7 @@ Ready to launch Phase 3 during your next call!`
               <span className="material-symbols-outlined">menu</span>
             </button>
             <h2 className="header-title" style={{ fontFamily: "var(--font-heading)", letterSpacing: '-0.02em', fontSize: 18 }}>
-              {activeView === 'book' && 'Mentorship Planner'}
+              {activeView === 'book' && 'Mentorship Booking'}
               {activeView === 'sessions' && 'Dashboard'}
               {activeView === 'settings' && 'Settings'}
             </h2>
@@ -1201,7 +1201,7 @@ Ready to launch Phase 3 during your next call!`
                 <div className="apple-booking-card glass-premium" style={{ width: '100%', padding: 'clamp(20px, 4vw, 32px)', color: 'var(--color-text-primary)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, borderBottom: '1px solid var(--color-border)', paddingBottom: 20, marginBottom: 24 }}>
                     <div>
-                      <h3 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.03em', fontFamily: 'var(--font-heading)' }}>Mentorship Booking Planner</h3>
+                      <h3 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.03em', fontFamily: 'var(--font-heading)' }}>Booking Form</h3>
                       <p style={{ fontSize: 13.5, color: 'var(--color-text-secondary)', margin: 0, marginTop: 6 }}>Complete parameters in a single screen to secure your executive coaching slot.</p>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(132,204,22,0.1)', border: '1px solid rgba(132,204,22,0.2)', padding: '6px 12px', borderRadius: 20, color: 'var(--color-green)', fontSize: 11, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
@@ -1294,33 +1294,15 @@ Ready to launch Phase 3 during your next call!`
                                     <input
                                       type="text"
                                       className="input-premium"
-                                      placeholder="e.g. 5:30 PM or 17:30"
+                                      placeholder="e.g. 5:30 PM"
                                       value={customTime}
                                       onChange={(e) => {
                                         setCustomTime(e.target.value);
-                                        const parsedSlot = parseCustomTimeToSlot(e.target.value, (parseFloat(customDuration) * 60) || 60);
+                                        const parsedSlot = parseCustomTimeToSlot(e.target.value, 60);
                                         if (parsedSlot) {
                                           setSelectedSlot(parsedSlot);
                                         } else {
                                           setSelectedSlot(null);
-                                        }
-                                      }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase' }}>Custom Duration (hours)</label>
-                                    <input
-                                      type="number"
-                                      step="0.5"
-                                      className="input-premium"
-                                      placeholder="e.g. 1 or 1.5"
-                                      value={customDuration}
-                                      onChange={(e) => {
-                                        const dur = e.target.value;
-                                        setCustomDuration(dur);
-                                        const parsedSlot = parseCustomTimeToSlot(customTime, (parseFloat(dur) * 60) || 60);
-                                        if (parsedSlot) {
-                                          setSelectedSlot(parsedSlot);
                                         }
                                       }}
                                     />
@@ -1412,7 +1394,7 @@ Ready to launch Phase 3 during your next call!`
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, borderBottom: '1px solid var(--color-border)', paddingBottom: 10, gap: 12 }}>
                             <span style={{ color: 'var(--color-text-muted)' }}>Duration</span>
-                            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{sessionType.id === 'custom' ? `${customDuration || '1'} hrs (Custom)` : sessionType.label}</span>
+                            <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{sessionType.id === 'custom' ? 'Custom Time Slot' : sessionType.label}</span>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, borderBottom: '1px solid var(--color-border)', paddingBottom: 10, gap: 12 }}>
                             <span style={{ color: 'var(--color-text-muted)' }}>Slot</span>
