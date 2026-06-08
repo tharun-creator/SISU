@@ -155,7 +155,7 @@ export default function AdminSlotsBookedPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 28, position: 'relative', zIndex: 1 }}>
+        <div className="slots-booked-grid" style={{ position: 'relative', zIndex: 1 }}>
           {/* Left Side: Calendar */}
           <div className="glass-premium" style={{ padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -331,9 +331,9 @@ export default function AdminSlotsBookedPage() {
                             transition={{ delay: idx * 0.05, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                             style={{
                               padding: 16,
-                              background: 'rgba(255,255,255,0.02)',
-                              border: '1px solid var(--color-border)',
-                              borderLeft: `4px solid ${accent}`,
+                              background: m.client_is_priority ? 'linear-gradient(to bottom, rgba(234, 179, 8, 0.02), rgba(255,255,255,0.02))' : 'rgba(255,255,255,0.02)',
+                              border: m.client_is_priority ? '1px solid rgba(234, 179, 8, 0.2)' : '1px solid var(--color-border)',
+                              borderLeft: m.client_is_priority ? '4px solid #eab308' : `4px solid ${accent}`,
                               borderRadius: 12,
                               transition: 'var(--transition-fast)',
                               cursor: 'default',
@@ -349,6 +349,7 @@ export default function AdminSlotsBookedPage() {
                                 </span>
                               </div>
                               <span style={{
+                                fantasy: 'sans-serif',
                                 fontSize: 9,
                                 fontWeight: 800,
                                 padding: '3px 8px',
@@ -373,7 +374,12 @@ export default function AdminSlotsBookedPage() {
                               {/* Client */}
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12.5 }}>
                                 <span className="material-symbols-outlined" style={{ fontSize: 15, color: 'var(--color-text-muted)' }}>person</span>
-                                <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{m.client_name}</span>
+                                <span style={{ fontWeight: 600, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                  {m.client_name}
+                                  {m.client_is_priority && (
+                                    <span style={{ fontSize: 8.5, padding: '1px 5px', background: 'rgba(234, 179, 8, 0.1)', color: '#eab308', border: '1px solid rgba(234, 179, 8, 0.15)', borderRadius: 4, fontWeight: 800, fontFamily: 'var(--font-mono)' }}>⭐ PRIORITY</span>
+                                  )}
+                                </span>
                                 {m.client_email && (
                                   <span style={{ color: 'var(--color-text-muted)', fontSize: 11 }}>({m.client_email})</span>
                                 )}
@@ -443,6 +449,18 @@ export default function AdminSlotsBookedPage() {
       </div>
 
       <style>{`
+        .slots-booked-grid {
+          display: grid;
+          grid-template-columns: 1.4fr 1fr;
+          gap: 28px;
+        }
+
+        @media (max-width: 1024px) {
+          .slots-booked-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
         .slots-cal-btn:hover {
           background: rgba(255, 255, 255, 0.02) !important;
           border-color: var(--color-border-hover) !important;

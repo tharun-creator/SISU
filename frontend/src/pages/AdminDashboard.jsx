@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import Layout from '../components/Layout';
 import BookingModal from '../components/BookingModal';
 import { api } from '../lib/api';
@@ -76,78 +75,7 @@ function StatCard({ icon, label, value, delta, color = 'var(--color-accent)', de
   );
 }
 
-function AnalyticsPieChart({ stats }) {
-  const pieData = [
-    { name: 'Approved', value: stats.approved_meetings || 0, color: 'var(--color-green)' },
-    { name: 'Pending', value: stats.pending_requests || 0, color: 'var(--color-amber)' },
-    { name: 'Rejected', value: stats.rejected_meetings || 0, color: 'var(--color-red)' },
-    { name: 'Cancelled', value: stats.cancelled_meetings || 0, color: 'var(--color-text-muted)' },
-  ].filter(d => d.value > 0);
-
-  if (pieData.length === 0) {
-    return (
-      <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', fontSize: 13 }}>
-        No chart data available
-      </div>
-    );
-  }
-
-  const total = pieData.reduce((acc, curr) => acc + curr.value, 0);
-
-  return (
-    <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ width: '100%', height: 160, position: 'relative' }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={pieData}
-              cx="50%"
-              cy="50%"
-              innerRadius={48}
-              outerRadius={64}
-              paddingAngle={4}
-              dataKey="value"
-            >
-              {pieData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} style={{ outline: 'none' }} />
-              ))}
-            </Pie>
-            <Tooltip
-              contentStyle={{
-                background: 'rgba(21, 21, 21, 0.95)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '8px',
-                color: 'white',
-                fontSize: '12px',
-                boxShadow: 'var(--shadow-md)',
-              }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-        {/* Center label */}
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
-          <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>
-            {total}
-          </div>
-          <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Total
-          </div>
-        </div>
-      </div>
-      
-      {/* Legend */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px', width: '100%', marginTop: 12 }}>
-        {pieData.map((item, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--color-text-secondary)' }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.color }} />
-            <span style={{ fontWeight: 500 }}>{item.name}</span>
-            <span style={{ marginLeft: 'auto', fontWeight: 700, color: 'var(--color-text-primary)', fontFamily: 'var(--font-mono)' }}>{item.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// AnalyticsPieChart component removed
 
 const TIME_SLOTS = [
   { value: '09:00', label: '09:00 AM' },
@@ -353,7 +281,7 @@ export default function AdminDashboard() {
         <div style={{ position: 'absolute', top: '-10%', left: '20%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 65%)', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0 }} />
 
         {/* Date / Pending Widget Header Row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 28, position: 'relative', zIndex: 1 }}>
           <div>
             <p style={{ color: 'var(--color-text-secondary)', fontSize: 14, fontWeight: 600 }}>
               {format(new Date(), 'EEEE, MMMM dd, yyyy')}
@@ -384,11 +312,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stat Cards Grid */}
-        <div className="layout-grid grid-cols-4" style={{ marginBottom: 28, position: 'relative', zIndex: 1 }}>
+        <div className="admin-stat-cards" style={{ marginBottom: 28, position: 'relative', zIndex: 1 }}>
           <StatCard icon="assessment" label="Total Meetings" value={stats.total_meetings ?? 0} color="var(--color-accent)" delay={0} />
           <StatCard icon="pending_actions" label="Pending Approval" value={stats.pending_requests ?? 0} color="var(--color-amber)" delta={stats.pending_requests > 0 ? `${stats.pending_requests} new` : null} delay={0.05} />
           <StatCard icon="check_circle" label="Approved Sessions" value={stats.approved_meetings ?? 0} color="var(--color-green)" delay={0.1} />
-          <StatCard icon="trending_up" label="Approval Rate" value={stats.approval_rate ?? '0%'} color="var(--color-accent-cyan)" delay={0.15} />
         </div>
 
         {/* Responsive Dashboard Core Grid */}
@@ -456,117 +383,283 @@ export default function AdminDashboard() {
             </div>
 
             {/* Meetings Table Card */}
+            {/* Meetings Card / Table Container */}
             <motion.div 
               initial={{ opacity: 0, y: 16 }} 
               animate={{ opacity: 1, y: 0 }} 
               transition={{ delay: 0.2 }}
-              className="glass-premium"
-              style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid var(--color-border)', background: 'var(--glass-bg)' }}
+              style={{ width: '100%' }}
             >
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.01)' }}>
-                      <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Client</th>
-                      <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Meeting Details</th>
-                      <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Date & Time</th>
-                      <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Priority</th>
-                      <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Status</th>
-                      <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loading ? (
-                      Array.from({ length: 5 }).map((_, i) => (
-                        <tr key={i} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                          <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 32, width: 32, borderRadius: '50%', display: 'inline-block' }} /><div className="skeleton-pulse" style={{ height: 14, width: 80, marginLeft: 8, display: 'inline-block' }} /></td>
-                          <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 14, width: 120 }} /></td>
-                          <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 14, width: 100 }} /></td>
-                          <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 20, width: 50, borderRadius: 6 }} /></td>
-                          <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 20, width: 60, borderRadius: 6 }} /></td>
-                          <td style={{ padding: '16px 20px', textAlign: 'right' }}><div className="skeleton-pulse" style={{ height: 28, width: 60, borderRadius: 8, display: 'inline-block' }} /></td>
-                        </tr>
-                      ))
-                    ) : filteredMeetings.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} style={{ textAlign: 'center', padding: '64px 0', color: 'var(--color-text-muted)', fontSize: 14 }}>
-                          <span className="material-symbols-outlined" style={{ fontSize: 32, marginBottom: 8, display: 'block', color: 'var(--color-text-muted)' }}>calendar_today</span>
-                          No scheduled mentorship meetings found.
-                        </td>
+              {/* Desktop Table View */}
+              <div className="desktop-only-table glass-premium" style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid var(--color-border)', background: 'var(--glass-bg)' }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.01)' }}>
+                        <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Client</th>
+                        <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Meeting Details</th>
+                        <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Date & Time</th>
+                        <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Priority</th>
+                        <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Status</th>
+                        <th style={{ padding: '16px 20px', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>Action</th>
                       </tr>
-                    ) : filteredMeetings.map((m, i) => {
-                      const priorityColor = PRIORITY_COLORS[m.priority] || 'var(--color-accent)';
-                      const statusColor = STATUS_COLORS[m.status] || 'white';
-                      return (
-                        <tr 
-                          key={m.id} 
-                          className="admin-table-row"
-                          onClick={() => setSelectedMeeting(m)}
-                          style={{ cursor: 'pointer', borderBottom: '1px solid var(--color-border)', transition: 'var(--transition-fast)' }}
-                        >
-                          <td style={{ padding: '16px 20px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                              <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: 'white', flexShrink: 0, boxShadow: '0 2px 10px rgba(59, 130, 246, 0.2)' }}>
-                                {m.client_name?.charAt(0) || '?'}
-                              </div>
-                              <div>
-                                <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{m.client_name}</p>
-                                <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{m.client_email}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td style={{ padding: '16px 20px' }}>
-                            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>{m.title}</p>
-                            <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{m.meeting_type}</p>
-                          </td>
-                          <td style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-text-secondary)' }}>
-                            <span style={{ fontWeight: 500 }}>{m.display_date || (m.start_time ? format(parseISO(m.start_time), 'MMM dd, yyyy') : 'TBD')}</span>
-                            <span style={{ color: 'var(--color-text-muted)', margin: '0 4px' }}>·</span>
-                            <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{m.display_time || (m.start_time ? format(parseISO(m.start_time), 'hh:mm a') : 'TBD')}</span>
-                          </td>
-                          <td style={{ padding: '16px 20px' }}>
-                            <span className={`badge-priority badge-priority-${m.priority}`}>
-                              {m.priority}
-                            </span>
-                          </td>
-                          <td style={{ padding: '16px 20px' }}>
-                            <span 
-                              className="badge-status-pill"
-                              style={{ 
-                                background: `${statusColor}10`, 
-                                color: statusColor, 
-                                border: `1px solid ${statusColor}20`,
-                                textTransform: 'capitalize' 
-                              }}
-                            >
-                              <span style={{ width: 5, height: 5, borderRadius: '50%', background: statusColor }} />
-                              {m.status === 'reschedule_requested' ? 'reschedule requested' : m.status}
-                            </span>
-                          </td>
-                          <td style={{ padding: '16px 20px', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
-                            {(m.status === 'pending' || m.status === 'reschedule_requested') ? (
-                              <button 
-                                className="btn-premium btn-premium-primary" 
-                                onClick={() => setSelectedMeeting(m)}
-                                style={{ padding: '6px 14px', fontSize: 12, borderRadius: 8 }}
-                              >
-                                Review
-                              </button>
-                            ) : (
-                              <button 
-                                className="btn-premium btn-premium-secondary" 
-                                onClick={() => setSelectedMeeting(m)}
-                                style={{ padding: '6px 12px', fontSize: 12, borderRadius: 8 }}
-                              >
-                                Details
-                              </button>
-                            )}
+                    </thead>
+                    <tbody>
+                      {loading ? (
+                        Array.from({ length: 5 }).map((_, i) => (
+                          <tr key={i} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                            <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 32, width: 32, borderRadius: '50%', display: 'inline-block' }} /><div className="skeleton-pulse" style={{ height: 14, width: 80, marginLeft: 8, display: 'inline-block' }} /></td>
+                            <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 14, width: 120 }} /></td>
+                            <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 14, width: 100 }} /></td>
+                            <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 20, width: 50, borderRadius: 6 }} /></td>
+                            <td style={{ padding: '16px 20px' }}><div className="skeleton-pulse" style={{ height: 20, width: 60, borderRadius: 6 }} /></td>
+                            <td style={{ padding: '16px 20px', textAlign: 'right' }}><div className="skeleton-pulse" style={{ height: 28, width: 60, borderRadius: 8, display: 'inline-block' }} /></td>
+                          </tr>
+                        ))
+                      ) : filteredMeetings.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} style={{ textAlign: 'center', padding: '64px 0', color: 'var(--color-text-muted)', fontSize: 14 }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 32, marginBottom: 8, display: 'block', color: 'var(--color-text-muted)' }}>calendar_today</span>
+                            No scheduled mentorship meetings found.
                           </td>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      ) : filteredMeetings.map((m) => {
+                        const priorityColor = PRIORITY_COLORS[m.priority] || 'var(--color-accent)';
+                        const statusColor = STATUS_COLORS[m.status] || 'white';
+                        return (
+                          <tr 
+                            key={m.id} 
+                            className="admin-table-row"
+                            onClick={() => setSelectedMeeting(m)}
+                            style={{ 
+                              cursor: 'pointer', 
+                              borderBottom: '1px solid var(--color-border)', 
+                              transition: 'var(--transition-fast)',
+                              background: m.client_is_priority ? 'rgba(234, 179, 8, 0.03)' : 'transparent'
+                            }}
+                          >
+                            <td style={{ padding: '16px 20px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={{ 
+                                  width: 34, 
+                                  height: 34, 
+                                  background: m.client_is_priority ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' : 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', 
+                                  borderRadius: '50%', 
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center', 
+                                  fontSize: 12, 
+                                  fontWeight: 800, 
+                                  color: 'white', 
+                                  flexShrink: 0, 
+                                  boxShadow: m.client_is_priority ? '0 2px 10px rgba(234, 179, 8, 0.2)' : '0 2px 10px rgba(59, 130, 246, 0.2)' 
+                                }}>
+                                  {m.client_name?.charAt(0) || '?'}
+                                </div>
+                                <div>
+                                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    {m.client_name}
+                                    {m.client_is_priority && (
+                                      <span style={{ fontSize: 8.5, padding: '1px 5px', background: 'rgba(234, 179, 8, 0.1)', color: '#eab308', border: '1px solid rgba(234, 179, 8, 0.15)', borderRadius: 4, fontWeight: 800, fontFamily: 'var(--font-mono)' }}>⭐ PRIORITY</span>
+                                    )}
+                                  </p>
+                                  <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{m.client_email}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="hide-on-mobile" style={{ padding: '16px 20px' }}>
+                              <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>{m.title}</p>
+                              <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{m.meeting_type}</p>
+                            </td>
+                            <td style={{ padding: '16px 20px', fontSize: 13, color: 'var(--color-text-secondary)' }}>
+                              <span style={{ fontWeight: 500 }}>{m.display_date || (m.start_time ? format(parseISO(m.start_time), 'MMM dd, yyyy') : 'TBD')}</span>
+                              <br className="show-on-mobile" style={{ display: 'none' }} />
+                              <span className="hide-on-mobile" style={{ color: 'var(--color-text-muted)', margin: '0 4px' }}>·</span>
+                              <span style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{m.display_time || (m.start_time ? format(parseISO(m.start_time), 'hh:mm a') : 'TBD')}</span>
+                            </td>
+                            <td className="hide-on-mobile" style={{ padding: '16px 20px' }}>
+                              <span className={`badge-priority badge-priority-${m.priority}`}>
+                                {m.priority}
+                              </span>
+                            </td>
+                            <td style={{ padding: '16px 20px' }}>
+                              <span 
+                                className="badge-status-pill"
+                                style={{ 
+                                  background: `${statusColor}10`, 
+                                  color: statusColor, 
+                                  border: `1px solid ${statusColor}20`,
+                                  textTransform: 'capitalize' 
+                                }}
+                              >
+                                <span style={{ width: 5, height: 5, borderRadius: '50%', background: statusColor }} />
+                                {m.status === 'reschedule_requested' ? 'reschedule requested' : m.status}
+                              </span>
+                            </td>
+                            <td style={{ padding: '16px 20px', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
+                              {(m.status === 'pending' || m.status === 'reschedule_requested') ? (
+                                <button 
+                                  className="btn-premium btn-premium-primary" 
+                                  onClick={() => setSelectedMeeting(m)}
+                                  style={{ padding: '6px 14px', fontSize: 12, borderRadius: 8 }}
+                                >
+                                  Review
+                                </button>
+                              ) : (
+                                <button 
+                                  className="btn-premium btn-premium-secondary" 
+                                  onClick={() => setSelectedMeeting(m)}
+                                  style={{ padding: '6px 12px', fontSize: 12, borderRadius: 8 }}
+                                >
+                                  Details
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mobile Cards View */}
+              <div className="mobile-only-cards" style={{ display: 'none', flexDirection: 'column', gap: 12 }}>
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="glass-premium" style={{ padding: 16, borderRadius: 16, border: '1px solid var(--color-border)', background: 'var(--glass-bg)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                        <div className="skeleton-pulse" style={{ height: 36, width: 36, borderRadius: '50%' }} />
+                        <div style={{ flex: 1 }}><div className="skeleton-pulse" style={{ height: 14, width: '40%', marginBottom: 6 }} /><div className="skeleton-pulse" style={{ height: 11, width: '60%' }} /></div>
+                      </div>
+                      <div className="skeleton-pulse" style={{ height: 16, width: '80%' }} />
+                      <div className="skeleton-pulse" style={{ height: 14, width: '50%' }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}><div className="skeleton-pulse" style={{ height: 22, width: 70, borderRadius: 6 }} /><div className="skeleton-pulse" style={{ height: 28, width: 80, borderRadius: 8 }} /></div>
+                    </div>
+                  ))
+                ) : filteredMeetings.length === 0 ? (
+                  <div className="glass-premium" style={{ textAlign: 'center', padding: '48px 16px', color: 'var(--color-text-muted)', fontSize: 14, borderRadius: 16, border: '1px solid var(--color-border)', background: 'var(--glass-bg)' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 32, marginBottom: 8, display: 'block', color: 'var(--color-text-muted)' }}>calendar_today</span>
+                    No scheduled mentorship meetings found.
+                  </div>
+                ) : filteredMeetings.map((m) => {
+                  const priorityColor = PRIORITY_COLORS[m.priority] || 'var(--color-accent)';
+                  const statusColor = STATUS_COLORS[m.status] || 'white';
+                  return (
+                    <div 
+                      key={m.id} 
+                      className="glass-premium"
+                      onClick={() => setSelectedMeeting(m)}
+                      style={{ 
+                        padding: 16, 
+                        borderRadius: 16, 
+                        border: m.client_is_priority ? '1px solid rgba(234, 179, 8, 0.25)' : '1px solid var(--color-border)', 
+                        background: m.client_is_priority ? 'linear-gradient(to bottom, rgba(234, 179, 8, 0.03), var(--glass-bg))' : 'var(--glass-bg)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 12,
+                        cursor: 'pointer',
+                        position: 'relative'
+                      }}
+                    >
+                      {/* Priority Tag line for Mobile */}
+                      {m.client_is_priority && (
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #eab308 0%, #ca8a04 100%)', borderTopLeftRadius: 16, borderTopRightRadius: 16 }} />
+                      )}
+                      
+                      {/* Row 1: Client profile and Priority badge */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ 
+                            width: 36, 
+                            height: 36, 
+                            background: m.client_is_priority ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' : 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', 
+                            borderRadius: '50%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            fontSize: 13, 
+                            fontWeight: 800, 
+                            color: 'white', 
+                            flexShrink: 0
+                          }}>
+                            {m.client_name?.charAt(0) || '?'}
+                          </div>
+                          <div>
+                            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              {m.client_name}
+                            </p>
+                            <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{m.client_email}</p>
+                          </div>
+                        </div>
+                        <span className={`badge-priority badge-priority-${m.priority}`}>
+                          {m.priority}
+                        </span>
+                      </div>
+
+                      {/* Row 2: Meeting Title & Type */}
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10 }}>
+                        <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 2 }}>{m.title}</h4>
+                        <p style={{ fontSize: 11, color: 'var(--color-text-secondary)' }}>{m.meeting_type}</p>
+                      </div>
+
+                      {/* Row 3: Time Slot */}
+                      <div style={{ 
+                        padding: '6px 10px', 
+                        background: 'rgba(255, 255, 255, 0.015)', 
+                        border: '1px solid rgba(255, 255, 255, 0.03)', 
+                        borderRadius: 8,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        fontSize: 11
+                      }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--color-accent)' }}>schedule</span>
+                        <span style={{ color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+                          {m.display_date || (m.start_time ? format(parseISO(m.start_time), 'MMM dd, yyyy') : 'TBD')}
+                          <span style={{ margin: '0 4px', color: 'var(--color-text-muted)' }}>·</span>
+                          {m.display_time || (m.start_time ? format(parseISO(m.start_time), 'hh:mm a') : 'TBD')}
+                        </span>
+                      </div>
+
+                      {/* Row 4: Status and Action Button */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 2 }}>
+                        <span 
+                          className="badge-status-pill"
+                          style={{ 
+                            background: `${statusColor}10`, 
+                            color: statusColor, 
+                            border: `1px solid ${statusColor}20`,
+                            textTransform: 'capitalize' 
+                          }}
+                        >
+                          <span style={{ width: 5, height: 5, borderRadius: '50%', background: statusColor }} />
+                          {m.status === 'reschedule_requested' ? 'reschedule requested' : m.status}
+                        </span>
+                        
+                        <div onClick={(e) => e.stopPropagation()}>
+                          {(m.status === 'pending' || m.status === 'reschedule_requested') ? (
+                            <button 
+                              className="btn-premium btn-premium-primary" 
+                              onClick={() => setSelectedMeeting(m)}
+                              style={{ padding: '6px 14px', fontSize: 12, borderRadius: 8 }}
+                            >
+                              Review
+                            </button>
+                          ) : (
+                            <button 
+                              className="btn-premium btn-premium-secondary" 
+                              onClick={() => setSelectedMeeting(m)}
+                              style={{ padding: '6px 12px', fontSize: 12, borderRadius: 8 }}
+                            >
+                              Details
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </motion.div>
           </div>          {/* Right Column: Analytics */}
@@ -664,8 +757,8 @@ export default function AdminDashboard() {
                     style={{
                       padding: 20,
                       borderRadius: 16,
-                      border: '1px solid var(--color-border)',
-                      background: 'var(--glass-bg)',
+                      border: activeMeeting.client_is_priority ? '1px solid rgba(234, 179, 8, 0.25)' : '1px solid var(--color-border)',
+                      background: activeMeeting.client_is_priority ? 'linear-gradient(to bottom, rgba(234, 179, 8, 0.03), var(--glass-bg))' : 'var(--glass-bg)',
                       position: 'relative',
                       overflow: 'hidden',
                       display: 'flex',
@@ -680,9 +773,11 @@ export default function AdminDashboard() {
                       left: 0,
                       right: 0,
                       height: 3,
-                      background: activeMeeting.priority === 'urgent' || activeMeeting.priority === 'high' 
-                        ? 'linear-gradient(90deg, var(--color-red) 0%, var(--color-accent-orange) 100%)'
-                        : 'linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)'
+                      background: activeMeeting.client_is_priority
+                        ? 'linear-gradient(90deg, #eab308 0%, #ca8a04 100%)'
+                        : (activeMeeting.priority === 'urgent' || activeMeeting.priority === 'high' 
+                            ? 'linear-gradient(90deg, var(--color-red) 0%, var(--color-accent-orange) 100%)'
+                            : 'linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)')
                     }} />
 
                     {/* Client Profile Row */}
@@ -690,7 +785,7 @@ export default function AdminDashboard() {
                       <div style={{ 
                         width: 38, 
                         height: 38, 
-                        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', 
+                        background: activeMeeting.client_is_priority ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' : 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', 
                         borderRadius: '50%', 
                         display: 'flex', 
                         alignItems: 'center', 
@@ -698,7 +793,8 @@ export default function AdminDashboard() {
                         fontSize: 13, 
                         fontWeight: 800, 
                         color: 'white',
-                        boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15)'
+                        boxShadow: activeMeeting.client_is_priority ? '0 2px 8px rgba(234, 179, 8, 0.2)' : '0 2px 8px rgba(59, 130, 246, 0.15)',
+                        flexShrink: 0
                       }}>
                         {activeMeeting.client_name?.charAt(0) || '?'}
                       </div>
@@ -707,6 +803,21 @@ export default function AdminDashboard() {
                           <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {activeMeeting.client_name}
                           </h4>
+                          {activeMeeting.client_is_priority && (
+                            <span style={{
+                              fontSize: 8.5,
+                              fontWeight: 800,
+                              padding: '1px 5px',
+                              borderRadius: 6,
+                              background: 'rgba(234, 179, 8, 0.08)',
+                              color: '#eab308',
+                              border: '1px solid rgba(234, 179, 8, 0.15)',
+                              fontFamily: 'var(--font-mono)',
+                              textTransform: 'uppercase'
+                            }}>
+                              ⭐ Priority
+                            </span>
+                          )}
                           <span style={{
                             fontSize: 9,
                             fontWeight: 800,
@@ -803,6 +914,18 @@ export default function AdminDashboard() {
                         lineHeight: 1.4
                       }}>
                         "{activeMeeting.reason}"
+                      </div>
+                    )}
+                    {activeMeeting.description && activeMeeting.description !== 'Booked via Executive Mentorship Workspace' && (
+                      <div style={{ 
+                        fontSize: 12, 
+                        color: 'var(--color-text-secondary)', 
+                        borderLeft: '2px solid var(--color-accent)', 
+                        paddingLeft: 10, 
+                        lineHeight: 1.4,
+                        marginTop: 6
+                      }}>
+                        <strong>Description:</strong> {activeMeeting.description}
                       </div>
                     )}
 
@@ -1117,19 +1240,7 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Analytics Summary */}
-            <motion.div 
-              initial={{ opacity: 0, x: 16 }} 
-              animate={{ opacity: 1, x: 0 }} 
-              transition={{ delay: 0.15 }}
-              className="glass-premium"
-              style={{ padding: 24, borderRadius: 16, border: '1px solid var(--color-border)', background: 'var(--glass-bg)' }}
-            >
-              <h3 style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.01em', marginBottom: 16, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>
-                Session Distribution
-              </h3>
-              <AnalyticsPieChart stats={stats} />
-            </motion.div>
+            {/* Session Distribution chart removed */}
           </div>
         </div>
       </div>
@@ -1160,9 +1271,35 @@ export default function AdminDashboard() {
           grid-template-columns: 2.2fr 1fr;
           gap: 24px;
         }
+        
+        .admin-stat-cards {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+        }
+
         @media (max-width: 1200px) {
           .admin-dashboard-grid {
             grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .admin-stat-cards {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+          }
+          .hide-on-mobile {
+            display: none !important;
+          }
+          .show-on-mobile {
+            display: block !important;
+          }
+          .desktop-only-table {
+            display: none !important;
+          }
+          .mobile-only-cards {
+            display: flex !important;
           }
         }
         

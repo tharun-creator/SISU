@@ -14,6 +14,7 @@ import logging
 import requests
 from typing import Optional, List, Dict
 
+import google_integration
 from sqlalchemy.orm import Session
 from database import Meeting, AvailabilitySlot, MeetingStatusLog, Notification
 
@@ -124,7 +125,6 @@ def find_next_available_slots(
             AvailabilitySlot.start_time > after,
         )
         .order_by(AvailabilitySlot.start_time)
-        .limit(count * 3)  # Fetch more, filter conflicts below
         .all()
     )
 
@@ -132,17 +132,26 @@ def find_next_available_slots(
     for slot in admin_slots:
         if len(results) >= count:
             break
-        if check_slot_available(db, slot.start_time, slot.end_time):
-            results.append(_slot_to_dict(slot.start_time, slot.end_time))
+            
+        # Ensure the slot exactly matches the requested duration
+        slot_duration = (slot.end_time - slot.start_time).total_seconds() / 60
+        if int(slot_duration) == duration_minutes:
+            if check_slot_available(db, slot.start_time, slot.end_time):
+                results.append(_slot_to_dict(slot.start_time, slot.end_time))
 
     # Fallback: generate synthetic slots if admin hasn't configured any
     if not results:
         logger.info("[BookingService] No admin slots found – generating fallback slots")
-        rem = after.minute % 30
+        
+        # Step dynamically based on the requested duration
+        step_minutes = duration_minutes if duration_minutes > 0 else 30
+        rem = after.minute % step_minutes
+        
         if rem == 0 and after.second == 0 and after.microsecond == 0:
-            candidate = after + datetime.timedelta(minutes=30)
+            candidate = after + datetime.timedelta(minutes=step_minutes)
         else:
-            candidate = after.replace(second=0, microsecond=0) + datetime.timedelta(minutes=(30 - rem))
+            candidate = after.replace(second=0, microsecond=0) + datetime.timedelta(minutes=(step_minutes - rem))
+            
         limit = after + datetime.timedelta(days=7)
 
         while candidate < limit and len(results) < count:
@@ -152,9 +161,10 @@ def find_next_available_slots(
                 if slot_end <= candidate.replace(hour=20, minute=0, second=0, microsecond=0):
                     if check_slot_available(db, candidate, slot_end):
                         results.append(_slot_to_dict(candidate, slot_end))
-            candidate += datetime.timedelta(minutes=30)
+            candidate += datetime.timedelta(minutes=step_minutes)
 
     return results
+
 
 
 def _slot_to_dict(start: datetime.datetime, end: datetime.datetime) -> Dict:
@@ -243,46 +253,59 @@ def build_zapier_payload(
 
 # ── Zapier Webhook Trigger ─────────────────────────────────────────────────────
 
-def trigger_zapier_for_approved_meeting(
+def handle_approved_meeting_native(
     meeting: Meeting,
     client_name: str,
     client_email: str,
 ) -> Dict:
     """
-    Trigger Zapier webhook with data pulled fresh from the DB meeting record.
-    Returns {"success": True/False, ...}
+    Directly creates a Google Calendar event and sends the custom Gmail confirmation.
+    Replaces Zapier webhook logic.
     """
-    webhook_url = os.getenv("ZAPIER_WEBHOOK_URL", "")
-    if not webhook_url or "YOUR_ID" in webhook_url:
-        logger.error("[BookingService] ZAPIER_WEBHOOK_URL not configured")
-        return {"success": False, "error": "Zapier webhook URL not set"}
+    logger.info(f"[BookingService] Starting native Google Integration for meeting #{meeting.id}")
+    
+    start_ist = _naive_to_ist_aware(meeting.start_time)
+    duration = meeting.duration_minutes or 60
+    end_ist = _naive_to_ist_aware(meeting.start_time + datetime.timedelta(minutes=duration))
+    
+    start_iso = start_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30")
+    end_iso = end_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30")
+    
+    cal_resp = google_integration.create_calendar_event(
+        title=meeting.title,
+        description=meeting.description or "",
+        start_iso=start_iso,
+        end_iso=end_iso,
+        attendee_email=client_email,
+        attendee_name=client_name
+    )
+    
+    if not cal_resp.get("success"):
+        logger.error(f"[BookingService] Calendar event creation failed: {cal_resp.get('error')}")
+        return {"success": False, "error": cal_resp.get("error")}
+        
+    logger.info(f"[BookingService] Calendar event created successfully.")
+    
+    mail_resp = google_integration.send_gmail_confirmation(
+        title=meeting.title,
+        description=meeting.description or "",
+        attendee_email=client_email,
+        attendee_name=client_name,
+        meet_link=cal_resp.get("meet_link") or "",
+        calendar_link=cal_resp.get("calendar_link") or ""
+    )
+    
+    if not mail_resp.get("success"):
+        logger.error(f"[BookingService] Gmail confirmation failed: {mail_resp.get('error')}")
+    else:
+        logger.info(f"[BookingService] Gmail confirmation sent successfully.")
 
-    payload = build_zapier_payload(meeting, client_name, client_email)
-
-    max_retries = int(os.getenv("WEBHOOK_MAX_RETRIES", "3"))
-    timeout_s = int(os.getenv("WEBHOOK_TIMEOUT", "10"))
-
-    for attempt in range(1, max_retries + 1):
-        try:
-            logger.info(
-                f"[BookingService] Zapier POST (accurate times)\n"
-                f"  meeting_id={payload['meeting_id']}, "
-                f"start={payload['start_time']} (IST), end={payload['end_time']} (IST)"
-            )
-            resp = requests.post(webhook_url, json=payload, timeout=timeout_s)
-            resp.raise_for_status()
-            logger.info(f"[BookingService] Zapier OK – {resp.status_code}: {resp.text[:200]}")
-            return {"success": True, "status_code": resp.status_code, "payload_sent": payload}
-
-        except requests.exceptions.Timeout:
-            logger.warning(f"[BookingService] Zapier timeout on attempt {attempt}")
-        except requests.exceptions.RequestException as e:
-            logger.error(f"[BookingService] Zapier error on attempt {attempt}: {e}")
-
-        if attempt < max_retries:
-            time.sleep(2 ** (attempt - 1))
-
-    return {"success": False, "error": f"Zapier webhook failed after {max_retries} attempts"}
+    return {
+        "success": True, 
+        "status_code": 200,
+        "google_event_id": cal_resp.get("event_id"),
+        "meet_link": cal_resp.get("meet_link")
+    }
 
 
 # ── Slot Management ────────────────────────────────────────────────────────────
@@ -300,25 +323,9 @@ def mark_slot_as_booked(db: Session, start: datetime.datetime, end: datetime.dat
         logger.info(f"[BookingService] Marked slot {start} as booked")
 
 
-# ── Zapier Cancellation ────────────────────────────────────────────────────────
-
 def trigger_zapier_cancellation(meeting_id: int, google_event_id: str, title: str, client_email: str):
-    """Notify Zapier that a meeting has been cancelled to remove from Calendar."""
-    webhook_url = os.getenv("ZAPIER_WEBHOOK_URL", "")
-    if not webhook_url: return
-
-    payload = {
-        "action": "cancelled",
-        "meeting_id": str(meeting_id),
-        "google_event_id": google_event_id,
-        "title": title,
-        "attendee_email": client_email
-    }
-    try:
-        requests.post(webhook_url, json=payload, timeout=5)
-        logger.info(f"[BookingService] Cancellation sent to Zapier for meeting #{meeting_id}")
-    except Exception as e:
-        logger.error(f"[BookingService] Failed to send cancellation to Zapier: {e}")
+    """Notify Zapier that a meeting has been cancelled. RETIRED: No-op."""
+    return
 
 
 # ── Audit Log Helper ───────────────────────────────────────────────────────────

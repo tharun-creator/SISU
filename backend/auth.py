@@ -86,6 +86,7 @@ def user_to_dict(user: User) -> dict:
         "job_title": user.job_title,
         "timezone": user.timezone,
         "avatar": user.avatar,
+        "is_priority": getattr(user, "is_priority", False),
         "created_at": user.created_at.isoformat() if user.created_at else None,
     }
 

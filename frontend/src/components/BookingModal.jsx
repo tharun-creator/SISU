@@ -217,6 +217,12 @@ export default function BookingModal({ meeting, onClose, onAction }) {
               <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>"{meeting.reason}"</p>
             </div>
           )}
+          {meeting.description && meeting.description !== 'Booked via Executive Mentorship Workspace' && (
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px dotted var(--color-border)' }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Description</p>
+              <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{meeting.description}</p>
+            </div>
+          )}
         </div>
 
         <div>

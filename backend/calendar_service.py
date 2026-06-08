@@ -15,24 +15,34 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SCOPES = ["https://www.googleapis.com/auth/calendar"]
+SCOPES = [
+    "https://www.googleapis.com/auth/calendar.events",
+    "https://www.googleapis.com/auth/gmail.send"
+]
 
 
 def _get_service():
     """Build a Google Calendar service using stored credentials with explicit refresh."""
-    creds = Credentials(
-        token=None, # Force refresh on first call
-        refresh_token=os.getenv("GOOGLE_REFRESH_TOKEN"),
-        token_uri="https://oauth2.googleapis.com/token",
-        client_id=os.getenv("GOOGLE_CLIENT_ID"),
-        client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
-        scopes=SCOPES,
-    )
+    token_path = 'token.json'
+    if os.path.exists(token_path):
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+    else:
+        creds = Credentials(
+            token=None, # Force refresh on first call
+            refresh_token=os.getenv("GOOGLE_REFRESH_TOKEN"),
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=os.getenv("GOOGLE_CLIENT_ID"),
+            client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+            scopes=SCOPES,
+        )
     
-    # Explicitly refresh the token if it's invalid (which it is since token=None)
+    # Explicitly refresh the token if it's invalid
     if not creds.valid:
         try:
             creds.refresh(Request())
+            if os.path.exists(token_path):
+                with open(token_path, 'w') as token:
+                    token.write(creds.to_json())
         except Exception as e:
             print(f"[Calendar] Failed to refresh token: {e}")
             raise

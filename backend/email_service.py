@@ -119,7 +119,7 @@ def _meeting_approved_html(client_name: str, meeting: dict, meet_link: str = "")
   <div style="display:inline-block;background:rgba(110,231,183,0.1);border:1px solid rgba(110,231,183,0.3);border-radius:50%;width:64px;height:64px;line-height:64px;font-size:28px;">✓</div>
 </div>
 <h1 style="color:#6ee7b7;font-size:28px;font-weight:700;margin:0 0 8px;text-align:center;">Meeting Approved!</h1>
-<p style="color:rgba(255,255,255,0.6);font-size:15px;margin:0 0 24px;text-align:center;">Hi {client_name}, your meeting request has been approved.</p>
+<p style="color:rgba(255,255,255,0.6);font-size:15px;margin:0 0 24px;text-align:center;">Hi {client_name}, the meeting is booked and please make sure to check it in the google calendar.</p>
 {_meeting_card(meeting.get('title','Meeting'), meeting.get('date','TBD'), meeting.get('time','TBD'), meeting.get('type','Session'), meeting.get('duration','60 mins'), meeting.get('priority','normal'))}
 {meet_section}
 {_cta_button("Add to Calendar", "#", "#6ee7b7")}"""

@@ -43,3 +43,14 @@ frontend/.env.production.local
 # OS
 .DS_Store
 Thumbs.db
+
+# Virtual environments
+.venv/
+backend/.venv/
+
+# Google secrets and token files
+backend/token.json
+client_secret_*.json
+backend/graphify/
+
+

@@ -1125,19 +1125,19 @@ Ready to launch Phase 3 during your next call!`
                   <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                        <label style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
                           Full Name <span style={{ color: 'var(--color-red)' }}>*</span>
                         </label>
                         <input type="text" className="input-premium" value={profileName} onChange={(e) => setProfileName(e.target.value)} required />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                        <label style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
                           Phone Number <span style={{ color: 'var(--color-red)' }}>*</span>
                         </label>
                         <input type="text" className="input-premium" value={profilePhone} onChange={(e) => setProfilePhone(e.target.value)} placeholder="+91 XXXXX XXXXX" required />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                        <label style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
                           Company <span style={{ color: 'var(--color-red)' }}>*</span>
                         </label>
                         <input type="text" className="input-premium" value={profileCompany} onChange={(e) => setProfileCompany(e.target.value)} placeholder="e.g. Sisu Enterprises" required />
@@ -1170,15 +1170,15 @@ Ready to launch Phase 3 during your next call!`
                   <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20 }}>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Current Password</label>
+                        <label style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Current Password</label>
                         <input type="password" className="input-premium" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>New Password</label>
+                        <label style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>New Password</label>
                         <input type="password" className="input-premium" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Confirm New Password</label>
+                        <label style={{ fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', display: 'block', marginBottom: 8, letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Confirm New Password</label>
                         <input type="password" className="input-premium" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                       </div>
                     </div>
@@ -1221,7 +1221,7 @@ Ready to launch Phase 3 during your next call!`
                     {/* LEFT SIDE: INPUT FORM FIELDS */}
                     <div className="booking-form-side">
                       <div>
-                        <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 800, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>1. Agenda</label>
+                        <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontWeight: 800, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>1. Agenda</label>
                         <input
                           className="input-premium"
                           type="text"
@@ -1233,7 +1233,7 @@ Ready to launch Phase 3 during your next call!`
 
                       <div className="apple-form-header-grid">
                         <div>
-                          <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 800, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>2. Duration</label>
+                          <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontWeight: 800, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>2. Duration</label>
                           <select className="input-premium" value={sessionType.id} onChange={(e) => handleSelectType(SESSION_TYPES.find(s => s.id === e.target.value))} style={{ appearance: 'none', cursor: 'pointer' }}>
                             {SESSION_TYPES.map(t => (
                               <option key={t.id} value={t.id} style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>{t.label} {t.id === 'custom' ? '' : `(${t.duration} mins)`}</option>
@@ -1242,7 +1242,7 @@ Ready to launch Phase 3 during your next call!`
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 800, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>3. Channel</label>
+                          <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontWeight: 800, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>3. Channel</label>
                           <select className="input-premium" value={meetType} onChange={(e) => setMeetType(e.target.value)} style={{ appearance: 'none', cursor: 'pointer' }}>
                             <option value="video" style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>Google Meet (Online Video)</option>
                             <option value="in_person" style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>Spi Edge (Inoffice Meet)</option>
@@ -1250,7 +1250,7 @@ Ready to launch Phase 3 during your next call!`
                           </select>
                           {meetType === 'custom_location' && (
                             <div style={{ marginTop: 12 }}>
-                              <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 800, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Address / Location Name *</label>
+                              <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontWeight: 800, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Address / Location Name *</label>
                               <input
                                 type="text"
                                 className="input-premium"
@@ -1265,7 +1265,7 @@ Ready to launch Phase 3 during your next call!`
                       </div>
 
                       <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 20 }}>
-                        <label style={{ display: 'block', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 800, marginBottom: 12, fontFamily: 'var(--font-mono)' }}>4. Select Coaching Date & Time Slot</label>
+                        <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontWeight: 800, marginBottom: 12, fontFamily: 'var(--font-mono)' }}>4. Select Coaching Date & Time Slot</label>
                         
                         <div className="apple-calendar-grid-container">
                           
@@ -1290,7 +1290,7 @@ Ready to launch Phase 3 during your next call!`
                               ) : sessionType.id === 'custom' ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '4px' }}>
                                   <div>
-                                    <label style={{ display: 'block', fontSize: 10, color: 'var(--color-text-muted)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase' }}>Custom Time (IST)</label>
+                                    <label style={{ display: 'block', fontSize: 14, color: 'var(--color-accent)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase' }}>Custom Time (IST)</label>
                                     <input
                                       type="text"
                                       className="input-premium"
@@ -1354,7 +1354,7 @@ Ready to launch Phase 3 during your next call!`
                       <div className="glass-premium" style={{ borderRadius: 'var(--radius-lg)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
                         <div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                            <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>5. Description</label>
+                            <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>5. Description</label>
                             <span style={{ fontSize: 10, color: (description || '').length >= 500 ? 'var(--color-red)' : 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
                               {(description || '').length}/500
                             </span>
@@ -1370,7 +1370,7 @@ Ready to launch Phase 3 during your next call!`
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-muted)', fontWeight: 700, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>
+                          <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontWeight: 700, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>
                             6. Phone Number <span style={{ color: 'var(--color-red)' }}>*</span>
                           </label>
                           <input

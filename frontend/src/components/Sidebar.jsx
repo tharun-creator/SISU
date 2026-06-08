@@ -53,7 +53,7 @@ export default function Sidebar({ notifCount = 0, active, onClose }) {
 
         {/* Role badge for Admin */}
         {isAdmin && (
-          <div style={{ margin: '0 24px 20px 24px', padding: '6px 12px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.15)', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ margin: '0 24px 20px 24px', padding: '6px 12px', background: 'rgba(26, 107, 74, 0.08)', border: '1px solid rgba(26, 107, 74, 0.15)', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-accent)' }} />
             <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.5px', fontFamily: 'var(--font-mono)' }}>Admin Control</span>
           </div>

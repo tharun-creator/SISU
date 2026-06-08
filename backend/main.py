@@ -236,6 +236,7 @@ def meeting_to_dict(m: Meeting) -> dict:
         "client_id": m.client_id,
         "client_name": m.client.name if m.client else "Unknown",
         "client_email": m.client.email if m.client else "",
+        "client_is_priority": getattr(m.client, "is_priority", False) if m.client else False,
         "title": m.title,
         "description": m.description,
         "reason": m.reason,
@@ -501,12 +502,12 @@ async def forgot_password(req: ForgotPasswordRequest, request: Request, backgrou
         print(f" RESET LINK: {reset_link}")
         print("="*80 + "\n")
         
-        # Send password reset email
+        # Send password reset email synchronously
         user_agent = request.headers.get("user-agent")
-        background_tasks.add_task(
-            email_service.send_password_reset,
-            user.email, user.name, reset_link, ip, user_agent
-        )
+        try:
+            email_service.send_password_reset(user.email, user.name, reset_link, ip, user_agent)
+        except Exception as email_err:
+            print(f"[Email Send Error] {email_err}")
         
         log_security_event(db, ip, email_clean, "forgot_password_success", "Token generated and sent", request=request)
     else:
@@ -561,11 +562,11 @@ async def reset_password(req: ResetPasswordRequest, request: Request, background
     user_agent = request.headers.get("user-agent")
     log_security_event(db, ip, user.email, "reset_password_success", "Password reset successfully", request=request)
     
-    # Dispatch confirmation email
-    background_tasks.add_task(
-        email_service.send_password_changed,
-        user.email, user.name, ip, user_agent
-    )
+    # Dispatch confirmation email synchronously
+    try:
+        email_service.send_password_changed(user.email, user.name, ip, user_agent)
+    except Exception as email_err:
+        print(f"[Email Send Error] {email_err}")
     
     return {"detail": "Your password has been reset successfully."}
 
@@ -792,10 +793,10 @@ async def create_meeting(
         "duration": f"{meeting.duration_minutes} mins",
         "priority": meeting.priority,
     }
-    background_tasks.add_task(
-        email_service.send_booking_received,
-        current_user.email, current_user.name, meeting_dict
-    )
+    try:
+        email_service.send_booking_received(current_user.email, current_user.name, meeting_dict)
+    except Exception as email_err:
+        print(f"[Email Send Error] {email_err}")
     create_notification(
         db, current_user.id, "booking_received",
         "Meeting request submitted",
@@ -864,9 +865,12 @@ async def cancel_meeting(
 
     log_status_change(db, meeting.id, old_status, "cancelled", current_user.email)
 
-    # Delete from Google Calendar
+    # Delete from Google Calendar synchronously
     if meeting.google_event_id:
-        background_tasks.add_task(calendar_service.delete_event, meeting.google_event_id)
+        try:
+            calendar_service.delete_event(meeting.google_event_id)
+        except Exception as e:
+            print(f"[Calendar Delete Error] {e}")
 
     client = db.query(User).filter(User.id == meeting.client_id).first()
     if client:
@@ -877,12 +881,10 @@ async def cancel_meeting(
             "type": meeting.meeting_type,
             "duration": f"{meeting.duration_minutes} mins",
         }
-        background_tasks.add_task(email_service.send_cancellation, client.email, client.name, meeting_dict)
-        # Sync cancellation to Zapier/Calendar
-        background_tasks.add_task(
-            meeting_booking_service.trigger_zapier_cancellation, 
-            meeting.id, meeting.google_event_id, meeting.title, client.email
-        )
+        try:
+            email_service.send_cancellation(client.email, client.name, meeting_dict)
+        except Exception as email_err:
+            print(f"[Email Send Error] {email_err}")
         create_notification(db, client.id, "cancelled", "Meeting cancelled", f"Your meeting '{meeting.title}' has been cancelled.", meeting.id)
 
     return {"message": "Meeting cancelled"}
@@ -991,75 +993,56 @@ async def client_confirm_reschedule(
     local_start = to_local(meeting.start_time)
 
     if meeting.google_event_id:
-        background_tasks.add_task(
-            calendar_service.update_event,
-            meeting.google_event_id,
-            start=meeting.start_time,
-            end=meeting.end_time,
-        )
-    else:
-        # Sync directly with Google Calendar immediately
         try:
-            event = calendar_service.create_event_direct(
-                title=meeting.title,
-                description=meeting.description or "Mentorship session booked on Sisu",
+            calendar_service.update_event(
+                meeting.google_event_id,
                 start=meeting.start_time,
                 end=meeting.end_time,
-                attendees=[client_email],
-                meeting_id=str(meeting.id),
-                preferred_communication=meeting.preferred_communication
             )
-            if event:
-                meeting.google_event_id = event.get("id")
-                meet_link = None
-                if event.get("conferenceData") and event["conferenceData"].get("entryPoints"):
-                    for ep in event["conferenceData"]["entryPoints"]:
-                        if ep.get("entryPointType") == "video":
-                            meet_link = ep.get("uri")
-                            break
-                if meet_link:
-                    meeting.meet_link = meet_link
         except Exception as cal_err:
-            print(f"[Calendar Direct Sync Error] {cal_err}")
+            print(f"[Calendar Update Error] {cal_err}")
+            
+        # Send rescheduled confirmation email via Resend
+        try:
+            new_dict = {
+                "title": meeting.title,
+                "date": local_start.strftime("%B %d, %Y"),
+                "time": f"{local_start.strftime('%I:%M %p')} IST",
+                "type": meeting.meeting_type,
+                "duration": f"{meeting.duration_minutes} mins",
+            }
+            old_dict = {
+                "title": meeting.title,
+                "date": "Previously Scheduled Time",
+                "time": "Previous Slot",
+                "type": meeting.meeting_type,
+                "duration": f"{meeting.duration_minutes} mins",
+            }
+            email_service.send_meeting_rescheduled(
+                client_email, client_name, old_dict, new_dict
+            )
+        except Exception as email_err:
+            print(f"[Email Send Error] {email_err}")
+    else:
+        # Create Google Calendar event and send Gmail confirmation
+        try:
+            res = meeting_booking_service.handle_approved_meeting_native(meeting, client_name, client_email)
+            if res.get("success"):
+                meeting.google_event_id = res.get("google_event_id")
+                meeting.meet_link = res.get("meet_link")
+                db.commit()
+                db.refresh(meeting)
+            else:
+                print(f"[Google Reschedule Sync Error] Direct sync returned failure: {res.get('error')}")
+        except Exception as err:
+            print(f"[Google Reschedule Sync Error] Direct sync failed: {err}")
 
     db.commit()
     log_status_change(db, meeting.id, old_status, "rescheduled", current_user.email)
 
-    # Send rescheduled confirmation email
-    try:
-        new_dict = {
-            "title": meeting.title,
-            "date": local_start.strftime("%B %d, %Y"),
-            "time": f"{local_start.strftime('%I:%M %p')} IST",
-            "type": meeting.meeting_type,
-            "duration": f"{meeting.duration_minutes} mins",
-        }
-        old_dict = {
-            "title": meeting.title,
-            "date": "Previously Scheduled Time",
-            "time": "Previous Slot",
-            "type": meeting.meeting_type,
-            "duration": f"{meeting.duration_minutes} mins",
-        }
-        background_tasks.add_task(
-            email_service.send_meeting_rescheduled,
-            client_email, client_name, old_dict, new_dict
-        )
-    except Exception as email_err:
-        print(f"[Email Send Error] {email_err}")
-
-    # Trigger Zapier webhook
-    try:
-        background_tasks.add_task(
-            meeting_booking_service.trigger_zapier_for_approved_meeting,
-            meeting, client_name, client_email
-        )
-    except Exception as zap_err:
-        print(f"[Zapier Send Error] {zap_err}")
-
     # Create notification for client
     create_notification(
-        db, current_user.id, "rescheduled", "Meeting Reschedule Confirmed! 🎉",
+        db, current_user.id, "rescheduled", "Meeting Reschedule Confirmed! ",
         f"Your meeting '{meeting.title}' has been successfully locked in for {local_start.strftime('%B %d at %I:%M %p')} IST.",
         meeting.id
     )
@@ -1224,6 +1207,25 @@ async def admin_delete_user(
     db.commit()
     return {"message": "User successfully deleted"}
 
+class UserPriorityUpdateRequest(BaseModel):
+    is_priority: bool
+
+@app.put("/api/admin/users/{user_id}/priority")
+async def admin_update_user_priority(
+    user_id: int,
+    req: UserPriorityUpdateRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user.is_priority = req.is_priority
+    db.commit()
+    db.refresh(user)
+    return {"message": "User priority status updated", "user": auth.user_to_dict(user)}
+
 # ── Admin Calendar Signaling Endpoints ──
 
 @app.get("/api/availability/calendar-signals")
@@ -1304,7 +1306,6 @@ async def admin_update_meeting_status(
 
             # If it's specifically a reschedule (not just an approval with a minor tweak)
             if req.status == "rescheduled":
-                # Do NOT sync directly to calendar or send final rescheduled emails yet.
                 # We send the reschedule proposed notification and email to client.
                 client = db.query(User).filter(User.id == meeting.client_id).first()
                 if client:
@@ -1312,7 +1313,10 @@ async def admin_update_meeting_status(
                     local_new = to_local(new_start)
                     old_dict = {"title": meeting.title, "date": local_old.strftime("%B %d, %Y"), "time": f"{local_old.strftime('%I:%M %p')} IST", "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
                     new_dict = {"title": meeting.title, "date": local_new.strftime("%B %d, %Y"), "time": f"{local_new.strftime('%I:%M %p')} IST", "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
-                    background_tasks.add_task(email_service.send_reschedule_proposed, client.email, client.name, old_dict, new_dict)
+                    try:
+                        email_service.send_reschedule_proposed(client.email, client.name, old_dict, new_dict)
+                    except Exception as email_err:
+                        print(f"[Email Send Error] {email_err}")
                     create_notification(db, client.id, "reschedule_proposed", "Reschedule Proposed", f"Admin proposed to reschedule '{meeting.title}' to {local_new.strftime('%B %d at %I:%M %p')} IST.", meeting.id)
 
     db.commit()
@@ -1338,73 +1342,32 @@ async def admin_update_meeting_status(
         # Mark the original availability slot as booked in the DB
         meeting_booking_service.mark_slot_as_booked(db, meeting.start_time, meeting.end_time)
 
-        # Sync directly with Google Calendar immediately
+        # Call direct Google integration (Calendar + Gmail confirmation) synchronously
         try:
-            print(f"[Calendar Direct Sync] Approving meeting #{meeting.id} - Title: '{meeting.title}'")
-            print(f"  Start Time (DB naive): {meeting.start_time}")
-            print(f"  End Time (DB naive): {meeting.end_time}")
-            print(f"  Start Time (IST local): {local_start.isoformat()}")
-            print(f"  Attendees: {[client.email]}")
-            event = calendar_service.create_event_direct(
-                title=meeting.title,
-                description=meeting.description or "Mentorship session booked on Sisu",
-                start=meeting.start_time,
-                end=meeting.end_time,
-                attendees=[client.email],
-                meeting_id=str(meeting.id),
-                preferred_communication=meeting.preferred_communication
-            )
-            if event:
-                meeting.google_event_id = event.get("id")
-                meet_link = None
-                if event.get("conferenceData") and event["conferenceData"].get("entryPoints"):
-                    for ep in event["conferenceData"]["entryPoints"]:
-                        if ep.get("entryPointType") == "video":
-                            meet_link = ep.get("uri")
-                            break
-                if meet_link:
-                    meeting.meet_link = meet_link
+            print(f"[Google Sync] Approving meeting #{meeting.id} - Title: '{meeting.title}'")
+            res = meeting_booking_service.handle_approved_meeting_native(meeting, client.name, client.email)
+            if res.get("success"):
+                meeting.google_event_id = res.get("google_event_id")
+                meeting.meet_link = res.get("meet_link")
                 db.commit()
                 db.refresh(meeting)
-        except Exception as cal_err:
-            print(f"[Calendar Direct Sync Error] {cal_err}")
+            else:
+                print(f"[Google Sync Error] Direct sync returned failure: {res.get('error')}")
+        except Exception as err:
+            print(f"[Google Sync Error] Direct sync failed: {err}")
 
-        # Send approved email with updated details
-        try:
-            fresh_dict = {
-                "title": meeting.title,
-                "date": local_start.strftime("%B %d, %Y"),
-                "time": f"{local_start.strftime('%I:%M %p')} IST",
-                "type": meeting.meeting_type,
-                "duration": f"{meeting.duration_minutes} mins",
-            }
-            background_tasks.add_task(
-                email_service.send_meeting_approved,
-                client.email, client.name, fresh_dict, meeting.meet_link or ""
-            )
-        except Exception as email_err:
-            print(f"[Email Send Error] {email_err}")
-
-        # Trigger Zapier webhook for approved meeting
-        try:
-            background_tasks.add_task(
-                meeting_booking_service.trigger_zapier_for_approved_meeting,
-                meeting, client.name, client.email
-            )
-        except Exception as zap_err:
-            print(f"[Zapier Send Error] {zap_err}")
-
-        create_notification(db, client.id, "approved", "Meeting Approved! 🎉", f"Your meeting '{meeting.title}' has been confirmed for {local_start.strftime('%B %d at %I:%M %p')}.", meeting.id)
+        create_notification(db, client.id, "approved", "Meeting Approved! 🎉", f"Your meeting '{meeting.title}' has been confirmed for {local_start.strftime('%B %d at %I:%M %p')}. The meeting is booked and please make sure to check it in the google calendar.", meeting.id)
 
     elif req.status == "rejected":
         if meeting.google_event_id:
-            background_tasks.add_task(calendar_service.delete_event, meeting.google_event_id)
-        # Sync rejection/cancellation to Zapier too
-        background_tasks.add_task(
-            meeting_booking_service.trigger_zapier_cancellation, 
-            meeting.id, meeting.google_event_id, meeting.title, client.email
-        )
-        background_tasks.add_task(email_service.send_meeting_rejected, client.email, client.name, meeting_dict, req.admin_notes or "")
+            try:
+                calendar_service.delete_event(meeting.google_event_id)
+            except Exception as e:
+                print(f"[Calendar Direct Delete Error] {e}")
+        try:
+            email_service.send_meeting_rejected(client.email, client.name, meeting_dict, req.admin_notes or "")
+        except Exception as email_err:
+            print(f"[Email Send Error] {email_err}")
         create_notification(db, client.id, "rejected", "Meeting Request Declined", f"Your request for '{meeting.title}' was not approved. You may submit a new request.", meeting.id)
 
     return meeting_to_dict(meeting)
@@ -1751,20 +1714,39 @@ async def schedule_meeting(
     if end_dt <= start_dt:
         return JSONResponse(status_code=400, content={"success": False, "error": "end_time must be after start_time", "code": "VALIDATION_ERROR"})
         
-    webhook_payload = {
-        "title": payload.title,
-        "start_time": start_dt.astimezone(IST).isoformat(),
-        "end_time": end_dt.astimezone(IST).isoformat(),
-        "attendee_email": payload.attendee_email,
-        "attendee_name": payload.attendee_name or payload.attendee_email.split("@")[0],
-        "google_meet": payload.google_meet
-    }
+    import google_integration
+    attendee_name = payload.attendee_name or payload.attendee_email.split("@")[0]
+    start_ist = start_dt.astimezone(IST)
+    end_ist = end_dt.astimezone(IST)
+    
+    start_iso = start_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30")
+    end_iso = end_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30")
     
     try:
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, send_zapier_webhook_sync, webhook_payload)
+        cal_resp = google_integration.create_calendar_event(
+            title=payload.title,
+            description=payload.description or "",
+            start_iso=start_iso,
+            end_iso=end_iso,
+            attendee_email=payload.attendee_email,
+            attendee_name=attendee_name
+        )
+        if not cal_resp.get("success"):
+            return JSONResponse(status_code=500, content={"success": False, "error": cal_resp.get("error"), "code": "CALENDAR_CREATION_FAILED"})
+            
+        mail_resp = google_integration.send_gmail_confirmation(
+            title=payload.title,
+            description=payload.description or "",
+            attendee_email=payload.attendee_email,
+            attendee_name=attendee_name,
+            meet_link=cal_resp.get("meet_link") or "",
+            calendar_link=cal_resp.get("calendar_link") or ""
+        )
+        if not mail_resp.get("success"):
+            print(f"[schedule_meeting] Failed to send Gmail confirmation: {mail_resp.get('error')}")
+            
     except Exception as e:
-        return JSONResponse(status_code=500, content={"success": False, "error": str(e), "code": "WEBHOOK_FAILED"})
+        return JSONResponse(status_code=500, content={"success": False, "error": str(e), "code": "SYNC_FAILED"})
         
     return {
         "success": True,

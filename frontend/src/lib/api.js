@@ -102,6 +102,7 @@ export const api = {
   adminPromoteUser: (data) => request('/api/admin/users/promote', { method: 'POST', body: JSON.stringify(data) }),
   adminDemoteUser: (data) => request('/api/admin/users/demote', { method: 'POST', body: JSON.stringify(data) }),
   adminUpdateUserStatus: (id, data) => request(`/api/admin/users/${id}/status`, { method: 'PUT', body: JSON.stringify(data) }),
+  adminUpdateUserPriority: (id, data) => request(`/api/admin/users/${id}/priority`, { method: 'PUT', body: JSON.stringify(data) }),
   adminDeleteUser: (id) => request(`/api/admin/users/${id}`, { method: 'DELETE' }),
   getCalendarSignals: () => request('/api/availability/calendar-signals'),
   adminSetDateSignal: (data) => request('/api/admin/availability/date-signal', { method: 'POST', body: JSON.stringify(data) }),

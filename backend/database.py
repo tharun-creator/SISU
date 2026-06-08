@@ -130,6 +130,7 @@ class User(Base):
     timezone = Column(String(100), default="Asia/Kolkata")
     phone = Column(String(50), nullable=True)
     is_active = Column(Boolean, default=True)
+    is_priority = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
@@ -288,6 +289,25 @@ try:
                 conn.commit()
 except Exception as e:
     print(f"Error checking/migrating password_reset_tokens: {e}")
+
+# Self-migrating database logic: ensure users table has 'is_priority' column
+try:
+    from sqlalchemy import inspect, text
+    inspector = inspect(engine)
+    if "users" in inspector.get_table_names():
+        columns = [col["name"] for col in inspector.get_columns("users")]
+        if "is_priority" not in columns:
+            print("Adding 'is_priority' column to users table...")
+            with engine.connect() as conn:
+                dialect = engine.url.drivername
+                if "mysql" in dialect:
+                    conn.execute(text("ALTER TABLE users ADD COLUMN is_priority TINYINT(1) NOT NULL DEFAULT 0"))
+                else:
+                    conn.execute(text("ALTER TABLE users ADD COLUMN is_priority BOOLEAN NOT NULL DEFAULT 0"))
+                conn.commit()
+            print("Successfully added 'is_priority' column to users table!")
+except Exception as e:
+    print(f"Error checking/migrating users table for is_priority: {e}")
 
 # Create all tables
 Base.metadata.create_all(bind=engine)

@@ -153,7 +153,7 @@ export default function AdminCalendarSlotsPage() {
           )}
         </AnimatePresence>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 28, position: 'relative', zIndex: 1 }}>
+        <div className="calendar-dashboard-grid" style={{ position: 'relative', zIndex: 1 }}>
           {/* Left Side: Big Calendar */}
           <div className="glass-premium" style={{ padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -268,7 +268,7 @@ export default function AdminCalendarSlotsPage() {
             </div>
 
             {/* Legend */}
-            <div style={{ display: 'flex', gap: 20, marginTop: 24, padding: 14, background: 'rgba(255,255,255,0.01)', border: '1px solid var(--color-border)', borderRadius: 12 }}>
+            <div style={{ display: 'flex', gap: 20, marginTop: 24, padding: 14, background: 'rgba(255,255,255,0.01)', border: '1px solid var(--color-border)', borderRadius: 12, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#84cc16' }} />
                 <span style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>Green (Available)</span>
@@ -412,6 +412,18 @@ export default function AdminCalendarSlotsPage() {
       </div>
 
       <style>{`
+        .calendar-dashboard-grid {
+          display: grid;
+          grid-template-columns: 1.4fr 1fr;
+          gap: 28px;
+        }
+
+        @media (max-width: 1024px) {
+          .calendar-dashboard-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
         .admin-cal-btn:hover {
           background: rgba(255, 255, 255, 0.02) !important;
           border-color: var(--color-border-hover) !important;

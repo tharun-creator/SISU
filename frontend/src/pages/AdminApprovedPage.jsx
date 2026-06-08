@@ -229,15 +229,38 @@ export default function AdminApprovedPage() {
                       key={m.id} 
                       className="admin-table-row"
                       onClick={() => setSelectedMeeting(m)}
-                      style={{ cursor: 'pointer', borderBottom: '1px solid var(--color-border)', transition: 'var(--transition-fast)' }}
+                      style={{ 
+                        cursor: 'pointer', 
+                        borderBottom: '1px solid var(--color-border)', 
+                        transition: 'var(--transition-fast)',
+                        background: m.client_is_priority ? 'rgba(234, 179, 8, 0.03)' : 'transparent'
+                      }}
                     >
                       <td style={{ padding: '16px 20px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: 'white', flexShrink: 0 }}>
+                          <div style={{ 
+                            width: 34, 
+                            height: 34, 
+                            background: m.client_is_priority ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' : 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', 
+                            borderRadius: '50%', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            fontSize: 12, 
+                            fontWeight: 800, 
+                            color: 'white', 
+                            flexShrink: 0,
+                            boxShadow: m.client_is_priority ? '0 2px 10px rgba(234, 179, 8, 0.2)' : '0 2px 10px rgba(59, 130, 246, 0.2)'
+                          }}>
                             {m.client_name?.charAt(0) || '?'}
                           </div>
                           <div>
-                            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)' }}>{m.client_name}</p>
+                            <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                              {m.client_name}
+                              {m.client_is_priority && (
+                                <span style={{ fontSize: 8.5, padding: '1px 5px', background: 'rgba(234, 179, 8, 0.1)', color: '#eab308', border: '1px solid rgba(234, 179, 8, 0.15)', borderRadius: 4, fontWeight: 800, fontFamily: 'var(--font-mono)' }}>⭐ PRIORITY</span>
+                              )}
+                            </p>
                             <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{m.client_email}</p>
                           </div>
                         </div>

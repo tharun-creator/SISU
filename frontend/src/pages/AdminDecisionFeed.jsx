@@ -307,9 +307,9 @@ export default function AdminDecisionFeed() {
                         width: '100%',
                         height: '100%',
                         borderRadius: 24,
-                        background: 'var(--color-surface-2)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        boxShadow: isTop ? 'var(--shadow-xl), 0 10px 40px rgba(0,0,0,0.3)' : 'var(--shadow-md)',
+                        background: meeting.client_is_priority ? 'linear-gradient(to bottom, rgba(234, 179, 8, 0.03), var(--color-surface-2))' : 'var(--color-surface-2)',
+                        border: meeting.client_is_priority ? '1px solid rgba(234, 179, 8, 0.25)' : '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: isTop ? (meeting.client_is_priority ? 'var(--shadow-xl), 0 10px 40px rgba(234, 179, 8, 0.15)' : 'var(--shadow-xl), 0 10px 40px rgba(0,0,0,0.3)') : 'var(--shadow-md)',
                         padding: 28,
                         display: 'flex',
                         flexDirection: 'column',
@@ -318,8 +318,23 @@ export default function AdminDecisionFeed() {
                         overflow: 'hidden'
                       }}
                     >
+                      {/* Card Accent Glow based on priority */}
+                      <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: 4,
+                        background: meeting.client_is_priority
+                          ? 'linear-gradient(90deg, #eab308 0%, #ca8a04 100%)'
+                          : (meeting.priority === 'urgent' || meeting.priority === 'high' 
+                              ? 'linear-gradient(90deg, var(--color-red) 0%, var(--color-accent-orange) 100%)'
+                              : 'linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)'),
+                        zIndex: 1
+                      }} />
+
                       {/* Card Content Wrapper */}
-                      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', zIndex: 2 }}>
                         
                         {/* Header Details */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
@@ -327,7 +342,7 @@ export default function AdminDecisionFeed() {
                             <div style={{ 
                               width: 42, 
                               height: 42, 
-                              background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', 
+                              background: meeting.client_is_priority ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' : 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)', 
                               borderRadius: '50%', 
                               display: 'flex', 
                               alignItems: 'center', 
@@ -335,12 +350,29 @@ export default function AdminDecisionFeed() {
                               fontSize: 14, 
                               fontWeight: 800, 
                               color: 'white',
-                              boxShadow: '0 4px 14px rgba(59, 130, 246, 0.25)' 
+                              boxShadow: meeting.client_is_priority ? '0 4px 14px rgba(234, 179, 8, 0.25)' : '0 4px 14px rgba(59, 130, 246, 0.25)' 
                             }}>
                               {meeting.client_name?.charAt(0).toUpperCase() || '?'}
                             </div>
                             <div>
-                              <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 2 }}>{meeting.client_name}</h4>
+                              <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                                {meeting.client_name}
+                                {meeting.client_is_priority && (
+                                  <span style={{
+                                    fontSize: 8.5,
+                                    fontWeight: 800,
+                                    padding: '1px 5px',
+                                    borderRadius: 6,
+                                    background: 'rgba(234, 179, 8, 0.08)',
+                                    color: '#eab308',
+                                    border: '1px solid rgba(234, 179, 8, 0.15)',
+                                    fontFamily: 'var(--font-mono)',
+                                    textTransform: 'uppercase'
+                                  }}>
+                                    ⭐ Priority
+                                  </span>
+                                )}
+                              </h4>
                               <p style={{ fontSize: 11, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
                                 <span>{meeting.client_email}</span>
                                 {meeting.phone && meeting.phone !== 'N/A' && (
@@ -435,6 +467,14 @@ export default function AdminDecisionFeed() {
                                   <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 4, fontFamily: 'var(--font-mono)' }}>Reason / Business Goals:</span>
                                   <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.5, fontStyle: 'italic' }}>
                                     "{meeting.reason}"
+                                  </p>
+                                </div>
+                              )}
+                              {meeting.description && meeting.description !== 'Booked via Executive Mentorship Workspace' && (
+                                <div style={{ marginTop: 8, borderLeft: '2px solid var(--color-accent)', paddingLeft: 8 }}>
+                                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 4, fontFamily: 'var(--font-mono)' }}>Description:</span>
+                                  <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                                    {meeting.description}
                                   </p>
                                 </div>
                               )}

@@ -124,13 +124,13 @@ def book_meeting(title: str, start_time_str: str, reason: Optional[str] = None, 
                 Meeting.deleted_at == None,
             ).first()
             if existing:
-                return f"⚠️ You already have a booking at this time! Meeting ID: {existing.id} (Status: {existing.status})."
+                return f" You already have a booking at this time! Meeting ID: {existing.id} (Status: {existing.status})."
                 
             # Conflict check
             if not meeting_booking_service.check_slot_available(db, start, end):
                 alternatives = meeting_booking_service.find_next_available_slots(db, start, duration_minutes=60, count=3)
                 alt_texts = [f"{a['display_time']} on {a['display_date']}" for a in alternatives]
-                return f"❌ Conflicting Slot: This slot is already booked. Here are some alternative slots:\n" + "\n".join(alt_texts)
+                return f" Conflicting Slot: This slot is already booked. Here are some alternative slots:\n" + "\n".join(alt_texts)
                 
             # Create meeting
             meeting = Meeting(
@@ -265,7 +265,7 @@ def cancel_my_meeting(meeting_id: int) -> str:
             db.add(notif)
             db.commit()
             
-            # Delete from Google Calendar / Zapier
+            # Delete from Google Calendar synchronously
             if meeting.google_event_id:
                 try:
                     import calendar_service
@@ -273,13 +273,6 @@ def cancel_my_meeting(meeting_id: int) -> str:
                 except Exception as cal_err:
                     print(f"[Calendar Error in Chatbot Cancel] {cal_err}")
                     
-            try:
-                meeting_booking_service.trigger_zapier_cancellation(
-                    meeting.id, meeting.google_event_id or "", meeting.title, user.email
-                )
-            except Exception as zap_err:
-                print(f"[Zapier Error in Chatbot Cancel] {zap_err}")
-                
             try:
                 meeting_dict = {
                     "title": meeting.title,
@@ -292,7 +285,7 @@ def cancel_my_meeting(meeting_id: int) -> str:
             except Exception as email_err:
                 print(f"[Email Error in Chatbot Cancel] {email_err}")
                 
-            return f"🗑️ Meeting ID #{meeting_id} (\"{meeting.title}\") has been successfully cancelled. A cancellation email has been sent to {user.email}."
+            return f" Meeting ID #{meeting_id} (\"{meeting.title}\") has been successfully cancelled. A cancellation email has been sent to {user.email}."
             
     except Exception as e:
         return f"Error cancelling meeting: {str(e)}"
@@ -335,7 +328,7 @@ def reschedule_my_meeting(meeting_id: int, new_start_time_str: str, reason: Opti
             if not meeting_booking_service.check_slot_available(db, start, end, exclude_meeting_id=meeting.id):
                 alternatives = meeting_booking_service.find_next_available_slots(db, start, duration_minutes=meeting.duration_minutes or 60, count=3)
                 alt_texts = [f"{a['display_time']} on {a['display_date']}" for a in alternatives]
-                return f"❌ Conflict: The proposed time conflicts with an existing booking. Here are some alternatives:\n" + "\n".join(alt_texts)
+                return f" Conflict: The proposed time conflicts with an existing booking. Here are some alternatives:\n" + "\n".join(alt_texts)
                 
             old_status = meeting.status
             old_start = meeting.start_time
@@ -383,7 +376,7 @@ def reschedule_my_meeting(meeting_id: int, new_start_time_str: str, reason: Opti
             db.commit()
             
             return (
-                f"🔄 Reschedule requested successfully!\n"
+                f" Reschedule requested successfully!\n"
                 f"- **Meeting ID**: {meeting.id}\n"
                 f"- **Proposed New Time**: {start.strftime('%B %d, %Y at %I:%M %p')} IST\n"
                 f"- **Status**: Pending Admin Confirmation\n\n"

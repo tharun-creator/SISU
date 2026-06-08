@@ -221,12 +221,12 @@ export default function BookingPage() {
                   <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4, fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)' }}>Meeting Information</h2>
                   
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Meeting Title *</label>
+                    <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Meeting Title *</label>
                     <input className="input-premium" placeholder="e.g. Q4 Growth Strategy Discussion" value={form.title} onChange={(e) => field('title', e.target.value)} required />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Meeting Type *</label>
+                    <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Meeting Type *</label>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8 }}>
                       {MEETING_TYPES.map(t => (
                         <button key={t} type="button" onClick={() => field('meeting_type', t)} style={{ padding: '10px 8px', borderRadius: 10, border: `1px solid ${form.meeting_type === t ? 'rgba(59, 130, 246, 0.4)' : 'var(--color-border)'}`, background: form.meeting_type === t ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)', color: form.meeting_type === t ? 'var(--color-accent)' : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'var(--transition-fast)', textAlign: 'center' }}>
@@ -237,8 +237,8 @@ export default function BookingPage() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Priority</label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                    <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Priority</label>
+                    <div className="layout-grid grid-cols-3" style={{ gap: 8 }}>
                       {PRIORITIES.map(p => {
                         const colors = { low: 'var(--color-green)', medium: 'var(--color-accent)', high: 'var(--color-accent-orange)' };
                         const c = colors[p];
@@ -252,17 +252,17 @@ export default function BookingPage() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Reason for Meeting</label>
+                    <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Reason for Meeting</label>
                     <textarea className="input-premium" placeholder="Briefly describe why you'd like this meeting..." value={form.reason} onChange={(e) => field('reason', e.target.value)} style={{ minHeight: 90 }} />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Additional Details</label>
+                    <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Additional Details</label>
                     <textarea className="input-premium" placeholder="Any context, agenda items, or documents to share..." value={form.description} onChange={(e) => field('description', e.target.value)} style={{ minHeight: 90 }} />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Preferred Communication</label>
+                    <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Preferred Communication</label>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       {COMM_METHODS.map(m => (
                         <button key={m} type="button" onClick={() => field('preferred_communication', m)} style={{ padding: '8px 16px', borderRadius: 100, border: `1px solid ${form.preferred_communication === m ? 'rgba(59, 130, 246, 0.4)' : 'var(--color-border)'}`, background: form.preferred_communication === m ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)', color: form.preferred_communication === m ? 'var(--color-accent)' : 'var(--color-text-secondary)', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'var(--transition-fast)' }}>
@@ -280,12 +280,12 @@ export default function BookingPage() {
                   <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4, fontFamily: 'var(--font-heading)', color: 'var(--color-text-primary)' }}>Choose Date & Time</h2>
                   
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Preferred Date & Time *</label>
+                    <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Preferred Date & Time *</label>
                     <input className="input-premium" type="datetime-local" value={form.start_time} onChange={(e) => handleStartTimeChange(e.target.value)} required min={new Date().toISOString().slice(0, 16)} />
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Duration</label>
+                    <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Duration</label>
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                       {DURATIONS.map(d => (
                         <button key={d} type="button" onClick={() => handleDurationChange(d)} style={{ padding: '10px 20px', borderRadius: 100, border: `1px solid ${form.duration_minutes === d ? 'rgba(59, 130, 246, 0.4)' : 'var(--color-border)'}`, background: form.duration_minutes === d ? 'rgba(59, 130, 246, 0.12)' : 'rgba(255,255,255,0.02)', color: form.duration_minutes === d ? 'var(--color-accent)' : 'var(--color-text-secondary)', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'var(--transition-fast)' }}>
@@ -311,7 +311,7 @@ export default function BookingPage() {
 
                   {(alternatives.length > 0 || availableSlots.length > 0) && (
                     <div style={{ marginTop: 8 }}>
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
+                      <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
                         {alternatives.length > 0 ? 'Suggested Alternatives' : 'Available Slots'}
                       </label>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: 10 }}>
