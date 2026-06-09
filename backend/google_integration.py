@@ -17,25 +17,63 @@ SCOPES = [
 ]
 
 def get_credentials():
-    """Loads Google credentials from token.json and refreshes if needed."""
+    """Loads Google credentials from token.json or environment variables.
+    
+    Priority:
+    1. token.json file (local development)
+    2. Environment variables: GOOGLE_REFRESH_TOKEN, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET (deployment)
+    """
     creds = None
-    # We expect token.json to be in the same directory (backend) or current working dir
     token_path = 'token.json'
     
+    # Priority 1: Try token.json (local development)
     if os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+    
+    # Priority 2: Fall back to environment variables (deployment)
+    if not creds:
+        refresh_token = os.getenv("GOOGLE_REFRESH_TOKEN")
+        client_id = os.getenv("GOOGLE_CLIENT_ID")
+        client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
         
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
+        if refresh_token and client_id and client_secret:
+            creds = Credentials(
+                token=None,
+                refresh_token=refresh_token,
+                token_uri="https://oauth2.googleapis.com/token",
+                client_id=client_id,
+                client_secret=client_secret,
+                scopes=SCOPES,
+            )
+            logger.info("[Google API] Using credentials from environment variables.")
+        else:
+            logger.error(
+                "[Google API] No valid credentials found. "
+                "Provide token.json OR set GOOGLE_REFRESH_TOKEN, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET env vars."
+            )
+            return None
+        
+    # Refresh if expired
+    if not creds.valid:
+        if creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
-                with open(token_path, 'w') as token:
-                    token.write(creds.to_json())
+                # Save refreshed token locally if possible (dev environment)
+                if os.path.exists(token_path):
+                    with open(token_path, 'w') as token:
+                        token.write(creds.to_json())
             except Exception as e:
                 logger.error(f"[Google API] Token refresh failed: {e}")
                 return None
+        elif creds.refresh_token:
+            # Token has never been used yet — force a refresh
+            try:
+                creds.refresh(Request())
+            except Exception as e:
+                logger.error(f"[Google API] Initial token refresh failed: {e}")
+                return None
         else:
-            logger.error("[Google API] No valid token found. Please run google_auth_setup.py first.")
+            logger.error("[Google API] Credentials are invalid and cannot be refreshed.")
             return None
             
     return creds
