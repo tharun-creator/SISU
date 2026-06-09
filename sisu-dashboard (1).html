@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SISU – Executive Portal</title>
+  
+  <!-- Modern Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ── DESIGN TOKENS & SYSTEM ── */
+    :root[data-theme="dark"] {
+      --bg-app: #060b08;
+      --bg-surface: rgba(18, 30, 23, 0.65);
+      --bg-surface-solid: #0d1611;
+      --bg-sidebar: #070d09;
+      --border-color: rgba(255, 255, 255, 0.07);
+      --border-color-hover: rgba(255, 255, 255, 0.15);
+      
+      --text-primary: #f3f5f4;
+      --text-secondary: #a3b2a8;
+      --text-muted: #6b7a70;
+      
+      --accent: #52b788;
+      --accent-hover: #74c69d;
+      --accent-glow: rgba(82, 183, 136, 0.15);
+      
+      --bg-toast: #122218;
+      --border-toast: rgba(82, 183, 136, 0.3);
+      
+      /* Status Colors */
+      --color-approved: #52b788;
+      --bg-approved: rgba(82, 183, 136, 0.1);
+      
+      --color-pending: #f59e0b;
+      --bg-pending: rgba(245, 158, 11, 0.1);
+      
+      --color-rejected: #ef4444;
+      --bg-rejected: rgba(239, 68, 68, 0.1);
+      
+      --color-cancelled: #6b7a70;
+      --bg-cancelled: rgba(107, 122, 112, 0.1);
+
+      --color-priority-medium: #f97316;
+      --bg-priority-medium: rgba(249, 115, 22, 0.1);
+      --color-priority-low: #3b82f6;
+      --bg-priority-low: rgba(59, 130, 246, 0.1);
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+      --glass-blur: blur(20px);
+    }
+
+    :root[data-theme="light"] {
+      --bg-app: #f4f7f5;
+      --bg-surface: rgba(255, 255, 255, 0.75);
+      --bg-surface-solid: #ffffff;
+      --bg-sidebar: #0c1a12;
+      --border-color: rgba(0, 0, 0, 0.06);
+      --border-color-hover: rgba(0, 0, 0, 0.12);
+      
+      --text-primary: #121e16;
+      --text-secondary: #5a6b60;
+      --text-muted: #8c9d92;
+      
+      --accent: #2d6a4f;
+      --accent-hover: #1b4332;
+      --accent-glow: rgba(45, 106, 79, 0.1);
+      
+      --bg-toast: #ffffff;
+      --border-toast: rgba(45, 106, 79, 0.2);
+      
+      /* Status Colors */
+      --color-approved: #2d6a4f;
+      --bg-approved: #e8f5ed;
+      
+      --color-pending: #d97706;
+      --bg-pending: #fef3c7;
+      
+      --color-rejected: #dc2626;
+      --bg-rejected: #fee2e2;
+      
+      --color-cancelled: #5a6b60;
+      --bg-cancelled: #e2e8f0;
+
+      --color-priority-medium: #ea580c;
+      --bg-priority-medium: #ffedd5;
+      --color-priority-low: #2563eb;
+      --bg-priority-low: #dbeafe;
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.08);
+      --glass-blur: blur(20px);
+    }
+
+    /* ── BASE & UTILITIES ── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    button, input {
+      font-family: inherit;
+    }
+
+    h1, h2, h3, h4, .brand-name, .page-title, .stat-number {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 260px;
+      background-color: var(--bg-sidebar);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 20px 24px;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-brand {
+      padding: 0 12px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 12px;
+    }
+
+    .brand-name {
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #74c69d 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-sub {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #74c69d;
+      text-transform: uppercase;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+
+    .admin-badge {
+      margin: 8px 12px 16px;
+      background: rgba(82, 183, 136, 0.12);
+      border: 1px solid rgba(82, 183, 136, 0.25);
+      border-radius: 20px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+    }
+
+    .admin-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #52b788;
+      box-shadow: 0 0 8px #52b788;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.7; }
+      50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 12px #52b788; }
+      100% { transform: scale(0.95); opacity: 0.7; }
+    }
+
+    .admin-badge span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #74c69d;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #8da496;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: #ffffff;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(82, 183, 136, 0.18) 0%, rgba(82, 183, 136, 0.05) 100%);
+      border-left: 3px solid #52b788;
+      padding-left: 11px; /* Offset border width */
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .nav-item svg {
+      opacity: 0.75;
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+    }
+
+    .nav-item.active svg {
+      opacity: 1;
+      stroke: #52b788;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: #52b788;
+      color: #0c1a12;
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+    }
+
+    .sidebar-footer {
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: auto;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .user-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #52b788 0%, #1b4332 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(82, 183, 136, 0.2);
+    }
+
+    .user-info {
+      overflow: hidden;
+    }
+
+    .user-info .name {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .user-info .role {
+      color: #74c69d;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* ── MAIN CONTENT AREA ── */
+    .main {
+      margin-left: 260px;
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background-color: var(--bg-surface-solid);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 32px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+    }
+
+    .hamburger:hover {
+      background: var(--border-color);
+    }
+
+    .hamburger span {
+      width: 20px;
+      height: 2px;
+      background-color: var(--text-primary);
+      border-radius: 2px;
+      display: block;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .topbar-center {
+      flex: 1;
+      max-width: 400px;
+      margin: 0 32px;
+    }
+
+    .search-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: var(--bg-app);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 10px 16px 10px 40px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      outline: none;
+      transition: all 0.25s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      width: 16px;
+      height: 16px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .theme-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--border-color);
+      border-color: var(--border-color-hover);
+    }
+
+    .notif-btn {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-primary);
+    }
+
+    .notif-btn:hover {
+      background-color: var(--border-color);
+      border-color: var(--border-color-hover);
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f97316;
+      border: 1.5px solid var(--bg-surface-solid);
+    }
+
+    .signout-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .signout-btn:hover {
+      background-color: var(--border-color);
+      color: var(--text-primary);
+      border-color: var(--border-color-hover);
+    }
+
+    /* ── CONTENT CONTAINER ── */
+    .content {
+      padding: 32px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .date-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-label svg {
+      color: var(--accent);
+    }
+
+    /* ── STATS SECTION ── */
+    .stats-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 6px 0;
+    }
+
+    .stat-item + .stat-item {
+      border-left: 1px solid var(--border-color);
+      padding-left: 36px;
+      margin-left: 36px;
+    }
+
+    .stat-icon-wrapper {
+      position: relative;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.blue { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+    .stat-icon.amber { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+    .stat-icon.green { background: rgba(82, 183, 136, 0.15); color: var(--accent); }
+
+    .stat-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .stat-number {
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Sparkline Container */
+    .sparkline-container {
+      width: 70px;
+      height: 30px;
+      margin-left: auto;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    /* ── BOTTOM GRID LAYOUT ── */
+    .bottom-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ── MEETINGS LIST CARD ── */
+    .meetings-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .meetings-filters {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .tab-btn.active {
+      background: var(--bg-surface-solid);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .time-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+      padding: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .time-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .time-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .time-btn.active {
+      background: var(--bg-surface-solid);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Desktop Table */
+    .meetings-table-wrapper {
+      overflow-x: auto;
+    }
+
+    .meetings-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .meetings-table th {
+      padding: 16px 24px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .meetings-table td {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    .meetings-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .meetings-table tr {
+      transition: background-color 0.15s;
+    }
+
+    .meetings-table tr:hover td {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .client-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .client-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(82, 183, 136, 0.2) 0%, rgba(82, 183, 136, 0.05) 100%);
+      border: 1px solid rgba(82, 183, 136, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .client-name {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .client-email {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .meeting-title {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .meeting-type {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .datetime {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* Badges */
+    .priority-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .priority-badge.medium {
+      background-color: var(--bg-priority-medium);
+      color: var(--color-priority-medium);
+    }
+
+    .priority-badge.low {
+      background-color: var(--bg-priority-low);
+      color: var(--color-priority-low);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .status-badge.approved {
+      color: var(--color-approved);
+      background-color: var(--bg-approved);
+    }
+    .status-badge.pending {
+      color: var(--color-pending);
+      background-color: var(--bg-pending);
+    }
+    .status-badge.rejected {
+      color: var(--color-rejected);
+      background-color: var(--bg-rejected);
+    }
+    .status-badge.cancelled {
+      color: var(--color-cancelled);
+      background-color: var(--bg-cancelled);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: currentColor;
+    }
+
+    .details-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-surface-solid);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .details-btn:hover {
+      background: var(--border-color);
+      border-color: var(--border-color-hover);
+      transform: translateY(-1px);
+    }
+
+    .details-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Empty State */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .empty-state-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
+
+    .empty-state-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .empty-state-desc {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      max-width: 300px;
+      line-height: 1.5;
+    }
+
+    /* ── RIGHT COLUMN ── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Mini Area Chart Widget */
+    .chart-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .chart-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .chart-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Inbox Zero Card */
+    .inbox-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      border-radius: 18px;
+      border: 1px solid var(--border-color);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 280px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .inbox-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(82, 183, 136, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .inbox-icon-wrap {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--bg-approved);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      color: var(--color-approved);
+      box-shadow: 0 8px 20px rgba(82, 183, 136, 0.15);
+    }
+
+    .inbox-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .inbox-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 220px;
+    }
+
+    .inbox-badge {
+      margin-top: 20px;
+      background: var(--bg-approved);
+      color: var(--color-approved);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(82, 183, 136, 0.2);
+    }
+
+    /* ── SLIDE-OUT DETAILS DRAWER ── */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .drawer-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -450px;
+      width: 100%;
+      max-width: 440px;
+      height: 100vh;
+      background-color: var(--bg-surface-solid);
+      border-left: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      z-index: 210;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .drawer-close:hover {
+      background-color: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .drawer-body {
+      padding: 24px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .drawer-client-profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 16px 0 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .drawer-client-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(82, 183, 136, 0.25) 0%, rgba(82, 183, 136, 0.05) 100%);
+      border: 2px solid rgba(82, 183, 136, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 14px rgba(82, 183, 136, 0.15);
+    }
+
+    .drawer-client-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .drawer-client-email {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .drawer-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .drawer-detail-box {
+      background-color: var(--bg-app);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .drawer-meeting-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .drawer-meeting-type {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .drawer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .drawer-grid-item {
+      background-color: var(--bg-app);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .drawer-grid-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 4px;
+    }
+
+    .drawer-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      padding-left: 20px;
+      margin-top: 8px;
+    }
+
+    .drawer-timeline::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      bottom: 4px;
+      width: 2px;
+      background: var(--border-color);
+    }
+
+    .timeline-item {
+      position: relative;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -19px;
+      top: 5px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      border: 2px solid var(--bg-surface-solid);
+    }
+
+    .timeline-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    .timeline-content {
+      font-size: 13px;
+    }
+
+    .timeline-title {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .timeline-time {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .drawer-footer {
+      padding: 20px 24px;
+      border-top: 1px solid var(--border-color);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      background-color: var(--bg-app);
+    }
+
+    .action-btn {
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .action-btn.secondary {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+    }
+
+    .action-btn.secondary:hover {
+      background: var(--border-color);
+      color: var(--text-primary);
+      border-color: var(--border-color-hover);
+    }
+
+    .action-btn.primary {
+      background: var(--accent);
+      border: none;
+      color: #070d09;
+    }
+
+    .action-btn.primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 12px rgba(82, 183, 136, 0.25);
+    }
+
+    /* ── MOBILE OVERLAY SIDEBAR ── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 95;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    /* ── TOAST NOTIFICATION ── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 300;
+    }
+
+    .toast {
+      background-color: var(--bg-toast);
+      border: 1px solid var(--border-toast);
+      color: var(--text-primary);
+      padding: 14px 20px;
+      border-radius: 10px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: toastIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes toastIn {
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .toast-icon {
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── RESPONSIVE DESIGN ── */
+    @media (max-width: 1100px) {
+      .bottom-layout {
+        grid-template-columns: 1fr;
+      }
+      .right-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .topbar-center {
+        display: none; /* Hide topbar search, we will have mobile search or it is not needed */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+        opacity: 1;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .topbar {
+        padding: 0 20px;
+      }
+
+      .signout-btn span {
+        display: none;
+      }
+      .signout-btn {
+        padding: 8px 10px;
+      }
+
+      .content {
+        padding: 20px;
+        gap: 20px;
+      }
+
+      .stats-card {
+        padding: 20px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+      }
+
+      .stat-item {
+        padding: 0;
+      }
+
+      .stat-item + .stat-item {
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        padding-left: 0;
+        margin-left: 0;
+        padding-top: 20px;
+      }
+
+      .right-col {
+        grid-template-columns: 1fr;
+      }
+
+      .meetings-filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-tabs, .time-tabs {
+        overflow-x: auto;
+        justify-content: flex-start;
+      }
+
+      /* Mobile table replacement card layout */
+      .meetings-table-wrapper {
+        display: none;
+      }
+
+      .meeting-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      .meeting-card-item {
+        background: rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .mci-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .mci-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .mci-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        padding: 10px 0;
+      }
+
+      .mci-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .mci-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .meeting-cards {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-name">SISU</div>
+      <div class="brand-sub">Executive Portal</div>
+    </div>
+
+    <div class="admin-badge">
+      <span class="dot"></span>
+      <span>Admin Control</span>
+    </div>
+
+    <nav class="nav">
+      <a class="nav-item active" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar Slots
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6M9 16h6M9 8h3M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
+        Slots Booked
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 8 12 12 14 14"/></svg>
+        Pending Requests
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>
+        Rescheduled
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Manage Users
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Notifications
+        <span class="nav-badge">2</span>
+      </a>
+      <a class="nav-item" href="#">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar">T</div>
+        <div class="user-info">
+          <div class="name">Tharun</div>
+          <div class="role">CEO</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+          <span></span><span style="margin: 4px 0;"></span><span></span>
+        </button>
+        <h1 class="page-title">Executive Dashboard</h1>
+      </div>
+
+      <!-- Real-time search bar -->
+      <div class="topbar-center">
+        <div class="search-wrapper">
+          <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search clients, emails, or titles...">
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark/light theme">
+          <!-- Sun Icon -->
+          <svg class="theme-sun" style="display:none;" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <!-- Moon Icon -->
+          <svg class="theme-moon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+
+        <button class="notif-btn" aria-label="Notifications">
+          <div class="notif-dot"></div>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </button>
+
+        <button class="signout-btn">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="content">
+      
+      <div class="content-header">
+        <div class="date-label" id="currentDateLabel">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="dateText">Friday, June 05, 2026</span>
+        </div>
+      </div>
+
+      <!-- COMBINED STATS CARD -->
+      <div class="stats-card">
+        <div class="stat-item">
+          <div class="stat-icon blue">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div class="stat-text">
+            <div class="stat-number" id="statTotal">17</div>
+            <div class="stat-label">Total Meetings</div>
+          </div>
+          <!-- Sparkline representation -->
+          <div class="sparkline-container">
+            <svg viewBox="0 0 50 20" width="100%" height="100%">
+              <path d="M 0 15 Q 10 5, 20 12 T 40 8 T 50 5" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="stat-item">
+          <div class="stat-icon amber">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+          </div>
+          <div class="stat-text">
+            <div class="stat-number" id="statPending">0</div>
+            <div class="stat-label">Pending Approval</div>
+          </div>
+          <div class="sparkline-container">
+            <svg viewBox="0 0 50 20" width="100%" height="100%">
+              <path d="M 0 18 L 10 18 L 20 18 L 30 18 L 40 18 L 50 18" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon green">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="stat-text">
+            <div class="stat-number" id="statApproved">17</div>
+            <div class="stat-label">Approved Sessions</div>
+          </div>
+          <div class="sparkline-container">
+            <svg viewBox="0 0 50 20" width="100%" height="100%">
+              <path d="M 0 15 Q 12 18, 22 8 T 38 4 T 50 2" fill="none" stroke="#52b788" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM LAYOUT -->
+      <div class="bottom-layout">
+
+        <!-- MEETINGS MAIN SECTION -->
+        <div class="meetings-card">
+          <div class="meetings-filters">
+            <!-- Filter Tabs -->
+            <div class="filter-tabs" id="statusFilterContainer">
+              <button class="tab-btn active" data-filter="all">All</button>
+              <button class="tab-btn" data-filter="Pending">Pending</button>
+              <button class="tab-btn" data-filter="Approved">Approved</button>
+              <button class="tab-btn" data-filter="Rejected">Rejected</button>
+              <button class="tab-btn" data-filter="Cancelled">Cancelled</button>
+            </div>
+            
+            <!-- Time Frame Tabs -->
+            <div class="time-tabs" id="timeFilterContainer">
+              <button class="time-btn active" data-time="all">All Time</button>
+              <button class="time-btn" data-time="today">Today</button>
+              <button class="time-btn" data-time="week">This Week</button>
+              <button class="time-btn" data-time="month">This Month</button>
+            </div>
+          </div>
+
+          <!-- Desktop Table Layout -->
+          <div class="meetings-table-wrapper">
+            <table class="meetings-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Meeting Details</th>
+                  <th>Date & Time</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Card Layout -->
+          <div class="meeting-cards" id="mobileCards">
+            <!-- Cards injected dynamically -->
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">
+              <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="empty-state-title">No bookings found</div>
+            <div class="empty-state-desc">Try modifying your filter selections or checking your search query.</div>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR COLUMN -->
+        <div class="right-col">
+          <!-- Weekly Activity Chart Widget -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <h4 class="chart-title">Weekly Load</h4>
+                <p class="chart-subtitle">Meetings booked per day</p>
+              </div>
+              <span style="font-size: 13.5px; font-weight: 700; color: var(--accent);">+18% vs LW</span>
+            </div>
+            <!-- Custom SVG Area/Bar Chart -->
+            <div style="height: 120px; display: flex; align-items: flex-end; justify-content: space-between; padding-top: 10px;">
+              <!-- Monday -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1;">
+                <div style="height: 40px; width: 14px; background: var(--border-color); border-radius: 4px; position: relative;">
+                  <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: var(--accent); border-radius: 4px;"></div>
+                </div>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">M</span>
+              </div>
+              <!-- Tuesday -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1;">
+                <div style="height: 80px; width: 14px; background: var(--border-color); border-radius: 4px; position: relative;">
+                  <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80%; background: var(--accent); border-radius: 4px;"></div>
+                </div>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">T</span>
+              </div>
+              <!-- Wednesday -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1;">
+                <div style="height: 60px; width: 14px; background: var(--border-color); border-radius: 4px; position: relative;">
+                  <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: var(--accent); border-radius: 4px;"></div>
+                </div>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">W</span>
+              </div>
+              <!-- Thursday -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1;">
+                <div style="height: 90px; width: 14px; background: var(--border-color); border-radius: 4px; position: relative;">
+                  <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 95%; background: var(--accent); border-radius: 4px; box-shadow: 0 0 8px var(--accent-glow);"></div>
+                </div>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">T</span>
+              </div>
+              <!-- Friday -->
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1;">
+                <div style="height: 70px; width: 14px; background: var(--border-color); border-radius: 4px; position: relative;">
+                  <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 70%; background: var(--accent); border-radius: 4px;"></div>
+                </div>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">F</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inbox Status Card -->
+          <div class="inbox-card">
+            <div class="inbox-icon-wrap">
+              <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h4 class="inbox-title">Inbox Zero</h4>
+            <p class="inbox-desc">No pending requests require attention right now. Awesome!</p>
+            <div class="inbox-badge">All caught up ✓</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- DYNAMIC DETAILS DRAWER -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Booking Details</h3>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Close drawer">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    
+    <div class="drawer-body" id="drawerBody">
+      <!-- Injected dynamically -->
+    </div>
+    
+    <div class="drawer-footer" id="drawerFooter">
+      <!-- Action buttons injected dynamically -->
+    </div>
+  </aside>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // Initial Bookings Data
+    const meetings = [
+      { id: 1, client: 'gojo', email: 'gojosatorou375@gmail.com', title: 'ertyu', type: '60 Min Mentorship', date: 'Jun 05, 2026 · 11:00 AM IST', rawDate: '2026-06-05T11:00:00', priority: 'MEDIUM', status: 'Approved', notes: 'Discussing advanced cursed techniques and integration paths.' },
+      { id: 2, client: 'tharun', email: 'tharunlot@gmail.com', title: 'tharun x meet', type: '60 Min Mentorship', date: 'Jun 12, 2026 · 12:00 PM IST', rawDate: '2026-06-12T12:00:00', priority: 'MEDIUM', status: 'Approved', notes: 'Monthly planning check-in and dashboard feedback review.' },
+      { id: 3, client: 'gojo', email: 'gojosatorou375@gmail.com', title: 'test-7', type: '60 Min Mentorship', date: 'Jun 17, 2026 · 03:30 PM IST', rawDate: '2026-06-17T15:30:00', priority: 'LOW', status: 'Approved', notes: 'General Q&A and codebase walkthrough.' },
+      { id: 4, client: 'gojo', email: 'gojosatorou375@gmail.com', title: 'test-6', type: '60 Min Mentorship', date: 'Jun 24, 2026 · 10:00 AM IST', rawDate: '2026-06-24T10:00:00', priority: 'LOW', status: 'Approved', notes: 'Routine alignment session.' },
+      { id: 5, client: 'gojo', email: 'gojosatorou375@gmail.com', title: 'test-5', type: '60 Min Mentorship', date: 'Jun 20, 2026 · 11:00 AM IST', rawDate: '2026-06-20T11:00:00', priority: 'MEDIUM', status: 'Approved', notes: 'Session on API structures and calendar events integrations.' },
+      { id: 6, client: 'gojo', email: 'gojosatorou375@gmail.com', title: 'test-4', type: '60 Min Mentorship', date: 'Jun 18, 2026 · 02:00 PM IST', rawDate: '2026-06-18T14:00:00', priority: 'LOW', status: 'Approved', notes: 'Reviewing code metrics and optimization strategies.' }
+    ];
+
+    // Selected filters state
+    let activeFilter = 'all';
+    let activeTimeFilter = 'all';
+    let searchQuery = '';
+
+    // DOM References
+    const tbody = document.getElementById('tableBody');
+    const mobileCards = document.getElementById('mobileCards');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+
+    // Init App
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set current date
+      const dateText = document.getElementById('dateText');
+      const now = new Date('2026-06-05T12:51:28+05:30');
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateText.textContent = now.toLocaleDateString('en-US', options);
+
+      // Load Theme Preference
+      const savedTheme = localStorage.getItem('sisu-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeTogglerUI(savedTheme);
+
+      // Render
+      renderDashboard();
+    });
+
+    // Theme Toggle Logic
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('sisu-theme', newTheme);
+      updateThemeTogglerUI(newTheme);
+      showToast(`Switched to ${newTheme} mode`);
+    }
+
+    function updateThemeTogglerUI(theme) {
+      const sunIcon = document.querySelector('.theme-sun');
+      const moonIcon = document.querySelector('.theme-moon');
+      if (theme === 'dark') {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+    }
+
+    // Filter Logic
+    document.querySelectorAll('#statusFilterContainer .tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('#statusFilterContainer .tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.getAttribute('data-filter');
+        renderDashboard();
+      });
+    });
+
+    document.querySelectorAll('#timeFilterContainer .time-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('#timeFilterContainer .time-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeTimeFilter = btn.getAttribute('data-time');
+        renderDashboard();
+      });
+    });
+
+    // Search Logic
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase().trim();
+      renderDashboard();
+    });
+
+    // Check Timeframes (Mock Relative to Jun 5, 2026)
+    function isSameDay(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth() &&
+             d1.getDate() === d2.getDate();
+    }
+
+    function isSameWeek(d1, d2) {
+      // Simple week calculation
+      const oneDay = 24 * 60 * 60 * 1000;
+      const diffDays = Math.round(Math.abs((d1 - d2) / oneDay));
+      return diffDays <= 7;
+    }
+
+    function isSameMonth(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth();
+    }
+
+    // Render Dashboard Items
+    function renderDashboard() {
+      // Clear container DOM
+      tbody.innerHTML = '';
+      mobileCards.innerHTML = '';
+
+      const referenceDate = new Date('2026-06-05T00:00:00'); // Our simulated date
+
+      // Filter meetings
+      const filtered = meetings.filter(m => {
+        // Status filter
+        if (activeFilter !== 'all' && m.status !== activeFilter) {
+          return false;
+        }
+
+        // Search query
+        if (searchQuery) {
+          const clientMatch = m.client.toLowerCase().includes(searchQuery);
+          const emailMatch = m.email.toLowerCase().includes(searchQuery);
+          const titleMatch = m.title.toLowerCase().includes(searchQuery);
+          if (!clientMatch && !emailMatch && !titleMatch) {
+            return false;
+          }
+        }
+
+        // Time Filter
+        if (activeTimeFilter !== 'all') {
+          const meetingDate = new Date(m.rawDate);
+          if (activeTimeFilter === 'today') {
+            return isSameDay(meetingDate, referenceDate);
+          } else if (activeTimeFilter === 'week') {
+            return isSameWeek(meetingDate, referenceDate);
+          } else if (activeTimeFilter === 'month') {
+            return isSameMonth(meetingDate, referenceDate);
+          }
+        }
+
+        return true;
+      });
+
+      // Update counters based on entire dataset
+      const totalMeetings = meetings.length;
+      const pendingCount = meetings.filter(m => m.status === 'Pending').length;
+      const approvedCount = meetings.filter(m => m.status === 'Approved').length;
+
+      document.getElementById('statTotal').textContent = totalMeetings;
+      document.getElementById('statPending').textContent = pendingCount;
+      document.getElementById('statApproved').textContent = approvedCount;
+
+      // Update Inbox Zero Card description
+      const inboxCard = document.querySelector('.inbox-card');
+      if (pendingCount === 0) {
+        inboxCard.querySelector('.inbox-title').textContent = "Inbox Zero";
+        inboxCard.querySelector('.inbox-desc').textContent = "No pending requests require attention right now. Awesome!";
+        inboxCard.querySelector('.inbox-badge').textContent = "All caught up ✓";
+      } else {
+        inboxCard.querySelector('.inbox-title').textContent = "Requests Awaiting";
+        inboxCard.querySelector('.inbox-desc').textContent = `You have ${pendingCount} request(s) awaiting your decision.`;
+        inboxCard.querySelector('.inbox-badge').textContent = "Action Needed ⚠";
+      }
+
+      // Empty State check
+      if (filtered.length === 0) {
+        emptyState.style.display = 'flex';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      // Inject Cards and Table rows
+      filtered.forEach(m => {
+        const initials = m.client[0].toUpperCase();
+        const pClass = m.priority === 'MEDIUM' ? 'medium' : 'low';
+        const sClass = m.status.toLowerCase();
+
+        // 1. Desktop Row
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class="client-cell">
+              <div class="client-avatar">${initials}</div>
+              <div>
+                <div class="client-name">${m.client}</div>
+                <div class="client-email">${m.email}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="meeting-title">${m.title}</div>
+            <div class="meeting-type">${m.type}</div>
+          </td>
+          <td><div class="datetime">${m.date}</div></td>
+          <td><span class="priority-badge ${pClass}">${m.priority}</span></td>
+          <td>
+            <span class="status-badge ${sClass}">
+              <span class="status-dot"></span>
+              ${m.status}
+            </span>
+          </td>
+          <td><button class="details-btn" onclick="openDetails(${m.id})">Details</button></td>
+        `;
+        tbody.appendChild(tr);
+
+        // 2. Mobile Card
+        const card = document.createElement('div');
+        card.className = 'meeting-card-item';
+        card.innerHTML = `
+          <div class="mci-header">
+            <div class="client-cell">
+              <div class="client-avatar" style="width:30px; height:30px; font-size:12px;">${initials}</div>
+              <div>
+                <div class="client-name" style="font-size:13.5px;">${m.client}</div>
+                <div class="client-email" style="font-size:11px;">${m.email}</div>
+              </div>
+            </div>
+            <span class="priority-badge ${pClass}" style="padding: 2px 8px; font-size:10px;">${m.priority}</span>
+          </div>
+          <div class="mci-title-block">
+            <div class="meeting-title" style="font-size:14px;">${m.title}</div>
+            <div class="meeting-type" style="font-size:12px;">${m.type}</div>
+          </div>
+          <div class="mci-meta-row">
+            <div class="mci-meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>${m.date}</span>
+            </div>
+          </div>
+          <div class="mci-actions">
+            <span class="status-badge ${sClass}">
+              <span class="status-dot"></span>
+              ${m.status}
+            </span>
+            <button class="details-btn" style="padding: 6px 12px; font-size:12px;" onclick="openDetails(${m.id})">Details</button>
+          </div>
+        `;
+        mobileCards.appendChild(card);
+      });
+    }
+
+    // Drawer Functionality
+    function openDetails(meetingId) {
+      const m = meetings.find(item => item.id === meetingId);
+      if (!m) return;
+
+      const initials = m.client[0].toUpperCase();
+      const sClass = m.status.toLowerCase();
+      const pClass = m.priority === 'MEDIUM' ? 'medium' : 'low';
+
+      // Set drawer body
+      const drawerBody = document.getElementById('drawerBody');
+      drawerBody.innerHTML = `
+        <div class="drawer-client-profile">
+          <div class="drawer-client-avatar">${initials}</div>
+          <h4 class="drawer-client-name">${m.client}</h4>
+          <p class="drawer-client-email">${m.email}</p>
+        </div>
+
+        <div class="drawer-section">
+          <h5 class="drawer-section-title">Topic & Type</h5>
+          <div class="drawer-detail-box">
+            <div class="drawer-meeting-title">${m.title}</div>
+            <div class="drawer-meeting-type">${m.type}</div>
+          </div>
+        </div>
+
+        <div class="drawer-grid">
+          <div class="drawer-section">
+            <h5 class="drawer-section-title">Priority</h5>
+            <div class="drawer-grid-item">
+              <span class="priority-badge ${pClass}">${m.priority}</span>
+            </div>
+          </div>
+          
+          <div class="drawer-section">
+            <h5 class="drawer-section-title">Current Status</h5>
+            <div class="drawer-grid-item">
+              <span class="status-badge ${sClass}">
+                <span class="status-dot"></span>
+                ${m.status}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <h5 class="drawer-section-title">Date & Time</h5>
+          <div class="drawer-detail-box" style="font-weight:600; color:var(--text-primary);">
+            ${m.date}
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <h5 class="drawer-section-title">Executive Notes</h5>
+          <div class="drawer-detail-box" style="color:var(--text-secondary); font-size:13px; line-height:1.5;">
+            ${m.notes || 'No description notes provided for this mentorship slot.'}
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <h5 class="drawer-section-title">Activity Trail</h5>
+          <div class="drawer-timeline">
+            <div class="timeline-item">
+              <span class="timeline-dot active"></span>
+              <div class="timeline-content">
+                <div class="timeline-title">Slot requested by ${m.client}</div>
+                <div class="timeline-time">Simulated 2 hours ago</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-dot ${m.status === 'Approved' ? 'active' : ''}"></span>
+              <div class="timeline-content">
+                <div class="timeline-title">Status set to: ${m.status}</div>
+                <div class="timeline-time">Just updated</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Set drawer action buttons
+      const drawerFooter = document.getElementById('drawerFooter');
+      
+      let primaryActionHTML = '';
+      let secondaryActionHTML = '';
+
+      if (m.status === 'Pending') {
+        secondaryActionHTML = `<button class="action-btn secondary" onclick="updateStatus(${m.id}, 'Rejected')">Reject</button>`;
+        primaryActionHTML = `<button class="action-btn primary" onclick="updateStatus(${m.id}, 'Approved')">Approve Slot</button>`;
+      } else if (m.status === 'Approved') {
+        secondaryActionHTML = `<button class="action-btn secondary" onclick="updateStatus(${m.id}, 'Cancelled')">Cancel Slot</button>`;
+        primaryActionHTML = `<button class="action-btn primary" style="background:#f59e0b;" onclick="updateStatus(${m.id}, 'Pending')">Set Pending</button>`;
+      } else {
+        // Rejected or Cancelled
+        secondaryActionHTML = `<button class="action-btn secondary" onclick="updateStatus(${m.id}, 'Pending')">Reset Status</button>`;
+        primaryActionHTML = `<button class="action-btn primary" onclick="updateStatus(${m.id}, 'Approved')">Approve Slot</button>`;
+      }
+
+      drawerFooter.innerHTML = `${secondaryActionHTML}${primaryActionHTML}`;
+
+      // Open drawer elements
+      document.getElementById('drawer').classList.add('open');
+      document.getElementById('drawerOverlay').classList.add('open');
+    }
+
+    function closeDrawer() {
+      document.getElementById('drawer').classList.remove('open');
+      document.getElementById('drawerOverlay').classList.remove('open');
+    }
+
+    // Action updates status
+    function updateStatus(id, newStatus) {
+      const m = meetings.find(item => item.id === id);
+      if (m) {
+        m.status = newStatus;
+        showToast(`Slot status updated to: ${newStatus}`);
+        renderDashboard();
+        // Refresh drawer view
+        openDetails(id);
+      }
+    }
+
+    // Sidebar Toggling for Mobile
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarOverlay').classList.add('open');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+    }
+
+    // Toast Alerts
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `
+        <svg class="toast-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      // Auto dismiss
+      setTimeout(() => {
+        toast.style.animation = 'none'; // reset animation for fade out
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        toast.style.transition = 'opacity 0.3s, transform 0.3s';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

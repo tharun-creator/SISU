@@ -1,0 +1,3162 @@
+{
+  "this/chatmodel/chatmodel/backend/app.py": {
+    "mtime": 1778483692.0,
+    "ast_hash": "a7b0d074fcdd294f520003fee588add7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/auth.py": {
+    "mtime": 1780921264.2484736,
+    "ast_hash": "e43630df310c61aae8c332af5cbee391",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/calendar_service.py": {
+    "mtime": 1780920735.9684753,
+    "ast_hash": "0bbbd85b606d78fcec8ea70d19ebd5ed",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/check_aiven.py": {
+    "mtime": 1779874505.9562101,
+    "ast_hash": "65d009027b9e731111e8d8ede72ab072",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/check_deps.py": {
+    "mtime": 1778688880.0,
+    "ast_hash": "3b424d214131c5f9d27b3a519f066451",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/create_db.py": {
+    "mtime": 1779093263.964087,
+    "ast_hash": "60c3daf964fe59cef6f05a39722766ee",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/database.py": {
+    "mtime": 1780642539.2159262,
+    "ast_hash": "44431048050f25e9378ddc7f3b7d57e7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/debug_tz.py": {
+    "mtime": 1778752698.0,
+    "ast_hash": "3b373382ea586133f44dba364453b057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/email_service.py": {
+    "mtime": 1780916768.4277391,
+    "ast_hash": "ef19eab8d873c1d93aa57abdc47dcf3a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/google_auth_setup.py": {
+    "mtime": 1780578431.3819172,
+    "ast_hash": "3f51ef30484c4ae9e2f2b7bcec2dda95",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/google_integration.py": {
+    "mtime": 1780916761.5997066,
+    "ast_hash": "e2203b971d2c16953979f85113a53d7b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/__init__.py": {
+    "mtime": 1780567536.1512313,
+    "ast_hash": "7d6b16eb66fd4852a50d7474a1815579",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/__main__.py": {
+    "mtime": 1780567536.1542823,
+    "ast_hash": "588e3633a7f258f1d010667f93c908e6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/affected.py": {
+    "mtime": 1780567536.1542823,
+    "ast_hash": "83d6b5888e511d289183df7bddf898c4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/analyze.py": {
+    "mtime": 1780567536.1647525,
+    "ast_hash": "85c20bd2132a9118e1fd6bcb2873f2d7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/benchmark.py": {
+    "mtime": 1780567536.1647525,
+    "ast_hash": "6e23a81b8349048191a8a54399988bb6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/build.py": {
+    "mtime": 1780567536.1681774,
+    "ast_hash": "0f6b0cc4bafaef637f19195ed3627060",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/cache.py": {
+    "mtime": 1780567536.1681774,
+    "ast_hash": "a6a1b1f80738d32424f8c22b9c6cc045",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/callflow_html.py": {
+    "mtime": 1780567536.1713116,
+    "ast_hash": "6e14cbcbb7977c038007544b3f657f1c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/cluster.py": {
+    "mtime": 1780567536.1713116,
+    "ast_hash": "bb83317014a47ad12e798aa19ff0d5cb",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/dedup.py": {
+    "mtime": 1780567536.1753442,
+    "ast_hash": "7df8aa7d642063dc082ecb3a0db32d63",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/detect.py": {
+    "mtime": 1780567536.177383,
+    "ast_hash": "50412e84f961aba4d4d50e23d8a23917",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/diagnostics.py": {
+    "mtime": 1780567536.177383,
+    "ast_hash": "e74233723bc5dba9cd8aeb20147fdefa",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/export.py": {
+    "mtime": 1780567536.1794045,
+    "ast_hash": "2db67bf352e94949d38d77a31e057a74",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/extract.py": {
+    "mtime": 1780567536.184006,
+    "ast_hash": "d8f8011ee0a27214c1a09e04bd3cfe5f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/global_graph.py": {
+    "mtime": 1780567536.1865137,
+    "ast_hash": "af92c71ff25b53a207c34281e77e2cb9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/google_workspace.py": {
+    "mtime": 1780567536.1865137,
+    "ast_hash": "65f351d6eb1778feacaff4ea6fd2b2a1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/hooks.py": {
+    "mtime": 1780567536.1865137,
+    "ast_hash": "bdde1e5e667a787e1c8bdefe8dd1fe72",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/ingest.py": {
+    "mtime": 1780567536.1865137,
+    "ast_hash": "c9688ebc354ea9a8b6b69448b8d67956",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/llm.py": {
+    "mtime": 1780567536.1921012,
+    "ast_hash": "3838535ae8dc1caad61ba1434654d2fc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/manifest.py": {
+    "mtime": 1780567536.1921012,
+    "ast_hash": "b6fb195b7900f4ed7bec86a8b0d43a18",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/mcp_ingest.py": {
+    "mtime": 1780567536.1945992,
+    "ast_hash": "82b0d6d2210fa12c3e627e231a36649b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/multigraph_compat.py": {
+    "mtime": 1780567536.1945992,
+    "ast_hash": "8cdcc4c145479df5b9108d8adeac986e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/prs.py": {
+    "mtime": 1780567536.1971345,
+    "ast_hash": "a1baed858fbb5476ff1b6e6684bbc086",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/querylog.py": {
+    "mtime": 1780567536.1971345,
+    "ast_hash": "9fbafe98a6d71c70c3d514ac49d5ce17",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/report.py": {
+    "mtime": 1780567536.1993732,
+    "ast_hash": "4ec9e136aa2d8653b59abbba26cea80c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/scip_ingest.py": {
+    "mtime": 1780567536.2001357,
+    "ast_hash": "ce2c29d40d8e5e0af42401e6afe6487d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/security.py": {
+    "mtime": 1780567536.201996,
+    "ast_hash": "f880bd7bdefda97fa8ca35d12d59c715",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/semantic_cleanup.py": {
+    "mtime": 1780567536.2031434,
+    "ast_hash": "d73f5ac9e9fea91a114c2e17692d5f55",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/serve.py": {
+    "mtime": 1780567536.2036927,
+    "ast_hash": "a9bce2e589f6381bd6657c3eafc2524a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/symbol_resolution.py": {
+    "mtime": 1780567536.3622825,
+    "ast_hash": "18aa0aba9c9a6ca0289efc55567c2ff5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/transcribe.py": {
+    "mtime": 1780567536.3637943,
+    "ast_hash": "806ed4df8ffa36a40cc887a8b07e0c36",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/tree_html.py": {
+    "mtime": 1780567536.3637943,
+    "ast_hash": "559ba02449467f377466e76cabecb614",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/validate.py": {
+    "mtime": 1780567536.3637943,
+    "ast_hash": "58b66d31350c480f602c1cb09648245d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/watch.py": {
+    "mtime": 1780567536.3679793,
+    "ast_hash": "b4ef2c744245cb3ef08b0e3990ca446d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/wiki.py": {
+    "mtime": 1780567536.3679793,
+    "ast_hash": "9abc54acb305b2c559c8ae2a9e61c353",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/__init__.py": {
+    "mtime": 1780567536.3679793,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/bench_extract.py": {
+    "mtime": 1780567536.3679793,
+    "ast_hash": "1a7d90e1abc6d7a780849ca3d5b3223e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/conftest.py": {
+    "mtime": 1780567536.3731616,
+    "ast_hash": "802d3bdf0c5f54b3765bb9384c03f10e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/barrel_reexport.ts": {
+    "mtime": 1780567536.3741698,
+    "ast_hash": "af11bd42788c3e2445b68e752fda283f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/cjs_require.js": {
+    "mtime": 1780567536.3762026,
+    "ast_hash": "7e96267e28c319393a69533179675d75",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/cookieHelpers.ts": {
+    "mtime": 1780567536.3762026,
+    "ast_hash": "b1c621bae8994f2bdd2556e3a6f4638f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/crate_a/src/lib.rs": {
+    "mtime": 1780567536.381425,
+    "ast_hash": "71e83aadad3ab78b3aa3d0258dce72cd",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/crate_b/src/lib.rs": {
+    "mtime": 1780567536.382942,
+    "ast_hash": "3fb1a6373bffeec6b3f46e1c5a3e8254",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/dynamic_import.ts": {
+    "mtime": 1780567536.3868344,
+    "ast_hash": "3c8854b41bfd47798987f3a982fdb73e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/extraction.json": {
+    "mtime": 1780567536.3868344,
+    "ast_hash": "8c7e53bb3a5d646b25bc1c3d0a39aa36",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.c": {
+    "mtime": 1780567536.3952963,
+    "ast_hash": "d3250485b2b859b49aa5076a0d80b4ad",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.cpp": {
+    "mtime": 1780567536.3952963,
+    "ast_hash": "dd6f0ad3768e96a616c567b1bb9b4040",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.cs": {
+    "mtime": 1780567536.3952963,
+    "ast_hash": "7962c3f5867f1a15f10b10393a310888",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.csproj": {
+    "mtime": 1780567536.3952963,
+    "ast_hash": "0c326f1066858a87410aaede6d9d3a79",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.dfm": {
+    "mtime": 1780567536.3952963,
+    "ast_hash": "43678d74d251a625bdaf3adb71572a9b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.dm": {
+    "mtime": 1780567536.3952963,
+    "ast_hash": "ddcfbe9a1f72bde70a9359ed5ac63b43",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.dmf": {
+    "mtime": 1780567536.401478,
+    "ast_hash": "f615920a477e590518a45d83898f8a19",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.dmi": {
+    "mtime": 1780567536.401478,
+    "ast_hash": "6219fabd2ff0339d30f71641648e1de9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.dmm": {
+    "mtime": 1780567536.401478,
+    "ast_hash": "f58dbf43ae4c57f2fd00f6d18ddba51e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.ex": {
+    "mtime": 1780567536.4046395,
+    "ast_hash": "d5edac0c474cea2d4ea70646f010e6f8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.f90": {
+    "mtime": 1780567536.4056501,
+    "ast_hash": "9d9538f1fb0f78875a0a2dcbd8045e21",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.go": {
+    "mtime": 1780567536.4056501,
+    "ast_hash": "b89aceb2ba2a70350d2b95f27c2ffd3f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.groovy": {
+    "mtime": 1780567536.4085577,
+    "ast_hash": "930d531632bec334756dbc1ecffd5607",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.java": {
+    "mtime": 1780567536.4085577,
+    "ast_hash": "a656851a85c317a33704f35d42b0620c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.jl": {
+    "mtime": 1780567536.410575,
+    "ast_hash": "05bf69b153b47ea73964930b374d12ae",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.json": {
+    "mtime": 1780567536.410575,
+    "ast_hash": "2f1e923bc3ed58c55233e963dc6045b4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.kt": {
+    "mtime": 1780567536.410575,
+    "ast_hash": "50555629a5ce0e0b148c162b112cf830",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.lfm": {
+    "mtime": 1780567536.4140599,
+    "ast_hash": "1ec315f44a5ab09c06df3a8e97333ec3",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.lpk": {
+    "mtime": 1780567536.4140599,
+    "ast_hash": "bd451cd8938c8149ac85ca96df47a649",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.luau": {
+    "mtime": 1780567536.4160752,
+    "ast_hash": "0371e4839c69f9e6e4bd6648c4658c30",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.m": {
+    "mtime": 1780567536.4160752,
+    "ast_hash": "c5f2fc141ac551aa2b005874ef90fadb",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.mcp.json": {
+    "mtime": 1780567536.4192948,
+    "ast_hash": "711a748b75ac88f902d20206f62f456b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.pas": {
+    "mtime": 1780567536.420313,
+    "ast_hash": "d4192e62625d914c2fcddbdf47c0b720",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.php": {
+    "mtime": 1780567536.4230442,
+    "ast_hash": "ade86571caa96861ffda7621e089f3d8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.ps1": {
+    "mtime": 1780567536.4242673,
+    "ast_hash": "f490c05808fe7a2405d59746deff79a8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.py": {
+    "mtime": 1780567536.4242673,
+    "ast_hash": "40d26857f9db668c666b9fd6e89cae0f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.razor": {
+    "mtime": 1780567536.4263036,
+    "ast_hash": "3615fcfb4146b40f45e143299c775aeb",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.rb": {
+    "mtime": 1780567536.4263036,
+    "ast_hash": "bc67e4db7dcea4169441db46e4c0d1b2",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.rs": {
+    "mtime": 1780567536.428938,
+    "ast_hash": "6ae255d57f9d6ffc4887b1c3d24f8e50",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.scala": {
+    "mtime": 1780567536.428938,
+    "ast_hash": "c4b036ab5f90c9b6d1d0e01c699673c7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.sh": {
+    "mtime": 1780567536.4309566,
+    "ast_hash": "70f9f27e90d6329a180bb154808e64c5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.sln": {
+    "mtime": 1780567536.432758,
+    "ast_hash": "04e08f3a88d26b5ef04d4b9dd4614c0f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.sql": {
+    "mtime": 1780567536.432758,
+    "ast_hash": "edcd04dd6a02eb350ac8f8c2bc42c3b1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.swift": {
+    "mtime": 1780567536.432758,
+    "ast_hash": "37daf4555ba4cb4a13c336ce7884ea4c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.ts": {
+    "mtime": 1780567536.4347973,
+    "ast_hash": "eca8672c41e03530fc355526545c425e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.tsx": {
+    "mtime": 1780567536.4368136,
+    "ast_hash": "cc4c55319bb09b4bcb9137d52ad8d16c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.zig": {
+    "mtime": 1780567536.4380536,
+    "ast_hash": "2b70ac0b9a1698a539c3a0413369a7ba",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_alter_fk.sql": {
+    "mtime": 1780567536.4380536,
+    "ast_hash": "3ef2846871ce9629d644790cfce469fa",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_calls.py": {
+    "mtime": 1780567536.4380536,
+    "ast_hash": "5d61d0c3268393efdff61e775d0299dc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_php_config.php": {
+    "mtime": 1780567536.4380536,
+    "ast_hash": "ec8acdd57e6c48be2208c8adb68ec9fb",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_php_container.php": {
+    "mtime": 1780567536.4423864,
+    "ast_hash": "53f59426adc01aad42273a91b9c5d682",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_php_listen.php": {
+    "mtime": 1780567536.4423864,
+    "ast_hash": "ee3ff06e804e168123f8426894527195",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_php_static_prop.php": {
+    "mtime": 1780567536.4423864,
+    "ast_hash": "73b53ddaa4e0b43f9868a14f57e41ff7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_preprocessed.F90": {
+    "mtime": 1780567536.4423864,
+    "ast_hash": "119a61bd69d8c4162b8f92634f78e3f1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_schema_qualified.sql": {
+    "mtime": 1780567536.4458518,
+    "ast_hash": "790a536e9a3979fe42fb0ced05550da4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_spock.groovy": {
+    "mtime": 1780567536.4458518,
+    "ast_hash": "1a8cc277ce07523862b09afecdd932e1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample_tsconfig.json": {
+    "mtime": 1780567536.4473672,
+    "ast_hash": "4627aa7f3e9c66e1fccfc2d431608dca",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/storageHelpers.ts": {
+    "mtime": 1780567536.4473672,
+    "ast_hash": "ed55602bc3d6911e4b38461e08c05753",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/swift_cross_file/Foo+Ext.swift": {
+    "mtime": 1780567536.4473672,
+    "ast_hash": "63951fcec2a174509859e3cb4306115f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/swift_cross_file/Foo.swift": {
+    "mtime": 1780567536.4473672,
+    "ast_hash": "ccfe251a8a6099ebeda9c67a098991a6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/typescript_advanced.ts": {
+    "mtime": 1780567536.4473672,
+    "ast_hash": "1c8c7caaa22b89dc2ae46a98bf1ec2c4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/urlHelpers.ts": {
+    "mtime": 1780567536.4473672,
+    "ast_hash": "479220da56fc6a649aee1342446dcf79",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_affected_cli.py": {
+    "mtime": 1780567536.4532824,
+    "ast_hash": "05eb4e515afce74c6a330aab29549905",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_analyze.py": {
+    "mtime": 1780567536.4532824,
+    "ast_hash": "84b2ffb8ab1b778fa18eea560b142240",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_antigravity_install.py": {
+    "mtime": 1780567536.4532824,
+    "ast_hash": "cca95167c3d673c3c2defaf45d5dcaaf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_astro_extraction.py": {
+    "mtime": 1780567536.4572458,
+    "ast_hash": "d02c22e47b8032d135860c1da4bc97a5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_backend_extras.py": {
+    "mtime": 1780567536.457572,
+    "ast_hash": "b933b2c6169cd33156f4b9d34a2aa920",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_benchmark.py": {
+    "mtime": 1780567536.457572,
+    "ast_hash": "ba858da65c6f5166eeb6b469a9693fb3",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_build.py": {
+    "mtime": 1780567536.457572,
+    "ast_hash": "f64ad476b5b0489d09f080cbdd3d887c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_cache.py": {
+    "mtime": 1780567536.4608054,
+    "ast_hash": "936bdfd7a1519e0f98c0866c826dcc5a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_callflow_html.py": {
+    "mtime": 1780567536.4608054,
+    "ast_hash": "dbc4e93925bcff9e6ede406b96bba27a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_charmap_encoding.py": {
+    "mtime": 1780567536.4628155,
+    "ast_hash": "6f944ec6836e2de9540ca3beba1d79b1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_chunking.py": {
+    "mtime": 1780567536.4628155,
+    "ast_hash": "29049c19d1d5fa98e8205d73481585c6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_claude_cli_backend.py": {
+    "mtime": 1780567536.4628155,
+    "ast_hash": "2de891420987cdf06764a2aa582e8555",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_claude_md.py": {
+    "mtime": 1780567536.4628155,
+    "ast_hash": "b8fcdab59fac826310c473a1b2f861c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_cli_export.py": {
+    "mtime": 1780567536.4628155,
+    "ast_hash": "d5f12139091b3bc119ecbda5c84d12e2",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_cluster.py": {
+    "mtime": 1780567536.4690046,
+    "ast_hash": "d809ac0e08a1a08344d4d479714afd9e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_confidence.py": {
+    "mtime": 1780567536.4690046,
+    "ast_hash": "aeaab1837c65fb85507e96621d1fa9e7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_cpp_preprocess.py": {
+    "mtime": 1780567536.4711323,
+    "ast_hash": "99044d22e02adca7fb5a3a7207de9908",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_dart.py": {
+    "mtime": 1780567536.4711323,
+    "ast_hash": "19f97853e6c3b995965a11d30d2c4596",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_dedup.py": {
+    "mtime": 1780567536.4741473,
+    "ast_hash": "4554a8842570ce32ff65c7bb52a0cda0",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_detect.py": {
+    "mtime": 1780567536.4741473,
+    "ast_hash": "448083af9033eda03b637ff3ffd21933",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_devin.py": {
+    "mtime": 1780567536.4741473,
+    "ast_hash": "bd4b17981405dc29c037a8478ee9f411",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_dotnet.py": {
+    "mtime": 1780567536.4772594,
+    "ast_hash": "5690b346daa8f82f2632dcdc4967452e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_explain_cli.py": {
+    "mtime": 1780567536.4772594,
+    "ast_hash": "c2c86dec923b8fca336ced11b3a7dd11",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_export.py": {
+    "mtime": 1780567536.479274,
+    "ast_hash": "d2d4f4f50e86dcf6f10aae167584dda3",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_extract.py": {
+    "mtime": 1780567536.479274,
+    "ast_hash": "6c312d74047a61f1129ffb001c66711f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_extract_cli.py": {
+    "mtime": 1780567536.479274,
+    "ast_hash": "f5bda884bba9db3a89234dc19c1f51a7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_file_node_id_spec.py": {
+    "mtime": 1780567536.4831638,
+    "ast_hash": "957f4e9f592218ca2f3725bf7ac50aea",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_global_graph.py": {
+    "mtime": 1780567536.4831638,
+    "ast_hash": "ab30b4eaabc3bd9e027bbf24f02f301d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_google_workspace.py": {
+    "mtime": 1780567536.4855113,
+    "ast_hash": "af8a234affff192d1d3f7af2c6bc4245",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_hooks.py": {
+    "mtime": 1780567536.4855113,
+    "ast_hash": "fe33c77ea18b47c6eb8fbcb6d2109477",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_hypergraph.py": {
+    "mtime": 1780567536.4855113,
+    "ast_hash": "1256cad0b03866e952d14314edd08116",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_import_extension_resolution.py": {
+    "mtime": 1780567536.4855113,
+    "ast_hash": "d37c11d3cdfc282dcd96546cf6706f39",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_incremental.py": {
+    "mtime": 1780567536.4855113,
+    "ast_hash": "fff9b3da2fda80566e3b083f0e020ca7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_ingest.py": {
+    "mtime": 1780567536.4905107,
+    "ast_hash": "887c3a601773a11f6a3a119c2aa94067",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_install.py": {
+    "mtime": 1780567536.4905107,
+    "ast_hash": "4ae862b06f8b0352caee680593acf531",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_install_references.py": {
+    "mtime": 1780567536.4925427,
+    "ast_hash": "5d18bdf157e5ebb31638457c73791a35",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_install_roundtrip.py": {
+    "mtime": 1780567536.493571,
+    "ast_hash": "e27de4454f90858f1102a39890ac7211",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_install_strings.py": {
+    "mtime": 1780567536.493571,
+    "ast_hash": "773e58959ed2d069c9433fe4837009aa",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_install_upgrade.py": {
+    "mtime": 1780567536.493571,
+    "ast_hash": "c5fcb2a61d395cb6246d05c4efdd0f23",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_js_import_resolution.py": {
+    "mtime": 1780567536.493571,
+    "ast_hash": "5894d99fcb1345b3187c1665bb304b34",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_labeling.py": {
+    "mtime": 1780567536.4979343,
+    "ast_hash": "05f7ef64c323544ce364d94c247b226a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_languages.py": {
+    "mtime": 1780567536.4979343,
+    "ast_hash": "ab1ff759a43c4eb0b48a0f1417edc84a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_llm_backends.py": {
+    "mtime": 1780567536.5004487,
+    "ast_hash": "3c9101b2a9f19e78adf37aff8c935049",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_llm_parser.py": {
+    "mtime": 1780567536.5004487,
+    "ast_hash": "754ee6540a5752df8fa4488029a009cb",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_mcp_ingest.py": {
+    "mtime": 1780567536.5004487,
+    "ast_hash": "063db4e850d3b7f8de00ccc8ac9c305f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_multigraph_compat.py": {
+    "mtime": 1780567536.5004487,
+    "ast_hash": "9523dddf51d3a02cac21ababb51674f5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_multigraph_diagnostics.py": {
+    "mtime": 1780567536.5004487,
+    "ast_hash": "3f723e26b00a046d0282c69431115fea",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_multilang.py": {
+    "mtime": 1780567536.5004487,
+    "ast_hash": "8f02328c90a55e1e5edfeb903cb7ff70",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_obsidian_filename_cap.py": {
+    "mtime": 1780567536.5071838,
+    "ast_hash": "2496463d20a0f0e654979bb379921f37",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_office_limits.py": {
+    "mtime": 1780567536.5071838,
+    "ast_hash": "291d62952e8d3f677509634cb42314f4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_ollama.py": {
+    "mtime": 1780567536.509338,
+    "ast_hash": "83709c03759f770d1bde3bd8124a1c11",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_pascal.py": {
+    "mtime": 1780567536.509338,
+    "ast_hash": "10386495508870fd8705f9d7c502dd79",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_path_cli.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "8de169afa6645a8afeb647764e663b07",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_pipeline.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "7fd37b8566d77fd4127081245f605e7d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_provider_registry.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "a2badc9724fafdf22808232556fdc346",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_prs.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "38e16aa0e8ca28267daecda50259ed7e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_python_import_resolution.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "c6edac6cd94226554809b7355eda707b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_query_cli.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "3d8713ee35b363b5ffaf7eb996146fb6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_querylog.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "65afa59c0aeb7cffffe172acae787ca9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_rationale.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "345c9427bbd3cba54953b597aac2313b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_read_hook.py": {
+    "mtime": 1780567536.5108504,
+    "ast_hash": "0dafbd7584d739975966ea640e6c47be",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_report.py": {
+    "mtime": 1780567536.5210135,
+    "ast_hash": "c30892057a259583592cb99291c7e424",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_scip_ingest.py": {
+    "mtime": 1780567536.5210135,
+    "ast_hash": "aecd586518fc9cf3b8ec33fb0274bf8f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_security.py": {
+    "mtime": 1780567536.5210135,
+    "ast_hash": "afcd39d24fcab3502608d4c199990c14",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_semantic_cleanup.py": {
+    "mtime": 1780567536.525128,
+    "ast_hash": "189731b8fc7671ea4a23f5d9c4869312",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_semantic_similarity.py": {
+    "mtime": 1780567536.525128,
+    "ast_hash": "8b6da033b8d5c2e759b10162e507acd3",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_serve.py": {
+    "mtime": 1780567536.5284715,
+    "ast_hash": "68a5e0a57fa8f34843c9db0d8319aa78",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_skillgen.py": {
+    "mtime": 1780567536.52969,
+    "ast_hash": "e2bd48c336f65daafff779db1e7174f0",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_symbol_resolution.py": {
+    "mtime": 1780567536.5312247,
+    "ast_hash": "eee6a81ac679b2329205d3450a56c73f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_transcribe.py": {
+    "mtime": 1780567536.5327518,
+    "ast_hash": "4f93c061f990991830203ce129291dd0",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_ts_inheritance.py": {
+    "mtime": 1780567536.5327518,
+    "ast_hash": "d750af68f102340116a3d617103c43c4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_validate.py": {
+    "mtime": 1780567536.5327518,
+    "ast_hash": "40f7c94d777ba791d6711ca7ad6444b1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_watch.py": {
+    "mtime": 1780567536.5359745,
+    "ast_hash": "423b91ac60a894642cf78badb163bbce",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_wheel_packaging.py": {
+    "mtime": 1780567536.5359745,
+    "ast_hash": "d9c32cff5c653afc6928f9acf87ed191",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/test_wiki.py": {
+    "mtime": 1780567536.5379915,
+    "ast_hash": "01504c2c2a8ecbd85e4719bb4a122c7b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/__init__.py": {
+    "mtime": 1780567536.5379915,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/__init__.py": {
+    "mtime": 1780567536.5415068,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/__main__.py": {
+    "mtime": 1780567536.5425322,
+    "ast_hash": "096cddc5f0e5ccc3dfae70d80823b7b5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/gen.py": {
+    "mtime": 1780567537.1907437,
+    "ast_hash": "4c3537af97dba2f2e5f9ab73913995c8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/example/raw/api.py": {
+    "mtime": 1780567537.21385,
+    "ast_hash": "94803866dac5d43ca93424600f92d087",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/example/raw/parser.py": {
+    "mtime": 1780567537.2228003,
+    "ast_hash": "7e851d6c9387d9dfe3d950da8134e907",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/example/raw/processor.py": {
+    "mtime": 1780567537.2251942,
+    "ast_hash": "039460bdd76c82646b92300559d85c8b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/example/raw/storage.py": {
+    "mtime": 1780567537.2292316,
+    "ast_hash": "51d7ae51c2822415aa561d6b5c2d21eb",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/example/raw/validator.py": {
+    "mtime": 1780567537.2292316,
+    "ast_hash": "0a1d1764da88dd249b9234f2fed8a4c8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/graph.json": {
+    "mtime": 1780567537.2380114,
+    "ast_hash": "57028339d42b045597a86010f8512f0e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/raw/auth.py": {
+    "mtime": 1780567537.240072,
+    "ast_hash": "f5e54f028db29f5ade3137e89f11e2e9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/raw/client.py": {
+    "mtime": 1780567537.2419393,
+    "ast_hash": "cb2d79a9a63444bd67eac05d9180eee6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/raw/exceptions.py": {
+    "mtime": 1780567537.2444916,
+    "ast_hash": "5cbe3454de1c02efd39d6ed626891664",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/raw/models.py": {
+    "mtime": 1780567537.249029,
+    "ast_hash": "8bd8f9e42930dfdd3f11236ea96dd30c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/raw/transport.py": {
+    "mtime": 1780567537.2510414,
+    "ast_hash": "44ad90c1522cf5a4cdcc204a823d4b38",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/raw/utils.py": {
+    "mtime": 1780567537.2530572,
+    "ast_hash": "396942df3d2ce6762c3d65014d0bbe19",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/karpathy-repos/graph.json": {
+    "mtime": 1780567537.2650523,
+    "ast_hash": "d6e2e2e97fb336673317351d3cfb1463",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/mixed-corpus/graph.json": {
+    "mtime": 1780567537.2713733,
+    "ast_hash": "3472483d969211d3e481a003d71c70a9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/mixed-corpus/raw/analyze.py": {
+    "mtime": 1780567537.2774215,
+    "ast_hash": "ab646c14d0bd6ade6453e830d366760c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/mixed-corpus/raw/build.py": {
+    "mtime": 1780567537.2794447,
+    "ast_hash": "5473722d759c4cde9072c2612c1c0a9e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/mixed-corpus/raw/cluster.py": {
+    "mtime": 1780567537.2814689,
+    "ast_hash": "cb21fb4b090dc4b6067a9235ee1278cb",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/rsl-siege-manager/graph.json": {
+    "mtime": 1780567537.3275905,
+    "ast_hash": "7609658567425751e750d0f3007e0a2a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/rsl-siege-manager/manifest.json": {
+    "mtime": 1780567537.3296144,
+    "ast_hash": "1713c4ede148cc142e79c786e8d11ec4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/llm.py": {
+    "mtime": 1780918514.8198538,
+    "ast_hash": "7b34dbea430086270b479fe430d055f6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/main.py": {
+    "mtime": 1780920681.0856633,
+    "ast_hash": "b8d32c52c055da25cb3672b440651646",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/meeting_booking_service.py": {
+    "mtime": 1780920744.8418367,
+    "ast_hash": "d769ac3f87fbaedc39e6297c5de599a9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/migrate_data.py": {
+    "mtime": 1779799966.6606767,
+    "ast_hash": "4b97c2ace80ed98b8821dc7520529eca",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/migrate_sqlite_to_mysql.py": {
+    "mtime": 1779708915.626767,
+    "ast_hash": "17e522fee8addd6c417fa0fd12b331e5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/query_db.py": {
+    "mtime": 1778696284.0,
+    "ast_hash": "5261506eb300a920e8951e38e582e77b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/reset_for_production.py": {
+    "mtime": 1779799959.292655,
+    "ast_hash": "56ed9995c222a0d53295296790e6ee8f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/reset_users.py": {
+    "mtime": 1779712769.7797983,
+    "ast_hash": "29bfa65537fc175f19f282c834d98e31",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/run_backend.py": {
+    "mtime": 1779093263.9779906,
+    "ast_hash": "114b388e7874ed5627042418ed14f90a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/scratch/add_constraint.py": {
+    "mtime": 1778838852.0,
+    "ast_hash": "290479552c8f0bcf7821581da5c6f7ef",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/scratch/check_routes.py": {
+    "mtime": 1779781641.3598523,
+    "ast_hash": "44bc4219d8f3be65ec7564ac4a8ee6ad",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/scratch/kill_port_8000.py": {
+    "mtime": 1779785884.6438193,
+    "ast_hash": "058eedbbdad644754eff1c470023d2eb",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/scratch/search_file.py": {
+    "mtime": 1779690873.938294,
+    "ast_hash": "f55cdb089c80f917925a615e8364bb00",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/scratch/search_phone.py": {
+    "mtime": 1779781377.836794,
+    "ast_hash": "1e24a5b250793cfc3d147a56c2c16d31",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/scratch/verify_backend.py": {
+    "mtime": 1779691128.6602786,
+    "ast_hash": "9efc1d79ed742ad178ce95879dec0007",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_cal.py": {
+    "mtime": 1778695626.0,
+    "ast_hash": "d8e2fd9515e9405ba7083acba010af50",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_db.py": {
+    "mtime": 1778689038.0,
+    "ast_hash": "08a13ca4999a5e6f96c4bc7c0191fee2",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_db_detailed.py": {
+    "mtime": 1778690244.0,
+    "ast_hash": "2274136294bac1b4ae362fe667115344",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_email_calendar_direct.py": {
+    "mtime": 1780044354.815215,
+    "ast_hash": "ea7dff9189aaa101b0af405a3d95ae10",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_full_cycle.py": {
+    "mtime": 1779710435.0484345,
+    "ast_hash": "c8988d2494c890761a62df988f2ea7d9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_mysql.py": {
+    "mtime": 1778694670.0,
+    "ast_hash": "0dff22c43febf6c81cc2a44fe2e794dc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_reset_flow.py": {
+    "mtime": 1779864719.6862345,
+    "ast_hash": "92ea0b7af8ea2f84dc62e7eee08b1af5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_zapier.py": {
+    "mtime": 1779798785.146989,
+    "ast_hash": "69a2ff2aa793e3cd139a4aa0a2bc4639",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/trigger_test_webhook.py": {
+    "mtime": 1779798785.1530118,
+    "ast_hash": "7a387f3d879f9987562c88ca71e4db1e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/eslint.config.js": {
+    "mtime": 1778484074.0,
+    "ast_hash": "3aa4b57d7f08181d86bde52a4dcb7f22",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/package.json": {
+    "mtime": 1778570156.0,
+    "ast_hash": "2a28380507022c96253fc884087d9835",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/postcss.config.js": {
+    "mtime": 1778485202.0,
+    "ast_hash": "c1ee9ce6a4fe04105dbf8e619390df5e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/App.jsx": {
+    "mtime": 1780038280.0771182,
+    "ast_hash": "f56c694240ccb86f19165d9996321ef8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/components/Appointments.jsx": {
+    "mtime": 1778495440.0,
+    "ast_hash": "60ad51def4b55ad6b457a773bfb0f5d7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/components/BookingModal.jsx": {
+    "mtime": 1780917637.371428,
+    "ast_hash": "f92aefcf4125e6219276b09e480672ad",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/components/CalendarWidget.jsx": {
+    "mtime": 1778497270.0,
+    "ast_hash": "12cfcea4cc967c510b89962b558f355e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/components/Chat.jsx": {
+    "mtime": 1780918482.4618514,
+    "ast_hash": "aed9f373042193d30872b1bb3ddba8bc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/components/Layout.jsx": {
+    "mtime": 1780918086.2251792,
+    "ast_hash": "6aa2cc77cda04302aa602bc0af2210ea",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/components/Sidebar.jsx": {
+    "mtime": 1780572915.0939083,
+    "ast_hash": "6959b0ea2b85dc8bca9d969f206ee703",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/lib/api.js": {
+    "mtime": 1780642597.32137,
+    "ast_hash": "182cf33c5b255ac48a69a6f5cc025bd0",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/lib/auth.jsx": {
+    "mtime": 1779962840.2897158,
+    "ast_hash": "1908e93aa5709af87df39caae2bea7c6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/main.jsx": {
+    "mtime": 1778484074.0,
+    "ast_hash": "e13723e2574429d9a6d849727e3ff695",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/AdminApprovedPage.jsx": {
+    "mtime": 1780642733.9740205,
+    "ast_hash": "919d1b3293e62d573bdb1cd968cce93b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/AdminCalendarSlotsPage.jsx": {
+    "mtime": 1780918654.178759,
+    "ast_hash": "94315ef374fa02d3e418539baa2b86ef",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/AdminDashboard.jsx": {
+    "mtime": 1780917640.1499255,
+    "ast_hash": "51e725adc618956a333ebb7ec5cf2634",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/AdminDecisionFeed.jsx": {
+    "mtime": 1780917646.016394,
+    "ast_hash": "897646c3601dba187620d8672cf70e9b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/AdminReschedulePage.jsx": {
+    "mtime": 1780642739.5921848,
+    "ast_hash": "5a735399accd864bf0661081cea863f3",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/AdminSlotsBookedPage.jsx": {
+    "mtime": 1780917650.9930117,
+    "ast_hash": "d361ca9a3a721566217695864817502d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/AdminUsersPage.jsx": {
+    "mtime": 1780918159.2242124,
+    "ast_hash": "67bb424d2a684902de144861dd3ed669",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/AnalyticsPage.jsx": {
+    "mtime": 1778576648.0,
+    "ast_hash": "779ecbbcb662664641ef52f1cd0d9582",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/BookingPage.jsx": {
+    "mtime": 1780918477.594383,
+    "ast_hash": "8b83da9cc32de5c6ed3199caef99a1d2",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/ClientDashboard.jsx": {
+    "mtime": 1780920752.7178924,
+    "ast_hash": "50867664a0adef2c142cd95bc51c475f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/ForgotPassword.jsx": {
+    "mtime": 1779863698.5007606,
+    "ast_hash": "a245aeb612df1dd0ed3e79e8f668a427",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/Login.jsx": {
+    "mtime": 1779962851.9649496,
+    "ast_hash": "8a1c4daa4215635b0fe0c03bacd05c3b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/NotificationsPage.jsx": {
+    "mtime": 1779444282.2911384,
+    "ast_hash": "acb394a54a4022a6d97e890cf4e416d9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/ResetPassword.jsx": {
+    "mtime": 1779863707.0172055,
+    "ast_hash": "7abfa6e179b8542628f62d1d7e5c5bb5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/SettingsPage.jsx": {
+    "mtime": 1779952047.023296,
+    "ast_hash": "c2d28adb5773f097908b1d6691bac6f3",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/pages/Signup.jsx": {
+    "mtime": 1779962862.4389553,
+    "ast_hash": "31143d06941d4372c1a556e8faf3c215",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/tailwind.config.js": {
+    "mtime": 1778576648.0,
+    "ast_hash": "655d66486911c3f0df96ec1d71a54111",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/vercel.json": {
+    "mtime": 1778844824.0,
+    "ast_hash": "6411d2fbb5f0e00aaff0ca0ded84e0b6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/vite.config.js": {
+    "mtime": 1778844916.0,
+    "ast_hash": "20631e90df12cbf6dc56386fb8fc7383",
+    "semantic_hash": ""
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1780570960.772856,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1780570960.774854,
+    "ast_hash": "637776aa6f7496d069afe7520c845c8a",
+    "semantic_hash": ""
+  },
+  "deployment_guide.md": {
+    "mtime": 1779800014.8581035,
+    "ast_hash": "577495882283cc18616c089fd26ecb4f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/DESIGN.md": {
+    "mtime": 1778575908.0,
+    "ast_hash": "cba2e6ccf3105a3722fb7ce239689ee9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/README.md": {
+    "mtime": 1778839836.0,
+    "ast_hash": "c8da2138343b8bb8d480f21688cddb8b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/admin.html": {
+    "mtime": 1780035088.626929,
+    "ast_hash": "ada46e057ede66a37e9e5382034daa2b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/.github/FUNDING.yml": {
+    "mtime": 1780567536.083004,
+    "ast_hash": "3026fc64a3b0c93415606cc9799356cd",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/.github/workflows/ci.yml": {
+    "mtime": 1780567536.0866706,
+    "ast_hash": "f227d2d590ea8b8f4776b1c12de36949",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/.pre-commit-config.yaml": {
+    "mtime": 1780567536.090198,
+    "ast_hash": "aefc571dab4abfe84800fd39d71fa50d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/AGENTS.md": {
+    "mtime": 1780567536.0929387,
+    "ast_hash": "ab254d0a1c83f1f4813a79ddddbdf284",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/ARCHITECTURE.md": {
+    "mtime": 1780567536.0929387,
+    "ast_hash": "ba157b42ddab031711caa6bba6eef72e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/CHANGELOG.md": {
+    "mtime": 1780567536.0969284,
+    "ast_hash": "f16375ed2ac53fea82316c7d1ac202e7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/README.md": {
+    "mtime": 1780567536.0989666,
+    "ast_hash": "14f1822059a49b6e84e8eb2ac534b62d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/SECURITY.md": {
+    "mtime": 1780567536.0989666,
+    "ast_hash": "8cc42d0936db88514164fa88aa35ee37",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/docker-mcp-sqlite.md": {
+    "mtime": 1780567536.1012597,
+    "ast_hash": "f560062bc0fa9015e579083a3c6de462",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/how-it-works.md": {
+    "mtime": 1780567536.1012597,
+    "ast_hash": "300c8ab0faca827d2cec848762ba58db",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/superpowers/plans/2026-05-04-incremental-updates-dedup.md": {
+    "mtime": 1780567536.108507,
+    "ast_hash": "8f2e4bf83e61604829f985428bb51fe3",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/superpowers/specs/2026-05-04-incremental-updates-dedup-design.md": {
+    "mtime": 1780567536.1119642,
+    "ast_hash": "1e5a0a2f249d793a88a2c729679be698",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.ar-SA.md": {
+    "mtime": 1780567536.1119642,
+    "ast_hash": "2f3937d556a28c1b810da9ee7dc5b85a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.cs-CZ.md": {
+    "mtime": 1780567536.1119642,
+    "ast_hash": "deedc1770222ea123c87e762cfd27039",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.da-DK.md": {
+    "mtime": 1780567536.1119642,
+    "ast_hash": "8c40f9404f0f9a743c789ed60166725c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.de-DE.md": {
+    "mtime": 1780567536.1176538,
+    "ast_hash": "8e1edf06363192518983707168f92776",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.el-GR.md": {
+    "mtime": 1780567536.1176538,
+    "ast_hash": "2221b84b6d27bd8dc59c10552228575a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.es-ES.md": {
+    "mtime": 1780567536.1176538,
+    "ast_hash": "bbfdb6ad07c6f05e89b5f649eac50d89",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.fi-FI.md": {
+    "mtime": 1780567536.1199782,
+    "ast_hash": "b96d3f3dcc2fcfec74e5775121e05e9a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.fil-PH.md": {
+    "mtime": 1780567536.1225007,
+    "ast_hash": "fc3f10b764b31ef2783e766a22e721cc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.fr-FR.md": {
+    "mtime": 1780567536.1245315,
+    "ast_hash": "05130e618cdd9a1d6c451d1c51ac0bb7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.hi-IN.md": {
+    "mtime": 1780567536.1245315,
+    "ast_hash": "664db1a269938faec6c735dea4b04080",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.hu-HU.md": {
+    "mtime": 1780567536.1265435,
+    "ast_hash": "8c79133602c728ae3edf2792a11d2a47",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.id-ID.md": {
+    "mtime": 1780567536.1265435,
+    "ast_hash": "09649ebf9bf848fc050c451eb0d62aee",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.it-IT.md": {
+    "mtime": 1780567536.1265435,
+    "ast_hash": "006a95989f743c9a2d6cca19aabf1b04",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.ja-JP.md": {
+    "mtime": 1780567536.1311471,
+    "ast_hash": "ffc7a81315dee82592745f0c38f002d5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.ko-KR.md": {
+    "mtime": 1780567536.1326594,
+    "ast_hash": "aeac4be784ff36520651d43d0413a87f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.nl-NL.md": {
+    "mtime": 1780567536.1337266,
+    "ast_hash": "d073585598808731e7aea27376375c8b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.no-NO.md": {
+    "mtime": 1780567536.1337266,
+    "ast_hash": "1269f43ad7bc9da4a8b533065505d3f3",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.pl-PL.md": {
+    "mtime": 1780567536.1362572,
+    "ast_hash": "9b3d14a334a7255e5a051c672f905681",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.pt-BR.md": {
+    "mtime": 1780567536.1372147,
+    "ast_hash": "af37ef2f9ec89f736a78e1ddb44546fd",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.ro-RO.md": {
+    "mtime": 1780567536.1392262,
+    "ast_hash": "91b7f1ca67846789beed2e6f9c010b23",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.ru-RU.md": {
+    "mtime": 1780567536.140714,
+    "ast_hash": "0b5f2519c001082e318f7c855030756c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.sv-SE.md": {
+    "mtime": 1780567536.140714,
+    "ast_hash": "344cf5d072cf2f89ce43db53d56db10d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.th-TH.md": {
+    "mtime": 1780567536.1427286,
+    "ast_hash": "bf9eec4d103308020cd00f647abec98a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.tr-TR.md": {
+    "mtime": 1780567536.1437786,
+    "ast_hash": "86737c3a7aacd8cacf43920689394c67",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.uk-UA.md": {
+    "mtime": 1780567536.1448114,
+    "ast_hash": "5d3de4f39df3be19186f42fb13517b9c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.uz-UZ.md": {
+    "mtime": 1780567536.146934,
+    "ast_hash": "15faa1458902b2bdca8a550e98dbd541",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.vi-VN.md": {
+    "mtime": 1780567536.1481388,
+    "ast_hash": "4bcdde863dbc0324c59a6b90bdea04f8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.zh-CN.md": {
+    "mtime": 1780567536.1487038,
+    "ast_hash": "b845fc1bf8b8370c4814137bb0cb7e49",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/translations/README.zh-TW.md": {
+    "mtime": 1780567536.1487038,
+    "ast_hash": "e00762ede65447a3535d9c2a960db89f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/always_on/agents-md.md": {
+    "mtime": 1780567536.157735,
+    "ast_hash": "752aa83aa64361ac32860f882dcff932",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/always_on/antigravity-rules.md": {
+    "mtime": 1780567536.157735,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/always_on/claude-md.md": {
+    "mtime": 1780567536.157735,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/always_on/gemini-md.md": {
+    "mtime": 1780567536.1626613,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/always_on/kiro-steering.md": {
+    "mtime": 1780567536.1637225,
+    "ast_hash": "81be1a4201e0893879433cddab9ffd20",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/always_on/vscode-instructions.md": {
+    "mtime": 1780567536.1647525,
+    "ast_hash": "2b23503628bf2ec71d067a85ca8948ab",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/command-kilo.md": {
+    "mtime": 1780567536.1733315,
+    "ast_hash": "feed090058024b3b0c5c93a0a0f2bbd8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-aider.md": {
+    "mtime": 1780567536.2036927,
+    "ast_hash": "5a2edbbc55cdbcb635c4a9c46970416e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-amp.md": {
+    "mtime": 1780567536.208205,
+    "ast_hash": "53aba1630a540021075103c5872d62f5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-claw.md": {
+    "mtime": 1780567536.208205,
+    "ast_hash": "88c8b6d90b01f012916de4a7c7505b62",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-codex.md": {
+    "mtime": 1780567536.2102263,
+    "ast_hash": "c90158162bcb3d54d075273ea13c20ca",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-copilot.md": {
+    "mtime": 1780567536.2102263,
+    "ast_hash": "88c8b6d90b01f012916de4a7c7505b62",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-devin.md": {
+    "mtime": 1780567536.2102263,
+    "ast_hash": "b6e237f4323b883064cbd80601950bdc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-droid.md": {
+    "mtime": 1780567536.2102263,
+    "ast_hash": "e6276afa366daab96867807ad90dfbd6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-kilo.md": {
+    "mtime": 1780567536.2152827,
+    "ast_hash": "b28447bc993f264ba937815aa4e09997",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-kiro.md": {
+    "mtime": 1780567536.2152827,
+    "ast_hash": "9f5547fbfc4e87a8e80ccb36143f55e4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-opencode.md": {
+    "mtime": 1780567536.218329,
+    "ast_hash": "ed85564fe2dcc5fcd12fcc5000f0be6a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-pi.md": {
+    "mtime": 1780567536.218329,
+    "ast_hash": "9f5547fbfc4e87a8e80ccb36143f55e4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-trae.md": {
+    "mtime": 1780567536.218329,
+    "ast_hash": "639f82c511acd8730fd306e8d626750f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-vscode.md": {
+    "mtime": 1780567536.221693,
+    "ast_hash": "91c3f70fe943b3fe57e848267a9e44ba",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill-windows.md": {
+    "mtime": 1780567536.221693,
+    "ast_hash": "2b322366533837bd4968c9eb1700574a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skill.md": {
+    "mtime": 1780567536.221693,
+    "ast_hash": "c9b93d72e7604d4f10103b741b42b50f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/amp/references/add-watch.md": {
+    "mtime": 1780567536.2246444,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/amp/references/exports.md": {
+    "mtime": 1780567536.2246444,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/amp/references/extraction-spec.md": {
+    "mtime": 1780567536.2285767,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/amp/references/github-and-merge.md": {
+    "mtime": 1780567536.2285767,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/amp/references/hooks.md": {
+    "mtime": 1780567536.2312605,
+    "ast_hash": "5da7125d6438cc8243ddae5176bbb153",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/amp/references/query.md": {
+    "mtime": 1780567536.2312605,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/amp/references/transcribe.md": {
+    "mtime": 1780567536.233275,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/amp/references/update.md": {
+    "mtime": 1780567536.233275,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claude/references/add-watch.md": {
+    "mtime": 1780567536.2368178,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claude/references/exports.md": {
+    "mtime": 1780567536.2368178,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claude/references/extraction-spec.md": {
+    "mtime": 1780567536.238834,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claude/references/github-and-merge.md": {
+    "mtime": 1780567536.2408674,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claude/references/hooks.md": {
+    "mtime": 1780567536.242381,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claude/references/query.md": {
+    "mtime": 1780567536.242381,
+    "ast_hash": "9c4d903233738180a0d50a7fb709d811",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claude/references/transcribe.md": {
+    "mtime": 1780567536.2448916,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claude/references/update.md": {
+    "mtime": 1780567536.2448916,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claw/references/add-watch.md": {
+    "mtime": 1780567536.248116,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claw/references/exports.md": {
+    "mtime": 1780567536.2491522,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claw/references/extraction-spec.md": {
+    "mtime": 1780567536.2491522,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claw/references/github-and-merge.md": {
+    "mtime": 1780567536.25168,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claw/references/hooks.md": {
+    "mtime": 1780567536.25168,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claw/references/query.md": {
+    "mtime": 1780567536.25168,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claw/references/transcribe.md": {
+    "mtime": 1780567536.25168,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/claw/references/update.md": {
+    "mtime": 1780567536.25168,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/codex/references/add-watch.md": {
+    "mtime": 1780567536.2580478,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/codex/references/exports.md": {
+    "mtime": 1780567536.2595854,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/codex/references/extraction-spec.md": {
+    "mtime": 1780567536.2595854,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/codex/references/github-and-merge.md": {
+    "mtime": 1780567536.2595854,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/codex/references/hooks.md": {
+    "mtime": 1780567536.2626293,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/codex/references/query.md": {
+    "mtime": 1780567536.2626293,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/codex/references/transcribe.md": {
+    "mtime": 1780567536.2657046,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/codex/references/update.md": {
+    "mtime": 1780567536.2657046,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/copilot/references/add-watch.md": {
+    "mtime": 1780567536.2657046,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/copilot/references/exports.md": {
+    "mtime": 1780567536.2700646,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/copilot/references/extraction-spec.md": {
+    "mtime": 1780567536.2700646,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/copilot/references/github-and-merge.md": {
+    "mtime": 1780567536.2723908,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/copilot/references/hooks.md": {
+    "mtime": 1780567536.2733984,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/copilot/references/query.md": {
+    "mtime": 1780567536.275425,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/copilot/references/transcribe.md": {
+    "mtime": 1780567536.275425,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/copilot/references/update.md": {
+    "mtime": 1780567536.2774417,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/droid/references/add-watch.md": {
+    "mtime": 1780567536.2810104,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/droid/references/exports.md": {
+    "mtime": 1780567536.2810104,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/droid/references/extraction-spec.md": {
+    "mtime": 1780567536.2810104,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/droid/references/github-and-merge.md": {
+    "mtime": 1780567536.2837706,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/droid/references/hooks.md": {
+    "mtime": 1780567536.2837706,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/droid/references/query.md": {
+    "mtime": 1780567536.2837706,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/droid/references/transcribe.md": {
+    "mtime": 1780567536.2837706,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/droid/references/update.md": {
+    "mtime": 1780567536.2837706,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kilo/references/add-watch.md": {
+    "mtime": 1780567536.2908654,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kilo/references/exports.md": {
+    "mtime": 1780567536.2924008,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kilo/references/extraction-spec.md": {
+    "mtime": 1780567536.2924008,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kilo/references/github-and-merge.md": {
+    "mtime": 1780567536.2941604,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kilo/references/hooks.md": {
+    "mtime": 1780567536.2947588,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kilo/references/query.md": {
+    "mtime": 1780567536.2962935,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kilo/references/transcribe.md": {
+    "mtime": 1780567536.2962935,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kilo/references/update.md": {
+    "mtime": 1780567536.2962935,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kiro/references/add-watch.md": {
+    "mtime": 1780567536.3011458,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kiro/references/exports.md": {
+    "mtime": 1780567536.3011458,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kiro/references/extraction-spec.md": {
+    "mtime": 1780567536.303187,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kiro/references/github-and-merge.md": {
+    "mtime": 1780567536.303187,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kiro/references/hooks.md": {
+    "mtime": 1780567536.3047106,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kiro/references/query.md": {
+    "mtime": 1780567536.3047106,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kiro/references/transcribe.md": {
+    "mtime": 1780567536.3067539,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/kiro/references/update.md": {
+    "mtime": 1780567536.3067539,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/opencode/references/add-watch.md": {
+    "mtime": 1780567536.3113773,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/opencode/references/exports.md": {
+    "mtime": 1780567536.312045,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/opencode/references/extraction-spec.md": {
+    "mtime": 1780567536.3135326,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/opencode/references/github-and-merge.md": {
+    "mtime": 1780567536.315333,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/opencode/references/hooks.md": {
+    "mtime": 1780567536.3160212,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/opencode/references/query.md": {
+    "mtime": 1780567536.3160212,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/opencode/references/transcribe.md": {
+    "mtime": 1780567536.3160212,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/opencode/references/update.md": {
+    "mtime": 1780567536.3160212,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/pi/references/add-watch.md": {
+    "mtime": 1780567536.322332,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/pi/references/exports.md": {
+    "mtime": 1780567536.322332,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/pi/references/extraction-spec.md": {
+    "mtime": 1780567536.3244882,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/pi/references/github-and-merge.md": {
+    "mtime": 1780567536.3262193,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/pi/references/hooks.md": {
+    "mtime": 1780567536.3262193,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/pi/references/query.md": {
+    "mtime": 1780567536.3262193,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/pi/references/transcribe.md": {
+    "mtime": 1780567536.3293512,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/pi/references/update.md": {
+    "mtime": 1780567536.3293512,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/trae/references/add-watch.md": {
+    "mtime": 1780567536.3327982,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/trae/references/exports.md": {
+    "mtime": 1780567536.3327982,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/trae/references/extraction-spec.md": {
+    "mtime": 1780567536.3327982,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/trae/references/github-and-merge.md": {
+    "mtime": 1780567536.3327982,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/trae/references/hooks.md": {
+    "mtime": 1780567536.3327982,
+    "ast_hash": "b7099eba34d64460003ed69fdb21ea14",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/trae/references/query.md": {
+    "mtime": 1780567536.3327982,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/trae/references/transcribe.md": {
+    "mtime": 1780567536.3395674,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/trae/references/update.md": {
+    "mtime": 1780567536.3395674,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/vscode/references/add-watch.md": {
+    "mtime": 1780567536.3431554,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/vscode/references/exports.md": {
+    "mtime": 1780567536.3431554,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/vscode/references/extraction-spec.md": {
+    "mtime": 1780567536.3431554,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/vscode/references/github-and-merge.md": {
+    "mtime": 1780567536.3431554,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/vscode/references/hooks.md": {
+    "mtime": 1780567536.3431554,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/vscode/references/query.md": {
+    "mtime": 1780567536.3431554,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/vscode/references/transcribe.md": {
+    "mtime": 1780567536.3431554,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/vscode/references/update.md": {
+    "mtime": 1780567536.3431554,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/windows/references/add-watch.md": {
+    "mtime": 1780567536.353321,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/windows/references/exports.md": {
+    "mtime": 1780567536.353321,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/windows/references/extraction-spec.md": {
+    "mtime": 1780567536.3554235,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/windows/references/github-and-merge.md": {
+    "mtime": 1780567536.3554235,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/windows/references/hooks.md": {
+    "mtime": 1780567536.357445,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/windows/references/query.md": {
+    "mtime": 1780567536.357445,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/windows/references/transcribe.md": {
+    "mtime": 1780567536.357445,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/graphify/skills/windows/references/update.md": {
+    "mtime": 1780567536.357445,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/deploy_guide.md": {
+    "mtime": 1780567536.3849742,
+    "ast_hash": "4c9127679279842396174bef13f7937b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.md": {
+    "mtime": 1780567536.420313,
+    "ast_hash": "e23659acdd71c13913857fceb1fabb48",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__always_on__agents-md.md": {
+    "mtime": 1780567536.5449736,
+    "ast_hash": "752aa83aa64361ac32860f882dcff932",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__always_on__antigravity-rules.md": {
+    "mtime": 1780567536.5449736,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__always_on__claude-md.md": {
+    "mtime": 1780567536.5449736,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__always_on__gemini-md.md": {
+    "mtime": 1780567536.5449736,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__always_on__kiro-steering.md": {
+    "mtime": 1780567536.5449736,
+    "ast_hash": "81be1a4201e0893879433cddab9ffd20",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__always_on__vscode-instructions.md": {
+    "mtime": 1780567536.5449736,
+    "ast_hash": "2b23503628bf2ec71d067a85ca8948ab",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-aider.md": {
+    "mtime": 1780567536.551804,
+    "ast_hash": "5a2edbbc55cdbcb635c4a9c46970416e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-amp.md": {
+    "mtime": 1780567536.5533369,
+    "ast_hash": "53aba1630a540021075103c5872d62f5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-claw.md": {
+    "mtime": 1780567536.5533369,
+    "ast_hash": "88c8b6d90b01f012916de4a7c7505b62",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-codex.md": {
+    "mtime": 1780567536.5533369,
+    "ast_hash": "c90158162bcb3d54d075273ea13c20ca",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-copilot.md": {
+    "mtime": 1780567536.5574949,
+    "ast_hash": "88c8b6d90b01f012916de4a7c7505b62",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-devin.md": {
+    "mtime": 1780567536.5574949,
+    "ast_hash": "b6e237f4323b883064cbd80601950bdc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-droid.md": {
+    "mtime": 1780567536.5574949,
+    "ast_hash": "e6276afa366daab96867807ad90dfbd6",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-kilo.md": {
+    "mtime": 1780567536.5574949,
+    "ast_hash": "b28447bc993f264ba937815aa4e09997",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-kiro.md": {
+    "mtime": 1780567536.562026,
+    "ast_hash": "9f5547fbfc4e87a8e80ccb36143f55e4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-opencode.md": {
+    "mtime": 1780567536.562026,
+    "ast_hash": "ed85564fe2dcc5fcd12fcc5000f0be6a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-pi.md": {
+    "mtime": 1780567536.562026,
+    "ast_hash": "9f5547fbfc4e87a8e80ccb36143f55e4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-trae.md": {
+    "mtime": 1780567536.562026,
+    "ast_hash": "639f82c511acd8730fd306e8d626750f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-vscode.md": {
+    "mtime": 1780567536.5669842,
+    "ast_hash": "91c3f70fe943b3fe57e848267a9e44ba",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill-windows.md": {
+    "mtime": 1780567536.5669842,
+    "ast_hash": "2b322366533837bd4968c9eb1700574a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skill.md": {
+    "mtime": 1780567536.5669842,
+    "ast_hash": "c9b93d72e7604d4f10103b741b42b50f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__amp__references__add-watch.md": {
+    "mtime": 1780567536.5669842,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__amp__references__exports.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__amp__references__extraction-spec.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__amp__references__github-and-merge.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__amp__references__hooks.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "5da7125d6438cc8243ddae5176bbb153",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__amp__references__query.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__amp__references__transcribe.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__amp__references__update.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claude__references__add-watch.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claude__references__exports.md": {
+    "mtime": 1780567536.5723722,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claude__references__extraction-spec.md": {
+    "mtime": 1780567536.5829163,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claude__references__github-and-merge.md": {
+    "mtime": 1780567536.5829163,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claude__references__hooks.md": {
+    "mtime": 1780567536.5829163,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claude__references__query.md": {
+    "mtime": 1780567536.5829163,
+    "ast_hash": "9c4d903233738180a0d50a7fb709d811",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claude__references__transcribe.md": {
+    "mtime": 1780567536.5880194,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claude__references__update.md": {
+    "mtime": 1780567536.588894,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claw__references__add-watch.md": {
+    "mtime": 1780567536.588894,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claw__references__exports.md": {
+    "mtime": 1780567536.5922163,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claw__references__extraction-spec.md": {
+    "mtime": 1780567536.5932412,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claw__references__github-and-merge.md": {
+    "mtime": 1780567536.5932412,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claw__references__hooks.md": {
+    "mtime": 1780567536.5932412,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claw__references__query.md": {
+    "mtime": 1780567536.5932412,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claw__references__transcribe.md": {
+    "mtime": 1780567536.5932412,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__claw__references__update.md": {
+    "mtime": 1780567536.5932412,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__codex__references__add-watch.md": {
+    "mtime": 1780567536.5932412,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__codex__references__exports.md": {
+    "mtime": 1780567536.6006882,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__codex__references__extraction-spec.md": {
+    "mtime": 1780567536.6006882,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__codex__references__github-and-merge.md": {
+    "mtime": 1780567536.6042478,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__codex__references__hooks.md": {
+    "mtime": 1780567536.6042478,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__codex__references__query.md": {
+    "mtime": 1780567536.6062887,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__codex__references__transcribe.md": {
+    "mtime": 1780567536.6062887,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__codex__references__update.md": {
+    "mtime": 1780567536.6082993,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__copilot__references__add-watch.md": {
+    "mtime": 1780567536.6082993,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__copilot__references__exports.md": {
+    "mtime": 1780567536.610994,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__copilot__references__extraction-spec.md": {
+    "mtime": 1780567536.613009,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__copilot__references__github-and-merge.md": {
+    "mtime": 1780567536.6140237,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__copilot__references__hooks.md": {
+    "mtime": 1780567536.6168027,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__copilot__references__query.md": {
+    "mtime": 1780567536.6188183,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__copilot__references__transcribe.md": {
+    "mtime": 1780567536.6188183,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__copilot__references__update.md": {
+    "mtime": 1780567536.6208365,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__droid__references__add-watch.md": {
+    "mtime": 1780567536.6228523,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__droid__references__exports.md": {
+    "mtime": 1780567536.6243665,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__droid__references__extraction-spec.md": {
+    "mtime": 1780567536.6264143,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__droid__references__github-and-merge.md": {
+    "mtime": 1780567536.6264143,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__droid__references__hooks.md": {
+    "mtime": 1780567536.6284366,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__droid__references__query.md": {
+    "mtime": 1780567536.6304562,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__droid__references__transcribe.md": {
+    "mtime": 1780567536.6329677,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__droid__references__update.md": {
+    "mtime": 1780567536.6350052,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kilo__references__add-watch.md": {
+    "mtime": 1780567536.6421108,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kilo__references__exports.md": {
+    "mtime": 1780567536.6448767,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kilo__references__extraction-spec.md": {
+    "mtime": 1780567536.6454115,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kilo__references__github-and-merge.md": {
+    "mtime": 1780567536.6482542,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kilo__references__hooks.md": {
+    "mtime": 1780567536.6482542,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kilo__references__query.md": {
+    "mtime": 1780567536.652316,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kilo__references__transcribe.md": {
+    "mtime": 1780567536.6538372,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kilo__references__update.md": {
+    "mtime": 1780567536.6558745,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kiro__references__add-watch.md": {
+    "mtime": 1780567536.6572826,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kiro__references__exports.md": {
+    "mtime": 1780567536.6592965,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kiro__references__extraction-spec.md": {
+    "mtime": 1780567536.6613107,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kiro__references__github-and-merge.md": {
+    "mtime": 1780567536.6633246,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kiro__references__hooks.md": {
+    "mtime": 1780567536.6653388,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kiro__references__query.md": {
+    "mtime": 1780567536.6673715,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kiro__references__transcribe.md": {
+    "mtime": 1780567536.6714225,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__kiro__references__update.md": {
+    "mtime": 1780567536.6734376,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__opencode__references__add-watch.md": {
+    "mtime": 1780567536.6757042,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__opencode__references__exports.md": {
+    "mtime": 1780567536.6777542,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__opencode__references__extraction-spec.md": {
+    "mtime": 1780567536.6937172,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__opencode__references__github-and-merge.md": {
+    "mtime": 1780567536.6937172,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__opencode__references__hooks.md": {
+    "mtime": 1780567536.6937172,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__opencode__references__query.md": {
+    "mtime": 1780567536.7088087,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__opencode__references__transcribe.md": {
+    "mtime": 1780567536.7088087,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__opencode__references__update.md": {
+    "mtime": 1780567536.7088087,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__pi__references__add-watch.md": {
+    "mtime": 1780567536.7088087,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__pi__references__exports.md": {
+    "mtime": 1780567536.7396355,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__pi__references__extraction-spec.md": {
+    "mtime": 1780567536.7401497,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__pi__references__github-and-merge.md": {
+    "mtime": 1780567536.7401497,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__pi__references__hooks.md": {
+    "mtime": 1780567536.8344092,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__pi__references__query.md": {
+    "mtime": 1780567536.8344092,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__pi__references__transcribe.md": {
+    "mtime": 1780567536.8422277,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__pi__references__update.md": {
+    "mtime": 1780567536.8422277,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__trae__references__add-watch.md": {
+    "mtime": 1780567536.8551238,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__trae__references__exports.md": {
+    "mtime": 1780567536.8551238,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__trae__references__extraction-spec.md": {
+    "mtime": 1780567536.8551238,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__trae__references__github-and-merge.md": {
+    "mtime": 1780567536.8551238,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__trae__references__hooks.md": {
+    "mtime": 1780567536.8654344,
+    "ast_hash": "b7099eba34d64460003ed69fdb21ea14",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__trae__references__query.md": {
+    "mtime": 1780567536.8654344,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__trae__references__transcribe.md": {
+    "mtime": 1780567536.875727,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__trae__references__update.md": {
+    "mtime": 1780567536.875727,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__vscode__references__add-watch.md": {
+    "mtime": 1780567537.010209,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__vscode__references__exports.md": {
+    "mtime": 1780567537.010209,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__vscode__references__extraction-spec.md": {
+    "mtime": 1780567537.019071,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__vscode__references__github-and-merge.md": {
+    "mtime": 1780567537.024207,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__vscode__references__hooks.md": {
+    "mtime": 1780567537.0498116,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__vscode__references__query.md": {
+    "mtime": 1780567537.0498116,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__vscode__references__transcribe.md": {
+    "mtime": 1780567537.0520923,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__vscode__references__update.md": {
+    "mtime": 1780567537.054112,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__windows__references__add-watch.md": {
+    "mtime": 1780567537.0572371,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__windows__references__exports.md": {
+    "mtime": 1780567537.0572371,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__windows__references__extraction-spec.md": {
+    "mtime": 1780567537.0592327,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__windows__references__github-and-merge.md": {
+    "mtime": 1780567537.0592327,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__windows__references__hooks.md": {
+    "mtime": 1780567537.061733,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__windows__references__query.md": {
+    "mtime": 1780567537.0677514,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__windows__references__transcribe.md": {
+    "mtime": 1780567537.0697687,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/expected/graphify__skills__windows__references__update.md": {
+    "mtime": 1780567537.071787,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/always-on/agents-md.md": {
+    "mtime": 1780567537.0739157,
+    "ast_hash": "752aa83aa64361ac32860f882dcff932",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/always-on/antigravity-rules.md": {
+    "mtime": 1780567537.0739157,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/always-on/claude-md.md": {
+    "mtime": 1780567537.0760388,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/always-on/gemini-md.md": {
+    "mtime": 1780567537.0760388,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/always-on/kiro-steering.md": {
+    "mtime": 1780567537.0780554,
+    "ast_hash": "81be1a4201e0893879433cddab9ffd20",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/always-on/vscode-instructions.md": {
+    "mtime": 1780567537.0780554,
+    "ast_hash": "2b23503628bf2ec71d067a85ca8948ab",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/core/aider.md": {
+    "mtime": 1780567537.081827,
+    "ast_hash": "5a2edbbc55cdbcb635c4a9c46970416e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/core/core.md": {
+    "mtime": 1780567537.0842493,
+    "ast_hash": "f07b1fa0ba593f8b6706f13f98d8493d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/core/devin.md": {
+    "mtime": 1780567537.0857272,
+    "ast_hash": "b6e237f4323b883064cbd80601950bdc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/dispatch/agent-tool-disk-powershell.md": {
+    "mtime": 1780567537.0905516,
+    "ast_hash": "a255fb234d711dd76fbd292b48c2ad3b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/dispatch/agent-tool-disk.md": {
+    "mtime": 1780567537.0927408,
+    "ast_hash": "fa68e011587a994efa5450db7b382156",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/dispatch/codex-agenttask.md": {
+    "mtime": 1780567537.0927408,
+    "ast_hash": "ad059c4957746233846d803378cceef1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/dispatch/manual-paste.md": {
+    "mtime": 1780567537.0962796,
+    "ast_hash": "e265e62d7220ff32fab6c696b16e04d4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/dispatch/opencode-mention.md": {
+    "mtime": 1780567537.097353,
+    "ast_hash": "17f351c783aecb5dfa107b0a450e424b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/dispatch/task-tool-disk-trae.md": {
+    "mtime": 1780567537.0984013,
+    "ast_hash": "1f20170d52b1393400800c365d95ce9d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/dispatch/task-tool-disk.md": {
+    "mtime": 1780567537.0984013,
+    "ast_hash": "1849cb66aee8edfdda7f91324c8393e8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/extra/kilo-rules.md": {
+    "mtime": 1780567537.102975,
+    "ast_hash": "4633b07cbfa9ccd063fcb04215f311e2",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/extra/powershell-troubleshooting.md": {
+    "mtime": 1780567537.150678,
+    "ast_hash": "fad387de672f5718a3d1ce6075c6d1ce",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/query-stub/cli-inline.md": {
+    "mtime": 1780567537.152022,
+    "ast_hash": "bc77f0022f95a120fc21b5f0e89f66b7",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/query-stub/cli.md": {
+    "mtime": 1780567537.1538002,
+    "ast_hash": "3939921eaa7a4274f2094e163bc5898c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/host/hooks-agents-md.md": {
+    "mtime": 1780567537.154312,
+    "ast_hash": "98a05b4f7535920a70e1caaa3314bb7b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/query/cli-inline.md": {
+    "mtime": 1780567537.156846,
+    "ast_hash": "82efbb856d6a3e15e7d78743b34a63c1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/query/cli.md": {
+    "mtime": 1780567537.160241,
+    "ast_hash": "9c4d903233738180a0d50a7fb709d811",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/shared/add-watch.md": {
+    "mtime": 1780567537.1622553,
+    "ast_hash": "e10311cd2f69de7d62674eff2b87420f",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/shared/exports.md": {
+    "mtime": 1780567537.1635115,
+    "ast_hash": "4b1c094b3077da6b95ec99694612327e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/shared/extraction-spec-compact.md": {
+    "mtime": 1780567537.1640341,
+    "ast_hash": "76bd40116aec91d386e8b676c2005eb4",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/shared/extraction-spec.md": {
+    "mtime": 1780567537.1652582,
+    "ast_hash": "a50d4409dbac381356a25ca0905d833c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/shared/github-and-merge.md": {
+    "mtime": 1780567537.1688747,
+    "ast_hash": "aa0e7ef186392cad062e60483ca7dbbf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/shared/hooks.md": {
+    "mtime": 1780567537.1853964,
+    "ast_hash": "0045c2f12c69bff3a641a8908a1ac057",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/shared/transcribe.md": {
+    "mtime": 1780567537.1853964,
+    "ast_hash": "cf217decf113af55483edfa042f22db5",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/references/shared/update.md": {
+    "mtime": 1780567537.187035,
+    "ast_hash": "c7a284f2788907c62b1627839ab9a9f9",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/shell/posix.md": {
+    "mtime": 1780567537.187548,
+    "ast_hash": "abe7398915aa87503ca97b3317e36cf1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/tools/skillgen/fragments/shell/powershell.md": {
+    "mtime": 1780567537.1895888,
+    "ast_hash": "09b681e5180fdcaee3dbe352543dc35a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/example/README.md": {
+    "mtime": 1780567537.2118323,
+    "ast_hash": "0ad0e818e81e67221ca59bba8f61dedc",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/example/raw/architecture.md": {
+    "mtime": 1780567537.21385,
+    "ast_hash": "1201316b29aec5bf4ce130fd116ea910",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/example/raw/notes.md": {
+    "mtime": 1780567537.2199914,
+    "ast_hash": "b34fb1280985d1a2a44baca60fa2debf",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/GRAPH_REPORT.md": {
+    "mtime": 1780567537.2312422,
+    "ast_hash": "a604a6da7f618b140193e923e5bc4f92",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/README.md": {
+    "mtime": 1780567537.2358592,
+    "ast_hash": "433f8494c1a0c308c5ef09f0a2c54f80",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/httpx/review.md": {
+    "mtime": 1780567537.2550733,
+    "ast_hash": "02e23ebb29f068b23dcce29af3d368d8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/karpathy-repos/GRAPH_REPORT.md": {
+    "mtime": 1780567537.2591937,
+    "ast_hash": "69d7498903d698e456f009958234917c",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/karpathy-repos/README.md": {
+    "mtime": 1780567537.261206,
+    "ast_hash": "b1cbbadc195601e545d3258ddb690553",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/karpathy-repos/review.md": {
+    "mtime": 1780567537.26557,
+    "ast_hash": "9697fe2ebd4458a2d4957220e6ae5a10",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/mixed-corpus/GRAPH_REPORT.md": {
+    "mtime": 1780567537.2678983,
+    "ast_hash": "f5f230efee89ed874926d520edc12c66",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/mixed-corpus/README.md": {
+    "mtime": 1780567537.2689378,
+    "ast_hash": "34252f3bf7a5af70096da4ffa8d086ff",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/mixed-corpus/review.md": {
+    "mtime": 1780567537.2830062,
+    "ast_hash": "485aa5f2c880fde1b8f5342401f6038a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/rsl-siege-manager/GRAPH_REPORT.md": {
+    "mtime": 1780567537.2870922,
+    "ast_hash": "2c56ab55dda9d94cb5aab4e1a21a2cf1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/rsl-siege-manager/README.md": {
+    "mtime": 1780567537.2996123,
+    "ast_hash": "146efca4b05edc2b2d9d8c7c5e5f0646",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/rsl-siege-manager/graph.html": {
+    "mtime": 1780567537.311059,
+    "ast_hash": "b6226c2e30e0ccfbc56b15297319fa65",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/rsl-siege-manager/review.md": {
+    "mtime": 1780567537.3316877,
+    "ast_hash": "4c33f90ff920a38235861eb9fd75387e",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/requirements.txt": {
+    "mtime": 1779093263.976472,
+    "ast_hash": "86dd77faa9cc7110460e72f978337585",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/runtime.txt": {
+    "mtime": 1778844838.0,
+    "ast_hash": "5d26c871dc4ce8aa9567ccefe779f2b0",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/README.md": {
+    "mtime": 1778484074.0,
+    "ast_hash": "a28dc4cb878325f3e9e5649f3e1469ac",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/index.html": {
+    "mtime": 1778484192.0,
+    "ast_hash": "777d54110a47b269b56b110537998c5b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/index.html": {
+    "mtime": 1778682910.0,
+    "ast_hash": "55e25aaf1ff956ad98179a0f08baa68b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/login.html": {
+    "mtime": 1780658777.8111987,
+    "ast_hash": "ca4cc8724c33f7709c7d475118e70100",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/render.yaml": {
+    "mtime": 1779093947.5417447,
+    "ast_hash": "26be161492dbe1f0f01007ba5710dd77",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/requirements.txt": {
+    "mtime": 1779093543.6148584,
+    "ast_hash": "2fda8e98f081f838319b5b529fef4f2d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/sign.html": {
+    "mtime": 1779267092.9866836,
+    "ast_hash": "533cd78ad312181ce523f20ff5ebd1b8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/worked/mixed-corpus/raw/attention_notes.md": {
+    "mtime": 1780567537.2774215,
+    "ast_hash": "1d9910017f78af70ed111d74b5e3558d",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/logo-icon.svg": {
+    "mtime": 1780567536.1043303,
+    "ast_hash": "7bfdde1f83bb3423470b408efabc2c52",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/graphify/docs/logo-text.svg": {
+    "mtime": 1780567536.1043303,
+    "ast_hash": "3a5c53971d1c5eca33d038201999dd68",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/public/favicon.svg": {
+    "mtime": 1778484074.0,
+    "ast_hash": "7e840862161341271697daa99a40d76b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/public/icons.svg": {
+    "mtime": 1778484074.0,
+    "ast_hash": "3b4fcfcf393eca4d264dca4a4663bc37",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/assets/hero.png": {
+    "mtime": 1778484074.0,
+    "ast_hash": "aead493361b27e7510691c5d7072dfc1",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/assets/react.svg": {
+    "mtime": 1778484074.0,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/frontend/src/assets/vite.svg": {
+    "mtime": 1778484074.0,
+    "ast_hash": "9960a24288958394ac50e57ff638b036",
+    "semantic_hash": ""
+  },
+  "sisu-mentorship-booking.html": {
+    "mtime": 1780572673.3147411,
+    "ast_hash": "4c898aa1200cb70f5fab826e9920ad9b",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_native_flow.py": {
+    "mtime": 1780640984.6173234,
+    "ast_hash": "d351e366d7348afd212525c689b8ff40",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/test_priority_client.py": {
+    "mtime": 1780642765.1047723,
+    "ast_hash": "eb7ca5e008ceebb4df8f868f1112c4f3",
+    "semantic_hash": ""
+  },
+  "sisu-dashboard (1).html": {
+    "mtime": 1780644142.0762825,
+    "ast_hash": "c54c6a844eb91969bb72e77cadf12b5c",
+    "semantic_hash": ""
+  }
+}

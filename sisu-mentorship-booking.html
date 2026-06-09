@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SISU — Mentorship Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface-2: #f0efe9;
+    --border: #e2e0d8;
+    --ink: #1a1917;
+    --ink-2: #6b6860;
+    --ink-3: #a09e99;
+    --accent: #1a6b4a;
+    --accent-light: #e8f4ef;
+    --accent-glow: #2d9e6e;
+    --gold: #c9a84c;
+    --danger: #c0392b;
+    --step-done: #1a6b4a;
+    --step-active: #1a1917;
+    --step-idle: #c8c6bf;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(26,25,23,0.07);
+    --shadow-lg: 0 8px 40px rgba(26,25,23,0.12);
+  }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* ── SIDEBAR ──────────────────────────────── */
+  .sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+  .sidebar-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: #fff;
+    letter-spacing: 2px;
+    padding: 0 28px 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 20px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 28px;
+    color: rgba(255,255,255,0.45);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); }
+  .nav-item.active { color: #fff; border-left-color: var(--accent-glow); background: rgba(255,255,255,0.06); }
+  .nav-icon { font-size: 16px; opacity: 0.8; }
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 20px 28px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .avatar {
+    width: 34px; height: 34px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .avatar-info { flex: 1; min-width: 0; }
+  .avatar-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .avatar-role { font-size: 11px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.8px; }
+
+  /* ── MAIN ──────────────────────────────────── */
+  .main {
+    margin-left: 220px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--ink);
+  }
+  .topbar-actions { display: flex; align-items: center; gap: 16px; }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-2);
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  .icon-btn:hover { background: var(--surface-2); color: var(--ink); }
+  .signout-btn {
+    font-size: 12px; font-weight: 600; color: var(--ink-2);
+    border: 1px solid var(--border); background: transparent;
+    padding: 7px 16px; border-radius: 20px; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.3px;
+    font-family: 'Sora', sans-serif;
+  }
+  .signout-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  /* ── CONTENT ──────────────────────────────── */
+  .content {
+    padding: 36px 40px 60px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* ── STEP INDICATOR ───────────────────────── */
+  .steps-header {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 32px;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .step-item.done .step-num { background: var(--step-done); color: #fff; }
+  .step-item.active .step-num { background: var(--ink); color: #fff; }
+  .step-item.idle .step-num { background: var(--surface-2); color: var(--ink-3); border: 1.5px solid var(--border); }
+  .step-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+  .step-item.done .step-label { color: var(--step-done); }
+  .step-item.active .step-label { color: var(--ink); }
+  .step-item.idle .step-label { color: var(--ink-3); }
+  .step-connector {
+    flex: 1; height: 1px; min-width: 20px; max-width: 48px;
+    background: var(--border); margin: 0 8px;
+  }
+  .step-connector.done { background: var(--step-done); }
+
+  /* ── FORM CARD ────────────────────────────── */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow);
+  }
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--ink-3);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label span {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-size: 9px; font-weight: 700; flex-shrink: 0;
+  }
+  .form-group { margin-bottom: 24px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(26,107,74,0.08);
+  }
+  input::placeholder, textarea::placeholder { color: var(--ink-3); }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾'; position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%); color: var(--ink-2); pointer-events: none; font-size: 12px;
+  }
+  select { cursor: pointer; }
+
+  /* ── CALENDAR ─────────────────────────────── */
+  .calendar-section { margin-bottom: 0; }
+  .calendar-container {
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+  }
+  .cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .cal-month {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px; color: var(--ink);
+  }
+  .cal-nav {
+    display: flex; gap: 6px;
+  }
+  .cal-nav-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--ink-2); transition: all 0.2s;
+  }
+  .cal-nav-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+  .cal-day-header {
+    text-align: center; font-size: 10px; font-weight: 700;
+    color: var(--ink-3); letter-spacing: 0.8px; padding: 4px 0 8px;
+    text-transform: uppercase;
+  }
+  .cal-day {
+    position: relative;
+    text-align: center; padding: 7px 4px;
+    font-size: 12px; font-weight: 500;
+    color: var(--ink-2);
+    border-radius: 8px; cursor: pointer; transition: all 0.15s;
+  }
+  .cal-day:hover:not(.empty):not(.disabled) { background: var(--accent-light); color: var(--accent); }
+  .cal-day.has-slot::after {
+    content: ''; display: block;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--accent); margin: 3px auto 0; opacity: 0.7;
+  }
+  .cal-day.today {
+    background: var(--accent-light);
+    color: var(--accent); font-weight: 700;
+    border: 1.5px solid var(--accent);
+  }
+  .cal-day.selected {
+    background: var(--accent) !important; color: #fff !important; font-weight: 700;
+  }
+  .cal-day.selected::after { background: rgba(255,255,255,0.6); }
+  .cal-day.disabled { color: var(--ink-3); cursor: not-allowed; opacity: 0.4; }
+  .cal-day.empty { cursor: default; }
+
+  /* ── TIME SLOTS ───────────────────────────── */
+  .timeslot-panel {
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    min-height: 260px;
+    display: flex; flex-direction: column;
+  }
+  .timeslot-header {
+    font-size: 12px; font-weight: 700; color: var(--ink-2);
+    letter-spacing: 0.5px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .timeslot-date-label {
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    background: var(--accent-light); padding: 3px 10px; border-radius: 20px;
+  }
+  .timeslot-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; flex: 1;
+  }
+  .time-btn {
+    padding: 9px 6px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border); background: var(--surface);
+    font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 600;
+    color: var(--ink-2); cursor: pointer; transition: all 0.15s;
+    text-align: center;
+  }
+  .time-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .time-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .time-btn.busy { opacity: 0.35; cursor: not-allowed; text-decoration: line-through; }
+  .no-date-msg {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--ink-3); font-size: 12px; gap: 10px;
+    text-align: center;
+  }
+  .no-date-icon { font-size: 32px; opacity: 0.4; }
+
+  .calendar-timeslot-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+
+  /* ── SUMMARY CARD ─────────────────────────── */
+  .summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    position: sticky; top: 80px;
+  }
+  .summary-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px; color: var(--ink);
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .summary-row:last-of-type { border-bottom: none; }
+  .summary-key {
+    font-size: 11px; font-weight: 700; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.8px; flex-shrink: 0;
+  }
+  .summary-val {
+    font-size: 12px; font-weight: 500; color: var(--ink);
+    text-align: right;
+  }
+  .summary-val.pending { color: var(--ink-3); font-style: italic; font-weight: 400; }
+  .summary-val.filled { color: var(--ink); }
+
+  .progress-bar-wrap {
+    margin: 20px 0 24px;
+    background: var(--surface-2);
+    border-radius: 20px; height: 6px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+    border-radius: 20px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--ink-3); margin-bottom: 6px;
+  }
+
+  .cta-btn {
+    width: 100%; padding: 15px;
+    background: var(--accent);
+    color: #fff; border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Sora', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.3px;
+    transition: all 0.25s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 20px;
+  }
+  .cta-btn:hover { background: #155a3c; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,107,74,0.3); }
+  .cta-btn:active { transform: translateY(0); }
+  .cta-btn:disabled { background: var(--border); color: var(--ink-3); cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .char-count {
+    text-align: right; font-size: 10px; color: var(--ink-3); margin-top: 4px;
+  }
+
+  /* ── BADGE ────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .badge-green { background: var(--accent-light); color: var(--accent); }
+
+  /* ── DIVIDER ──────────────────────────────── */
+  .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+  /* ── PHONE ────────────────────────────────── */
+  .phone-wrapper { position: relative; }
+  .phone-flag {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px; pointer-events: none;
+  }
+  .phone-input { padding-left: 42px !important; }
+
+  /* ── TOAST ────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: 32px; right: 32px;
+    background: var(--ink); color: #fff;
+    padding: 14px 22px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    opacity: 0; transform: translateY(16px);
+    transition: all 0.3s; pointer-events: none; z-index: 1000;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* animations */
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .form-card { animation: fadeIn 0.4s ease; }
+  .summary-card { animation: fadeIn 0.45s ease; }
+
+  .required-star { color: var(--danger); margin-left: 2px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">SISU</div>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">⊞</span> Dashboard
+  </a>
+  <a class="nav-item active" href="#">
+    <span class="nav-icon">◷</span> Schedule
+  </a>
+  <a class="nav-item" href="#">
+    <span class="nav-icon">⚙</span> Settings
+  </a>
+  <div class="sidebar-footer">
+    <div class="avatar">G</div>
+    <div class="avatar-info">
+      <div class="avatar-name">Gojo</div>
+      <div class="avatar-role">Client</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <span class="topbar-title">Mentorship Booking</span>
+    <div class="topbar-actions">
+      <button class="icon-btn" title="Notifications">🔔</button>
+      <button class="signout-btn">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- STEP INDICATOR -->
+      <div class="steps-header">
+        <div class="step-item active" id="step-ind-1">
+          <div class="step-num">1</div>
+          <div class="step-label">Details</div>
+        </div>
+        <div class="step-connector" id="conn-1"></div>
+        <div class="step-item idle" id="step-ind-2">
+          <div class="step-num">2</div>
+          <div class="step-label">Schedule</div>
+        </div>
+        <div class="step-connector" id="conn-2"></div>
+        <div class="step-item idle" id="step-ind-3">
+          <div class="step-num">3</div>
+          <div class="step-label">Contact</div>
+        </div>
+        <div class="step-connector" id="conn-3"></div>
+        <div class="step-item idle" id="step-ind-4">
+          <div class="step-num">4</div>
+          <div class="step-label">Confirm</div>
+        </div>
+      </div>
+
+      <!-- FORM CARD -->
+      <div class="form-card">
+
+        <!-- SECTION 1: AGENDA -->
+        <div class="form-group">
+          <div class="section-label"><span>1</span> Agenda</div>
+          <input type="text" id="agenda" placeholder="e.g. Auditing outbound sales pipeline and optimizing customer SOPs…"
+            oninput="updateSummary()">
+        </div>
+
+        <!-- SECTION 2+3: DURATION & CHANNEL -->
+        <div class="field-row form-group">
+          <div>
+            <div class="section-label"><span>2</span> Duration</div>
+            <div class="select-wrap">
+              <select id="duration" onchange="updateSummary()">
+                <option>60 Min Mentorship (60 mins)</option>
+                <option>30 Min Mentorship (30 mins)</option>
+                <option>90 Min Deep Dive (90 mins)</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="section-label"><span>3</span> Channel</div>
+            <div class="select-wrap">
+              <select id="channel" onchange="updateSummary()">
+                <option>Google Meet (Online Video)</option>
+                <option>Zoom (Online Video)</option>
+                <option>In-Person Meeting</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- SECTION 4: DATE & TIME -->
+        <div class="form-group calendar-section">
+          <div class="section-label"><span>4</span> Select Coaching Date &amp; Time Slot</div>
+          <div class="calendar-timeslot-row">
+
+            <!-- Calendar -->
+            <div class="calendar-container">
+              <div class="cal-header">
+                <span class="cal-month" id="cal-month-label">June 2026</span>
+                <div class="cal-nav">
+                  <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+                  <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+                </div>
+              </div>
+              <div class="cal-grid" id="cal-grid"></div>
+            </div>
+
+            <!-- Time Slots -->
+            <div class="timeslot-panel" id="timeslot-panel">
+              <div class="no-date-msg" id="no-date-msg">
+                <div class="no-date-icon">📅</div>
+                <div>Pick a date on the calendar<br>to unlock coaching slots.</div>
+              </div>
+              <div id="timeslot-content" style="display:none; flex:1; flex-direction:column;">
+                <div class="timeslot-header">
+                  Available Slots
+                  <span class="timeslot-date-label" id="slot-date-label"></span>
+                </div>
+                <div class="timeslot-grid" id="timeslot-grid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- SECTION 5: DESCRIPTION -->
+        <div class="form-group">
+          <div class="section-label"><span>5</span> Description</div>
+          <textarea id="description" maxlength="500"
+            placeholder="e.g. Discussing outbound roadmap &amp; scaling SDR metrics…"
+            oninput="updateCharCount(); updateSummary()"></textarea>
+          <div class="char-count"><span id="char-count">0</span>/500</div>
+        </div>
+
+        <!-- SECTION 6: PHONE -->
+        <div class="form-group">
+          <div class="section-label"><span>6</span> Phone Number <span class="required-star">*</span></div>
+          <div class="phone-wrapper">
+            <span class="phone-flag">🇮🇳</span>
+            <input type="text" id="phone" class="phone-input"
+              placeholder="+91 98765 43210"
+              oninput="updateSummary()">
+          </div>
+        </div>
+
+      </div><!-- /form-card -->
+    </div><!-- /left col -->
+
+    <!-- RIGHT COLUMN: SUMMARY CARD -->
+    <div>
+      <div class="summary-card">
+        <div class="summary-title">Session Summary</div>
+
+        <div class="progress-label">
+          <span>Completion</span>
+          <span id="progress-pct">0%</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+        </div>
+
+        <div class="summary-row">
+          <span class="summary-key">Focus</span>
+          <span class="summary-val pending" id="sum-focus">Awaiting agenda…</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-key">Duration</span>
+          <span class="summary-val filled" id="sum-duration">60 Min Mentorship</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-key">Slot</span>
+          <span class="summary-val pending" id="sum-slot">Awaiting selection…</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-key">Channel</span>
+          <span class="summary-val filled" id="sum-channel">Google Meet</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-key">Phone</span>
+          <span class="summary-val pending" id="sum-phone">Not provided</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-key">Notes</span>
+          <span class="summary-val pending" id="sum-desc">No description provided</span>
+        </div>
+
+        <button class="cta-btn" id="cta-btn" disabled onclick="submitForm()">
+          Request Mentorship Session →
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<div class="toast" id="toast">✅ Session request submitted!</div>
+
+<script>
+// ── CALENDAR ──────────────────────────────────
+let currentYear = 2026, currentMonth = 5; // June (0-indexed)
+let selectedDate = null, selectedTime = null;
+
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+const DAYS = ['SU','MO','TU','WE','TH','FR','SA'];
+
+// Slots available on certain days
+const SLOTS = {
+  '2026-6-7':  ['9:00 AM','10:00 AM','11:00 AM','2:00 PM','3:00 PM','4:00 PM'],
+  '2026-6-8':  ['8:30 AM','10:30 AM','1:00 PM','3:30 PM'],
+  '2026-6-9':  ['9:00 AM','11:00 AM','2:00 PM','5:00 PM'],
+  '2026-6-10': ['10:00 AM','11:30 AM','3:00 PM','4:30 PM'],
+  '2026-6-11': ['9:30 AM','1:00 PM','2:30 PM','4:00 PM','6:00 PM'],
+  '2026-6-12': ['8:00 AM','9:00 AM','10:00 AM'],
+  '2026-6-13': ['11:00 AM','3:00 PM'],
+  '2026-6-14': ['9:00 AM','10:00 AM','2:00 PM','4:00 PM'],
+  '2026-6-15': ['8:30 AM','11:00 AM','1:30 PM','5:00 PM'],
+  '2026-6-17': ['10:00 AM','2:00 PM','3:30 PM'],
+  '2026-6-18': ['9:00 AM','11:00 AM','4:00 PM'],
+  '2026-6-20': ['10:30 AM','1:00 PM','3:00 PM'],
+  '2026-6-21': ['9:00 AM','2:00 PM'],
+  '2026-6-22': ['11:00 AM','1:30 PM','4:00 PM'],
+  '2026-6-23': ['9:30 AM','10:30 AM','3:00 PM'],
+  '2026-6-24': ['8:00 AM','2:00 PM','5:00 PM'],
+  '2026-6-25': ['9:00 AM','11:00 AM','1:00 PM'],
+  '2026-6-27': ['10:00 AM','2:30 PM','4:00 PM'],
+  '2026-6-28': ['9:00 AM','11:30 AM'],
+  '2026-6-29': ['10:00 AM','1:00 PM','3:00 PM'],
+  '2026-6-30': ['9:30 AM','2:00 PM','5:00 PM'],
+};
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  document.getElementById('cal-month-label').textContent = `${MONTHS[currentMonth]} ${currentYear}`;
+  grid.innerHTML = '';
+
+  DAYS.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-day-header';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const today = new Date();
+
+  for (let i = 0; i < firstDay; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const el = document.createElement('div');
+    const key = `${currentYear}-${currentMonth+1}-${d}`;
+    const isToday = (d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear());
+    const isPast = new Date(currentYear, currentMonth, d) < new Date(today.toDateString());
+    const hasSlot = !!SLOTS[key];
+
+    el.className = 'cal-day';
+    if (isPast) el.classList.add('disabled');
+    if (isToday) el.classList.add('today');
+    if (hasSlot && !isPast) el.classList.add('has-slot');
+    if (selectedDate && selectedDate.d === d && selectedDate.m === currentMonth && selectedDate.y === currentYear)
+      el.classList.add('selected');
+
+    el.textContent = d;
+    if (!isPast) {
+      el.onclick = () => selectDate(d, currentMonth, currentYear, key);
+    }
+    grid.appendChild(el);
+  }
+}
+
+function selectDate(d, m, y, key) {
+  selectedDate = {d, m, y, key};
+  selectedTime = null;
+  renderCalendar();
+  renderSlots(key, d, m, y);
+  updateSummary();
+}
+
+function renderSlots(key, d, m, y) {
+  const slots = SLOTS[key] || [];
+  document.getElementById('no-date-msg').style.display = 'none';
+  const content = document.getElementById('timeslot-content');
+  content.style.display = 'flex';
+
+  const dateLabel = new Date(y, m, d).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+  document.getElementById('slot-date-label').textContent = dateLabel;
+
+  const grid = document.getElementById('timeslot-grid');
+  grid.innerHTML = '';
+
+  if (!slots.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--ink-3);font-size:12px;padding:20px 0;">No slots available this day.</div>';
+    return;
+  }
+
+  slots.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'time-btn' + (selectedTime === t ? ' selected' : '');
+    btn.textContent = t;
+    btn.onclick = () => { selectedTime = t; renderSlots(key, d, m, y); updateSummary(); };
+    grid.appendChild(btn);
+  });
+}
+
+function changeMonth(delta) {
+  currentMonth += delta;
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  renderCalendar();
+}
+
+// ── SUMMARY & PROGRESS ────────────────────────
+function updateSummary() {
+  const agenda = document.getElementById('agenda').value.trim();
+  const duration = document.getElementById('duration').value;
+  const channel = document.getElementById('channel').value;
+  const phone = document.getElementById('phone').value.trim();
+  const desc = document.getElementById('description').value.trim();
+
+  // Focus
+  const focusEl = document.getElementById('sum-focus');
+  if (agenda) {
+    focusEl.textContent = agenda.length > 40 ? agenda.slice(0,40)+'…' : agenda;
+    focusEl.className = 'summary-val filled';
+  } else {
+    focusEl.textContent = 'Awaiting agenda…';
+    focusEl.className = 'summary-val pending';
+  }
+
+  // Duration
+  document.getElementById('sum-duration').textContent = duration.split(' (')[0];
+
+  // Slot
+  const slotEl = document.getElementById('sum-slot');
+  if (selectedDate && selectedTime) {
+    const d = new Date(selectedDate.y, selectedDate.m, selectedDate.d);
+    slotEl.textContent = d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' + selectedTime;
+    slotEl.className = 'summary-val filled';
+  } else if (selectedDate) {
+    const d = new Date(selectedDate.y, selectedDate.m, selectedDate.d);
+    slotEl.textContent = d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · pick a time';
+    slotEl.className = 'summary-val pending';
+  } else {
+    slotEl.textContent = 'Awaiting selection…';
+    slotEl.className = 'summary-val pending';
+  }
+
+  // Channel
+  document.getElementById('sum-channel').textContent = channel.split(' (')[0];
+
+  // Phone
+  const phoneEl = document.getElementById('sum-phone');
+  if (phone) { phoneEl.textContent = phone; phoneEl.className = 'summary-val filled'; }
+  else { phoneEl.textContent = 'Not provided'; phoneEl.className = 'summary-val pending'; }
+
+  // Desc
+  const descEl = document.getElementById('sum-desc');
+  if (desc) { descEl.textContent = desc.length > 50 ? desc.slice(0,50)+'…' : desc; descEl.className = 'summary-val filled'; }
+  else { descEl.textContent = 'No description provided'; descEl.className = 'summary-val pending'; }
+
+  // Progress
+  let filled = 0;
+  if (agenda) filled++;
+  if (selectedDate) filled++;
+  if (selectedTime) filled++;
+  if (phone) filled++;
+  if (desc) filled++;
+  const pct = Math.round((filled / 5) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  // CTA enable
+  const canSubmit = agenda && selectedDate && selectedTime && phone;
+  document.getElementById('cta-btn').disabled = !canSubmit;
+
+  // Step indicators
+  updateStepIndicators(agenda, selectedDate, selectedTime, phone);
+}
+
+function updateStepIndicators(agenda, date, time, phone) {
+  const s1 = document.getElementById('step-ind-1');
+  const s2 = document.getElementById('step-ind-2');
+  const s3 = document.getElementById('step-ind-3');
+  const s4 = document.getElementById('step-ind-4');
+  const c1 = document.getElementById('conn-1');
+  const c2 = document.getElementById('conn-2');
+  const c3 = document.getElementById('conn-3');
+
+  const setStep = (el, state) => {
+    el.className = `step-item ${state}`;
+  };
+
+  setStep(s1, agenda ? 'done' : 'active');
+  c1.className = 'step-connector' + (agenda ? ' done' : '');
+
+  setStep(s2, (date && time) ? 'done' : (agenda ? 'active' : 'idle'));
+  c2.className = 'step-connector' + ((date && time) ? ' done' : '');
+
+  setStep(s3, phone ? 'done' : ((date && time) ? 'active' : 'idle'));
+  c3.className = 'step-connector' + (phone ? ' done' : '');
+
+  setStep(s4, (agenda && date && time && phone) ? 'active' : 'idle');
+}
+
+function updateCharCount() {
+  const len = document.getElementById('description').value.length;
+  document.getElementById('char-count').textContent = len;
+}
+
+function submitForm() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+// Init
+renderCalendar();
+updateSummary();
+</script>
+</body>
+</html>
