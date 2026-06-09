@@ -1,0 +1,578 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Layout from '../components/Layout';
+import { api } from '../lib/api';
+import { useAuth } from '../lib/auth';
+
+export default function AdminUsersPage() {
+  const { user: currentUser, isAdmin } = useAuth();
+  if (!isAdmin) {
+    window.location.href = '/';
+    return null;
+  }
+  const [users, setUsers] = useState([]);
+  const [clientName, setClientName] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
+  const [clientPassword, setClientPassword] = useState('');
+  const [adminEmailInput, setAdminEmailInput] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [message, setMessage] = useState(null); // { text, type: 'success' | 'error' }
+  const [newClientCreds, setNewClientCreds] = useState(null); // { email, password, isAdmin }
+
+  const fetchUsers = async () => {
+    try {
+      const data = await api.adminGetUsers();
+      setUsers(data || []);
+    } catch (err) {
+      console.error(err);
+      setMessage({ text: err.message || 'Failed to fetch users', type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleCreateClient = async (e) => {
+    e.preventDefault();
+    if (!clientName.trim() || !clientEmail.trim() || !clientPassword.trim()) return;
+    setActionLoading(true);
+    setMessage(null);
+    setNewClientCreds(null);
+    try {
+      const res = await api.adminCreateUser({
+        name: clientName.trim(),
+        email: clientEmail.trim(),
+        password: clientPassword.trim(),
+        role: 'client'
+      });
+      setMessage({ text: `Successfully created client account for ${res.name}`, type: 'success' });
+      setClientName('');
+      setClientEmail('');
+      setClientPassword('');
+      setNewClientCreds({
+        email: res.email,
+        password: clientPassword.trim()
+      });
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to create client account', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePromoteAdmin = async (e) => {
+    e.preventDefault();
+    if (!adminEmailInput.trim()) return;
+    setActionLoading(true);
+    setMessage(null);
+    setNewClientCreds(null);
+    try {
+      const res = await api.adminPromoteUser({ email: adminEmailInput.trim() });
+      setMessage({ text: res.message, type: 'success' });
+      setAdminEmailInput('');
+      if (res.created_new && res.user.temporary_password) {
+        setNewClientCreds({
+          email: res.user.email,
+          password: res.user.temporary_password,
+          isAdmin: true
+        });
+      }
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to promote user', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePromoteUser = async (email) => {
+    if (!window.confirm(`Are you sure you want to promote '${email}' to admin?`)) return;
+    setActionLoading(true);
+    setMessage(null);
+    try {
+      const res = await api.adminPromoteUser({ email });
+      setMessage({ text: res.message, type: 'success' });
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to promote user', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDemoteUser = async (email) => {
+    if (!window.confirm(`Are you sure you want to demote admin '${email}' to a regular client?`)) return;
+    setActionLoading(true);
+    setMessage(null);
+    try {
+      const res = await api.adminDemoteUser({ email });
+      setMessage({ text: res.message, type: 'success' });
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to demote user', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleToggleStatus = async (user) => {
+    setActionLoading(true);
+    setMessage(null);
+    try {
+      const newStatus = !user.is_active;
+      await api.adminUpdateUserStatus(user.id, { is_active: newStatus });
+      setMessage({ text: `Account status for ${user.name} successfully updated`, type: 'success' });
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to update user status', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleTogglePriority = async (user) => {
+    setActionLoading(true);
+    setMessage(null);
+    try {
+      const newPriority = !user.is_priority;
+      await api.adminUpdateUserPriority(user.id, { is_priority: newPriority });
+      setMessage({ text: `Priority status for ${user.name} successfully updated`, type: 'success' });
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to update user priority', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (user) => {
+    if (!window.confirm(`Warning: Are you absolutely sure you want to permanently delete user '${user.name}' (${user.email})?`)) return;
+    setActionLoading(true);
+    setMessage(null);
+    try {
+      await api.adminDeleteUser(user.id);
+      setMessage({ text: `Successfully deleted user ${user.name}`, type: 'success' });
+      await fetchUsers();
+    } catch (err) {
+      setMessage({ text: err.message || 'Failed to delete user', type: 'error' });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  return (
+    <Layout title="Manage Users">
+      <div style={{ position: 'relative' }}>
+        <div style={{ position: 'absolute', top: '-10%', left: '20%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 65%)', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none', zIndex: 0 }} />
+
+        {/* Page Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, position: 'relative', zIndex: 1 }}>
+          <div>
+            <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>User & Role Management</h1>
+            <p style={{ fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 4, marginBottom: 0 }}>Add admins, manage client accounts, and revoke admin permissions.</p>
+          </div>
+        </div>
+
+        {/* Status Messages */}
+        <AnimatePresence>
+          {message && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              style={{
+                padding: '12px 16px',
+                background: message.type === 'success' ? 'rgba(34, 197, 94, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+                border: `1px solid ${message.type === 'success' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)'}`,
+                borderRadius: 12,
+                color: message.type === 'success' ? 'var(--color-green)' : 'var(--color-red)',
+                fontSize: 13,
+                marginBottom: 20,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                zIndex: 1,
+                position: 'relative'
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                {message.type === 'success' ? 'check_circle' : 'error'}
+              </span>
+              {message.text}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+
+          {/* Right Column: User list Table */}
+          <div className="glass-premium" style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ padding: 20, borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>
+                Registered Accounts ({users.length})
+              </h3>
+            </div>
+            
+            {/* Desktop Table View */}
+            <div className="desktop-only-table" style={{ width: '100%' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.01)' }}>
+                      <th style={{ padding: '12px 18px', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>User</th>
+                      <th style={{ padding: '12px 18px', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Role</th>
+                      <th style={{ padding: '12px 18px', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Priority</th>
+                      <th style={{ padding: '12px 18px', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Status</th>
+                      <th style={{ padding: '12px 18px', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      Array.from({ length: 4 }).map((_, i) => (
+                        <tr key={i} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                          <td style={{ padding: '14px 18px' }}><div className="skeleton-pulse" style={{ height: 14, width: 140 }} /></td>
+                          <td style={{ padding: '14px 18px' }}><div className="skeleton-pulse" style={{ height: 18, width: 60, borderRadius: 6 }} /></td>
+                          <td style={{ padding: '14px 18px' }}><div className="skeleton-pulse" style={{ height: 18, width: 50, borderRadius: 6 }} /></td>
+                          <td style={{ padding: '14px 18px' }}><div className="skeleton-pulse" style={{ height: 18, width: 50, borderRadius: 6 }} /></td>
+                          <td style={{ padding: '14px 18px', textAlign: 'right' }}><div className="skeleton-pulse" style={{ height: 24, width: 100, borderRadius: 6, display: 'inline-block' }} /></td>
+                        </tr>
+                      ))
+                    ) : users.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-muted)', fontSize: 13 }}>
+                          No accounts found.
+                        </td>
+                      </tr>
+                    ) : users.map((u) => {
+                      const isSelf = u.id === currentUser?.id;
+                      const isAdmin = u.role === 'admin';
+                      
+                      return (
+                        <tr key={u.id} style={{ borderBottom: '1px solid var(--color-border)', background: isSelf ? 'rgba(59, 130, 246, 0.01)' : 'transparent' }}>
+                          <td style={{ padding: '14px 18px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <div style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: '50%',
+                                background: isAdmin ? 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)' : 'rgba(255,255,255,0.03)',
+                                border: '1px solid var(--color-border)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 10,
+                                fontWeight: 800,
+                                color: 'white',
+                                flexShrink: 0
+                              }}>
+                                {u.name ? u.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() : '?'}
+                              </div>
+                              <div style={{ minWidth: 0 }}>
+                                <p style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                  {u.name}
+                                  {isSelf && <span style={{ fontSize: 9, padding: '1px 5px', background: 'rgba(255,255,255,0.05)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', borderRadius: 4, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>YOU</span>}
+                                </p>
+                                <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{u.email}</p>
+                              </div>
+                            </div>
+                          </td>
+                          
+                          <td style={{ padding: '14px 18px' }}>
+                            <span style={{
+                              fontSize: 9.5,
+                              fontWeight: 800,
+                              padding: '3px 8px',
+                              borderRadius: 6,
+                              background: isAdmin ? 'rgba(59,130,246,0.1)' : 'rgba(132,204,22,0.1)',
+                              color: isAdmin ? 'var(--color-accent)' : '#84cc16',
+                              border: `1px solid ${isAdmin ? 'rgba(59,130,246,0.15)' : 'rgba(132,204,22,0.15)'}`,
+                              fontFamily: 'var(--font-mono)',
+                              textTransform: 'uppercase'
+                            }}>
+                              {u.role}
+                            </span>
+                          </td>
+                          
+                          <td style={{ padding: '14px 18px' }}>
+                            <span style={{
+                              fontSize: 9.5,
+                              fontWeight: 800,
+                              padding: '3px 8px',
+                              borderRadius: 6,
+                              background: u.is_priority ? 'rgba(234,179,8,0.1)' : 'rgba(255,255,255,0.03)',
+                              color: u.is_priority ? '#eab308' : 'var(--color-text-muted)',
+                              border: `1px solid ${u.is_priority ? 'rgba(234,179,8,0.15)' : 'var(--color-border)'}`,
+                              fontFamily: 'var(--font-mono)',
+                              textTransform: 'uppercase'
+                            }}>
+                              {u.is_priority ? '⭐ Priority' : 'Standard'}
+                            </span>
+                          </td>
+                          
+                          <td style={{ padding: '14px 18px' }}>
+                            <span style={{
+                              fontSize: 9.5,
+                              fontWeight: 800,
+                              padding: '3px 8px',
+                              borderRadius: 6,
+                              background: u.is_active ? 'rgba(132,204,22,0.1)' : 'rgba(239,68,68,0.1)',
+                              color: u.is_active ? '#84cc16' : '#ef4444',
+                              border: `1px solid ${u.is_active ? 'rgba(132,204,22,0.15)' : 'rgba(239,68,68,0.15)'}`,
+                              fontFamily: 'var(--font-mono)',
+                              textTransform: 'uppercase'
+                            }}>
+                              {u.is_active ? 'Active' : 'Disabled'}
+                            </span>
+                          </td>
+                          
+                          <td style={{ padding: '14px 18px', textAlign: 'right' }}>
+                            <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
+                              {!isSelf && (
+                                <>
+                                  {/* Promote / Demote Action */}
+                                  {isAdmin ? (
+                                    u.email?.toLowerCase() !== 'tharunriot@gmail.com' && (
+                                      <button
+                                        onClick={() => handleDemoteUser(u.email)}
+                                        className="btn-premium btn-premium-ghost"
+                                        style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, color: 'var(--color-accent-orange)', border: '1px solid rgba(249,115,22,0.08)' }}
+                                        title="Demote to client"
+                                        disabled={actionLoading}
+                                      >
+                                        Demote
+                                      </button>
+                                    )
+                                  ) : (
+                                    <button
+                                      onClick={() => handlePromoteUser(u.email)}
+                                      className="btn-premium btn-premium-ghost"
+                                      style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, color: 'var(--color-accent)', border: '1px solid rgba(59,130,246,0.08)' }}
+                                      title="Promote to admin"
+                                      disabled={actionLoading}
+                                    >
+                                      Promote
+                                    </button>
+                                  )}
+
+                                  {/* Toggle Priority */}
+                                  {!isAdmin && (
+                                    <button
+                                      onClick={() => handleTogglePriority(u)}
+                                      className="btn-premium btn-premium-ghost"
+                                      style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, color: u.is_priority ? 'var(--color-text-muted)' : '#eab308', border: u.is_priority ? '1px solid var(--color-border)' : '1px solid rgba(234,179,8,0.08)' }}
+                                      title={u.is_priority ? 'Make standard client' : 'Make priority client'}
+                                      disabled={actionLoading}
+                                    >
+                                      {u.is_priority ? 'Make Standard' : 'Make Priority'}
+                                    </button>
+                                  )}
+
+                                  {/* Enable / Disable Status */}
+                                  <button
+                                    onClick={() => handleToggleStatus(u)}
+                                    className="btn-premium btn-premium-ghost"
+                                    style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, color: u.is_active ? 'var(--color-red)' : 'var(--color-green)' }}
+                                    title={u.is_active ? 'Deactivate account' : 'Activate account'}
+                                    disabled={actionLoading}
+                                  >
+                                    {u.is_active ? 'Deactivate' : 'Activate'}
+                                  </button>
+                                  
+                                  {/* Delete Account */}
+                                  <button
+                                    onClick={() => handleDeleteUser(u)}
+                                    className="btn-premium btn-premium-danger"
+                                    style={{ padding: '4px 8px', fontSize: 11, borderRadius: 6, minWidth: 'auto' }}
+                                    title="Delete Account"
+                                    disabled={actionLoading}
+                                  >
+                                    Delete
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Mobile Cards View */}
+            <div className="mobile-only-cards" style={{ display: 'none', flexDirection: 'column', gap: 12, padding: 16 }}>
+              {loading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="glass-premium" style={{ padding: 16, borderRadius: 12, border: '1px solid var(--color-border)', background: 'var(--glass-bg)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                      <div className="skeleton-pulse" style={{ height: 28, width: 28, borderRadius: '50%' }} />
+                      <div style={{ flex: 1 }}><div className="skeleton-pulse" style={{ height: 12, width: '40%', marginBottom: 4 }} /><div className="skeleton-pulse" style={{ height: 10, width: '60%' }} /></div>
+                    </div>
+                  </div>
+                ))
+              ) : users.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--color-text-muted)', fontSize: 13 }}>
+                  No accounts found.
+                </div>
+              ) : users.map((u) => {
+                const isSelf = u.id === currentUser?.id;
+                const isAdmin = u.role === 'admin';
+                return (
+                  <div 
+                    key={u.id} 
+                    className="glass-premium"
+                    style={{ 
+                      padding: 16, 
+                      borderRadius: 12, 
+                      border: '1px solid var(--color-border)', 
+                      background: isSelf ? 'rgba(59, 130, 246, 0.01)' : 'var(--glass-bg)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 12
+                    }}
+                  >
+                    {/* User profile row */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: '50%',
+                          background: isAdmin ? 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)' : 'rgba(255,255,255,0.03)',
+                          border: '1px solid var(--color-border)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          color: 'white',
+                          flexShrink: 0
+                        }}>
+                          {u.name ? u.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() : '?'}
+                        </div>
+                        <div>
+                          <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
+                            {u.name}
+                            {isSelf && <span style={{ fontSize: 8.5, padding: '1px 5px', background: 'rgba(255,255,255,0.05)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', borderRadius: 4, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>YOU</span>}
+                          </p>
+                          <p style={{ fontSize: 11, color: 'var(--color-text-secondary)', margin: 0 }}>{u.email}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Active Status Badge */}
+                      <span style={{
+                        fontSize: 9,
+                        fontWeight: 800,
+                        padding: '2px 6px',
+                        borderRadius: 6,
+                        background: u.is_active ? 'rgba(132,204,22,0.1)' : 'rgba(239,68,68,0.1)',
+                        color: u.is_active ? '#84cc16' : '#ef4444',
+                        border: `1px solid ${u.is_active ? 'rgba(132,204,22,0.15)' : 'rgba(239,68,68,0.15)'}`,
+                        fontFamily: 'var(--font-mono)',
+                        textTransform: 'uppercase'
+                      }}>
+                        {u.is_active ? 'Active' : 'Disabled'}
+                      </span>
+                    </div>
+
+                    {/* Meta Row: Role and Priority */}
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <span style={{
+                        fontSize: 9.5,
+                        fontWeight: 800,
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        background: isAdmin ? 'rgba(59,130,246,0.1)' : 'rgba(132,204,22,0.1)',
+                        color: isAdmin ? 'var(--color-accent)' : '#84cc16',
+                        border: `1px solid ${isAdmin ? 'rgba(59,130,246,0.15)' : 'rgba(132,204,22,0.15)'}`,
+                        fontFamily: 'var(--font-mono)',
+                        textTransform: 'uppercase'
+                      }}>
+                        {u.role}
+                      </span>
+                      <span style={{
+                        fontSize: 9.5,
+                        fontWeight: 800,
+                        padding: '3px 8px',
+                        borderRadius: 6,
+                        background: u.is_priority ? 'rgba(234,179,8,0.1)' : 'rgba(255,255,255,0.03)',
+                        color: u.is_priority ? '#eab308' : 'var(--color-text-muted)',
+                        border: `1px solid ${u.is_priority ? 'rgba(234,179,8,0.15)' : 'var(--color-border)'}`,
+                        fontFamily: 'var(--font-mono)',
+                        textTransform: 'uppercase'
+                      }}>
+                        {u.is_priority ? '⭐ Priority' : 'Standard'}
+                      </span>
+                    </div>
+
+                    {/* Actions row */}
+                    {!isSelf && (
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 2 }}>
+                        {isAdmin ? (
+                          u.email?.toLowerCase() !== 'tharunriot@gmail.com' && (
+                            <button
+                              onClick={() => handleDemoteUser(u.email)}
+                              className="btn-premium btn-premium-ghost"
+                              style={{ padding: '6px 10px', fontSize: 11, borderRadius: 6, color: 'var(--color-accent-orange)', border: '1px solid rgba(249,115,22,0.08)' }}
+                              disabled={actionLoading}
+                            >
+                              Demote
+                            </button>
+                          )
+                        ) : (
+                          <button
+                            onClick={() => handlePromoteUser(u.email)}
+                            className="btn-premium btn-premium-ghost"
+                            style={{ padding: '6px 10px', fontSize: 11, borderRadius: 6, color: 'var(--color-accent)', border: '1px solid rgba(59,130,246,0.08)' }}
+                            disabled={actionLoading}
+                          >
+                            Promote
+                          </button>
+                        )}
+
+                        {!isAdmin && (
+                          <button
+                            onClick={() => handleTogglePriority(u)}
+                            className="btn-premium btn-premium-ghost"
+                            style={{ padding: '6px 10px', fontSize: 11, borderRadius: 6, color: u.is_priority ? 'var(--color-text-muted)' : '#eab308', border: u.is_priority ? '1px solid var(--color-border)' : '1px solid rgba(234,179,8,0.08)' }}
+                            disabled={actionLoading}
+                          >
+                            {u.is_priority ? 'Make Standard' : 'Make Priority'}
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => handleToggleStatus(u)}
+                          className="btn-premium btn-premium-ghost"
+                          style={{ padding: '6px 10px', fontSize: 11, borderRadius: 6, color: u.is_active ? 'var(--color-red)' : 'var(--color-green)', border: '1px solid var(--color-border)' }}
+                          disabled={actionLoading}
+                        >
+                          {u.is_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                        
+                        <button
+                          onClick={() => handleDeleteUser(u)}
+                          className="btn-premium btn-premium-danger"
+                          style={{ padding: '6px 10px', fontSize: 11, borderRadius: 6, minWidth: 'auto', marginLeft: 'auto' }}
+                          disabled={actionLoading}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+}

@@ -1,0 +1,65 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        // Premium dark palette
+        "background": "#08080f",
+        "surface": "#0e0e1a",
+        "surface-2": "#13131f",
+        "surface-3": "#1a1a2a",
+        "accent": "#6366f1",
+        "accent-2": "#8b5cf6",
+        "on-surface": "rgba(255,255,255,0.95)",
+        "on-surface-variant": "rgba(255,255,255,0.55)",
+        "outline": "rgba(255,255,255,0.3)",
+        "outline-variant": "rgba(255,255,255,0.07)",
+        "primary": "#6366f1",
+        "primary-container": "#4f46e5",
+        "on-primary": "#ffffff",
+        "on-primary-container": "#e0e7ff",
+        "on-background": "rgba(255,255,255,0.95)",
+        "surface-container-low": "rgba(255,255,255,0.03)",
+        "surface-container": "rgba(255,255,255,0.05)",
+        "surface-container-high": "rgba(255,255,255,0.08)",
+        "surface-container-highest": "rgba(255,255,255,0.12)",
+        "surface-bright": "#0e0e1a",
+        "surface-container-lowest": "#08080f",
+        "secondary": "#8b5cf6",
+        "secondary-container": "rgba(139,92,246,0.15)",
+        "secondary-fixed": "rgba(139,92,246,0.2)",
+        "on-secondary": "#ffffff",
+        "on-secondary-container": "#c4b5fd",
+        "tertiary": "#10b981",
+        "tertiary-container": "rgba(16,185,129,0.15)",
+        "on-tertiary": "#ffffff",
+        "inverse-surface": "#e2e8f0",
+        "inverse-on-surface": "#0f172a",
+        "error": "#ef4444",
+        "on-error": "#ffffff",
+      },
+      spacing: {
+        "gutter": "2rem",
+        "container-max": "1400px",
+      },
+      fontFamily: {
+        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "SF Pro Display", "sans-serif"],
+      },
+      borderRadius: {
+        DEFAULT: "0.5rem",
+        lg: "0.75rem",
+        xl: "1rem",
+        "2xl": "1.5rem",
+      },
+      backdropBlur: {
+        xs: "4px",
+      },
+    },
+  },
+  plugins: [],
+}
