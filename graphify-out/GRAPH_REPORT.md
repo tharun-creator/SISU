@@ -1,13 +1,18 @@
-# Graph Report - sisu-booking-system  (2026-06-08)
+# Graph Report - sisu-booking-system  (2026-06-10)
 
 ## Corpus Check
-- 609 files · ~929,246 words
+- 682 files · ~995,477 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8622 nodes · 14130 edges · 836 communities (662 shown, 174 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 888 edges (avg confidence: 0.57)
+- 9461 nodes · 16650 edges · 934 communities (749 shown, 185 thin omitted)
+- Extraction: 89% EXTRACTED · 11% INFERRED · 0% AMBIGUOUS · INFERRED: 1884 edges (avg confidence: 0.53)
 - Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `a63567c4`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Community 0|Community 0]]
@@ -185,7 +190,6 @@
 - [[_COMMUNITY_Community 173|Community 173]]
 - [[_COMMUNITY_Community 174|Community 174]]
 - [[_COMMUNITY_Community 175|Community 175]]
-- [[_COMMUNITY_Community 176|Community 176]]
 - [[_COMMUNITY_Community 177|Community 177]]
 - [[_COMMUNITY_Community 178|Community 178]]
 - [[_COMMUNITY_Community 179|Community 179]]
@@ -219,6 +223,7 @@
 - [[_COMMUNITY_Community 207|Community 207]]
 - [[_COMMUNITY_Community 208|Community 208]]
 - [[_COMMUNITY_Community 209|Community 209]]
+- [[_COMMUNITY_Community 210|Community 210]]
 - [[_COMMUNITY_Community 211|Community 211]]
 - [[_COMMUNITY_Community 212|Community 212]]
 - [[_COMMUNITY_Community 213|Community 213]]
@@ -336,6 +341,7 @@
 - [[_COMMUNITY_Community 326|Community 326]]
 - [[_COMMUNITY_Community 327|Community 327]]
 - [[_COMMUNITY_Community 328|Community 328]]
+- [[_COMMUNITY_Community 329|Community 329]]
 - [[_COMMUNITY_Community 330|Community 330]]
 - [[_COMMUNITY_Community 331|Community 331]]
 - [[_COMMUNITY_Community 332|Community 332]]
@@ -722,15 +728,19 @@
 - [[_COMMUNITY_Community 720|Community 720]]
 - [[_COMMUNITY_Community 721|Community 721]]
 - [[_COMMUNITY_Community 722|Community 722]]
+- [[_COMMUNITY_Community 723|Community 723]]
 - [[_COMMUNITY_Community 724|Community 724]]
 - [[_COMMUNITY_Community 725|Community 725]]
 - [[_COMMUNITY_Community 726|Community 726]]
+- [[_COMMUNITY_Community 727|Community 727]]
+- [[_COMMUNITY_Community 729|Community 729]]
 - [[_COMMUNITY_Community 730|Community 730]]
 - [[_COMMUNITY_Community 731|Community 731]]
-- [[_COMMUNITY_Community 734|Community 734]]
 - [[_COMMUNITY_Community 735|Community 735]]
 - [[_COMMUNITY_Community 736|Community 736]]
 - [[_COMMUNITY_Community 737|Community 737]]
+- [[_COMMUNITY_Community 738|Community 738]]
+- [[_COMMUNITY_Community 739|Community 739]]
 - [[_COMMUNITY_Community 740|Community 740]]
 - [[_COMMUNITY_Community 741|Community 741]]
 - [[_COMMUNITY_Community 742|Community 742]]
@@ -757,7 +767,6 @@
 - [[_COMMUNITY_Community 763|Community 763]]
 - [[_COMMUNITY_Community 764|Community 764]]
 - [[_COMMUNITY_Community 765|Community 765]]
-- [[_COMMUNITY_Community 766|Community 766]]
 - [[_COMMUNITY_Community 767|Community 767]]
 - [[_COMMUNITY_Community 768|Community 768]]
 - [[_COMMUNITY_Community 769|Community 769]]
@@ -797,44 +806,59 @@
 - [[_COMMUNITY_Community 803|Community 803]]
 - [[_COMMUNITY_Community 804|Community 804]]
 - [[_COMMUNITY_Community 805|Community 805]]
+- [[_COMMUNITY_Community 844|Community 844]]
+- [[_COMMUNITY_Community 845|Community 845]]
+- [[_COMMUNITY_Community 846|Community 846]]
+- [[_COMMUNITY_Community 847|Community 847]]
+- [[_COMMUNITY_Community 849|Community 849]]
+- [[_COMMUNITY_Community 850|Community 850]]
+- [[_COMMUNITY_Community 853|Community 853]]
+- [[_COMMUNITY_Community 854|Community 854]]
+- [[_COMMUNITY_Community 855|Community 855]]
+- [[_COMMUNITY_Community 858|Community 858]]
+- [[_COMMUNITY_Community 859|Community 859]]
+- [[_COMMUNITY_Community 860|Community 860]]
+- [[_COMMUNITY_Community 881|Community 881]]
+- [[_COMMUNITY_Community 882|Community 882]]
+- [[_COMMUNITY_Community 899|Community 899]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Changelog` - 124 edges
-2. `Path` - 88 edges
-3. `str` - 85 edges
-4. `ingest_scip_json()` - 84 edges
-5. `Communities (141 total, 52 thin omitted)` - 71 edges
-6. `_make_id()` - 62 edges
-7. `main()` - 61 edges
-8. `_labels()` - 59 edges
-9. `bytes` - 56 edges
-10. `DataProcessor` - 56 edges
+2. `Session` - 110 edges
+3. `User` - 94 edges
+4. `Meeting` - 90 edges
+5. `Notification` - 90 edges
+6. `Path` - 88 edges
+7. `AdminEmail` - 86 edges
+8. `str` - 85 edges
+9. `ingest_scip_json()` - 84 edges
+10. `MeetingStatusLog` - 82 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `test_availability_signals()` --calls--> `DateAvailabilitySignal`  [INFERRED]
-  this/chatmodel/chatmodel/backend/scratch/verify_backend.py → this/chatmodel/chatmodel/backend/database.py
-- `reset_database_users()` --calls--> `AdminEmail`  [INFERRED]
-  this/chatmodel/chatmodel/backend/reset_users.py → this/chatmodel/chatmodel/backend/database.py
-- `run_full_cycle_test()` --calls--> `AdminEmail`  [INFERRED]
-  this/chatmodel/chatmodel/backend/test_full_cycle.py → this/chatmodel/chatmodel/backend/database.py
-- `test_dedup_ok_with_no_repo_attr()` --calls--> `deduplicate_entities()`  [INFERRED]
-  this/chatmodel/chatmodel/backend/graphify/tests/test_global_graph.py → this/chatmodel/chatmodel/backend/graphify/graphify/dedup.py
-- `test_dedup_ok_with_single_repo()` --calls--> `deduplicate_entities()`  [INFERRED]
-  this/chatmodel/chatmodel/backend/graphify/tests/test_global_graph.py → this/chatmodel/chatmodel/backend/graphify/graphify/dedup.py
+- `RegisterRequest` --uses--> `AdminEmail`  [INFERRED]
+  backend/auth.py → this/chatmodel/chatmodel/backend/database.py
+- `RegisterRequest` --uses--> `User`  [INFERRED]
+  backend/auth.py → this/chatmodel/chatmodel/backend/database.py
+- `LoginRequest` --uses--> `AdminEmail`  [INFERRED]
+  backend/auth.py → this/chatmodel/chatmodel/backend/database.py
+- `LoginRequest` --uses--> `User`  [INFERRED]
+  backend/auth.py → this/chatmodel/chatmodel/backend/database.py
+- `TokenResponse` --uses--> `AdminEmail`  [INFERRED]
+  backend/auth.py → this/chatmodel/chatmodel/backend/database.py
 
 ## Import Cycles
 - 1-file cycle: `this/chatmodel/chatmodel/backend/graphify/tests/test_prs.py -> this/chatmodel/chatmodel/backend/graphify/tests/test_prs.py`
 - 1-file cycle: `this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.rs -> this/chatmodel/chatmodel/backend/graphify/tests/fixtures/sample.rs`
 
-## Communities (836 total, 174 thin omitted)
+## Communities (934 total, 185 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.02
 Nodes (124): 0.1.0 (2026-04-03), 0.1.1 (2026-04-04), 0.1.3 (2026-04-04), 0.1.4 (2026-04-05), 0.1.5 (2026-04-05), 0.1.6 (2026-04-05), 0.1.7 (2026-04-05), 0.1.8 (2026-04-05) (+116 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.06
-Nodes (89): _c_collect_type_refs(), _cpp_collect_type_refs(), _csharp_attribute_names(), _csharp_collect_type_refs(), _csharp_extra_walk(), _csharp_pre_scan_interfaces(), _dynamic_import_js(), _get_c_func_name() (+81 more)
+Cohesion: 0.03
+Nodes (160): _c_collect_type_refs(), _collect_js_symbol_resolution_facts(), _collect_python_symbol_resolution_facts(), _cpp_collect_type_refs(), _csharp_attribute_names(), _csharp_classify_base(), _csharp_collect_type_refs(), _csharp_extra_walk() (+152 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.05
@@ -865,8 +889,8 @@ Cohesion: 0.03
 Nodes (71): Communities (141 total, 52 thin omitted), Community 0 - "Community 0", Community 10 - "Community 10", Community 11 - "Community 11", Community 12 - "Community 12", Community 13 - "Community 13", Community 14 - "Community 14", Community 15 - "Community 15" (+63 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.06
-Nodes (50): _cpp_preprocess(), _disambiguate_colliding_node_ids(), extract_blade(), extract_dmi(), extract_powershell(), _extract_python_rationale(), _extract_spock_fallback(), extract_sql() (+42 more)
+Cohesion: 0.05
+Nodes (58): _apply_symbol_resolution_facts(), _augment_js_reexport_edges(), _augment_symbol_resolution_edges(), _disambiguate_colliding_node_ids(), extract_blade(), extract_dmf(), extract_dmi(), extract_dmm() (+50 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.06
@@ -877,8 +901,8 @@ Cohesion: 0.07
 Nodes (58): _add_edge(), _add_node(), _detect_package_from_args(), _emit_server(), extract_mcp_config(), _file_stem(), is_mcp_config_path(), _make_id() (+50 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.09
-Nodes (68): admin_create_user(), admin_delete_user(), admin_demote_user(), admin_get_all_meetings(), admin_get_users(), admin_promote_user(), admin_set_date_signal(), admin_update_meeting_status() (+60 more)
+Cohesion: 0.05
+Nodes (123): admin_create_user(), admin_delete_user(), admin_demote_user(), admin_get_all_meetings(), admin_get_users(), admin_promote_user(), admin_set_date_signal(), admin_update_meeting_status() (+115 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.07
@@ -889,12 +913,12 @@ Cohesion: 0.04
 Nodes (55): _make_code_doc_graph(), _make_cross_lang_graph(), make_graph(), _make_simple_graph(), Tests for analyze.py., Code↔paper edge should score higher than code↔code edge., Helper: Python node in backend/, TypeScript node in frontend/, different communi, Cross-language INFERRED calls edge should score lower than same-language EXTRACT (+47 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.07
-Nodes (55): MeetingPriority, MeetingStatus, UserRole, Enum, _auto_follow_symlinks(), convert_office_file(), _could_contain_included_path(), count_words() (+47 more)
+Cohesion: 0.06
+Nodes (58): MeetingPriority, MeetingStatus, UserRole, Enum, _auto_follow_symlinks(), convert_office_file(), _could_contain_included_path(), count_words() (+50 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.07
-Nodes (42): extract_groovy(), extract_ruby(), extract_swift(), Extract classes, methods, constructors, and imports from a .groovy/.gradle file., Extract classes, methods, singleton methods, and calls from a .rb file., Extract classes, structs, protocols, functions, imports, and calls from a .swift, _labels(), Local const/let/var inside an arrow callback must NOT emit a node (#1077). (+34 more)
+Cohesion: 0.31
+Nodes (69): AvailabilityCreate, BookingBase, BookingCreate, BookingOut, CaptchaResponse, ChangePasswordRequest, ChatMessage, ChatResponse (+61 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.04
@@ -909,20 +933,20 @@ Cohesion: 0.04
 Nodes (54): Communities, Community 0 - "nanoGPT Model Architecture", Community 10 - "micrograd README + Backprop", Community 11 - "Attention Residuals Paper", Community 12 - "Continual LoRA Paper", Community 13 - "minGPT Trainer Class", Community 14 - "NeuralWalker Paper", Community 15 - "Dataset Abstractions" (+46 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.09
-Nodes (35): _check_tree_sitter_version(), extract(), _merge_swift_extensions(), Extract AST nodes and edges from a list of code files.      Two-pass process:, Collapse cross-file Swift `extension Foo` nodes into the canonical `Foo`., Two-pass Java import resolution.      Pass 1: build a global index {ClassName:, Raise a clear error if tree-sitter is too old for the new Language API., _resolve_cross_file_java_imports() (+27 more)
+Cohesion: 0.05
+Nodes (62): _check_tree_sitter_version(), extract(), _extract_parallel(), _extract_sequential(), _extract_single_file(), _get_extractor(), _merge_swift_extensions(), _pascal_find_body() (+54 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.05
 Nodes (76): Resolve a JS/TS module path or specifier to a local source file.      With a P, _resolve_js_module_path(), _import_targets(), Tests for #716 — TypeScript bare-path imports, Svelte 5 rune file imports (`fro, JS variant of the rune file pattern: a `.svelte.js` file (used in     JavaScrip, When both `.svelte.ts` and `.svelte.js` exist (hybrid project mid-     migratio, If `foo.svelte` IS a real markup file, importing `./foo.svelte`     must resolv, TS ESM convention: imports written as .js but the actual file is .ts. (+68 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.07
-Nodes (48): extract_delphi_form(), extract_lazarus_form(), extract_lazarus_package(), extract_pascal(), _project_xml_is_safe(), Extract units, classes, procedures, uses-imports, and calls from Pascal/Delphi f, Extract component hierarchy from Lazarus .lfm form files.      .lfm is a text-, Extract component hierarchy from Delphi .dfm form files.      .dfm files come (+40 more)
+Cohesion: 0.08
+Nodes (46): extract_delphi_form(), extract_lazarus_form(), extract_lazarus_package(), extract_pascal(), Extract units, classes, procedures, uses-imports, and calls from Pascal/Delphi f, Extract component hierarchy from Lazarus .lfm form files.      .lfm is a text-, Extract component hierarchy from Delphi .dfm form files.      .dfm files come, Extract package metadata from Lazarus .lpk package files (XML format).      .l (+38 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.34
-Nodes (48): LoginRequest, RegisterRequest, AdminEmail, AvailabilitySlot, Booking, CaptchaChallenge, DateAvailabilitySignal, Meeting (+40 more)
+Cohesion: 0.28
+Nodes (49): LoginRequest, RegisterRequest, AdminEmail, AvailabilitySlot, Booking, CaptchaChallenge, DateAvailabilitySignal, Meeting (+41 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.06
@@ -953,8 +977,8 @@ Cohesion: 0.10
 Nodes (42): _cross_community_surprises(), _cross_file_surprises(), _file_category(), god_nodes(), graph_diff(), _is_concept_node(), _is_file_node(), _node_community_map() (+34 more)
 
 ### Community 31 - "Community 31"
-Cohesion: 0.07
-Nodes (33): extract_dm(), extract_elixir(), Extract types, procs, includes, and calls from a .dm/.dme file., Extract modules, functions, imports, and calls from a .ex/.exs file., _calls(), _edges_with_relation(), test_dm_ambiguous_member_call_left_unresolved(), test_dm_call_edges_have_call_context() (+25 more)
+Cohesion: 0.11
+Nodes (62): admin_create_user(), admin_delete_user(), admin_demote_user(), admin_get_all_meetings(), admin_get_users(), admin_promote_user(), admin_set_date_signal(), admin_update_meeting_status() (+54 more)
 
 ### Community 32 - "Community 32"
 Cohesion: 0.05
@@ -969,12 +993,12 @@ Cohesion: 0.06
 Nodes (54): check_graph_file_size_cap(), Resolve *path* and verify it stays inside *base*.      *base* defaults to the, Reject *path* if its size exceeds ``_MAX_GRAPH_FILE_BYTES``.      Protects cal, Strip control characters and cap length.      Safe for embedding in JSON data, Return a control-character-free, HTML-escaped, bounded string., Sanitize a metadata value while preserving simple JSON-compatible types., Sanitize metadata keys and values before graph export.      Metadata is less c, Raise ValueError if *url* is not http or https, or targets a private/internal IP (+46 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.04
-Nodes (68): chat(), AgentState, asks_for_user_name(), book_meeting(), call_model(), cancel_my_meeting(), extract_user_name(), generate_chat_response() (+60 more)
+Cohesion: 0.27
+Nodes (32): _extract_for(), _has_edge(), _has_no_symbol_to_symbol_edge(), _has_symbol_edge(), _has_symbol_to_symbol_edge(), packages: - '.' in pnpm-workspace.yaml must not raise IndexError on any Python v, test_js_import_resolution_ignores_stale_importer_cache_when_target_appears(), test_pnpm_workspace_dot_package_does_not_crash() (+24 more)
 
 ### Community 36 - "Community 36"
-Cohesion: 0.07
-Nodes (38): extract_csproj(), extract_razor(), extract_sln(), Extract projects and inter-project dependencies from a .sln file., Extract packages, project refs, and target framework from a .csproj/.fsproj/.vbp, Extract directives, component refs, and @code methods from .razor/.cshtml., _labels(), Tests for .NET project file extraction (.sln, .csproj, .razor). (+30 more)
+Cohesion: 0.09
+Nodes (32): extract_csproj(), extract_razor(), extract_sln(), Extract projects and inter-project dependencies from a .sln file., Extract packages, project refs, and target framework from a .csproj/.fsproj/.vbp, Extract directives, component refs, and @code methods from .razor/.cshtml., _labels(), Tests for .NET project file extraction (.sln, .csproj, .razor). (+24 more)
 
 ### Community 37 - "Community 37"
 Cohesion: 0.08
@@ -990,7 +1014,7 @@ Nodes (37): _estimate_tokens(), _hr(), print_benchmark(), _query_subgraph_tokens
 
 ### Community 40 - "Community 40"
 Cohesion: 0.11
-Nodes (20): ConnectError, An error occurred at the transport layer., Failed to establish a connection., TransportError, AsyncBaseTransport, BaseTransport, ConnectionPool, HTTPTransport (+12 more)
+Nodes (21): ConnectError, An error occurred at the transport layer., Failed to establish a connection., TimeoutException, TransportError, AsyncBaseTransport, BaseTransport, ConnectionPool (+13 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.07
@@ -1006,7 +1030,7 @@ Nodes (13): AsyncClient, BaseClient, Client, The main Client and AsyncClient cla
 
 ### Community 44 - "Community 44"
 Cohesion: 0.06
-Nodes (38): load_extraction(), Nodes missing file_type entirely should also be canonicalized to 'concept'., Unknown file_type values are coerced through the synonym mapper, falling     ba, Known invalid file_type values map to their canonical equivalents., Regression for #760.      When the callee is defined before the caller in sour, Regression for #1061.      When an extraction emits two `calls` edges between, Legacy 'source' key on nodes is renamed to 'source_file' before graph build., Semantic subagents emit absolute source_file paths; build_from_json must     re (+30 more)
+Nodes (41): edge_data(), edge_datas(), Return every edge attribute dict for (u, v); always a list., Return one edge attribute dict for (u, v), tolerating MultiGraph.      For Mul, load_extraction(), Nodes missing file_type entirely should also be canonicalized to 'concept'., Unknown file_type values are coerced through the synonym mapper, falling     ba, Known invalid file_type values map to their canonical equivalents. (+33 more)
 
 ### Community 45 - "Community 45"
 Cohesion: 0.08
@@ -1033,32 +1057,32 @@ Cohesion: 0.15
 Nodes (32): _cross_community_surprises(), _cross_file_surprises(), _cross_language(), _file_category(), god_nodes(), graph_diff(), _is_concept_node(), _is_file_node() (+24 more)
 
 ### Community 51 - "Community 51"
-Cohesion: 0.14
-Nodes (23): extract_astro(), extract_svelte(), _load_tsconfig_aliases(), Strip // line comments, /* */ block comments, and trailing commas from JSONC., Recursively read path aliases from a tsconfig, following extends chains., Walk up from start_dir to find tsconfig.json and return compilerOptions.paths al, Extract imports from .svelte files: script-block via JS AST + template regex fal, Extract imports from .astro files: frontmatter (TS) + template regex fallback. (+15 more)
+Cohesion: 0.08
+Nodes (35): extract_astro(), _extract_generic(), extract_lua(), extract_ruby(), extract_svelte(), _find_body(), LanguageConfig, _load_tsconfig_aliases() (+27 more)
 
 ### Community 52 - "Community 52"
-Cohesion: 0.07
-Nodes (31): _extract_parallel(), _extract_pascal_regex(), _extract_sequential(), _extract_single_file(), _get_extractor(), _pascal_find_body(), _pascal_resolve_unit(), _pascal_split_bases() (+23 more)
+Cohesion: 0.12
+Nodes (16): _cpp_preprocess(), extract_fortran(), Run cpp -w -P on a capital-F Fortran file and return preprocessed bytes., Extract programs, modules, subroutines, functions, use statements, and calls fro, test_fortran_capital_F_parses_preprocessed(), test_fortran_case_insensitive_names(), test_fortran_finds_calls(), test_fortran_finds_derived_type() (+8 more)
 
 ### Community 53 - "Community 53"
 Cohesion: 0.06
 Nodes (32): For always-on context in Devin sessions, For --cluster-only, For git commit hook, For /graphify add, For /graphify explain, For /graphify path, For /graphify query, For --update (incremental re-extraction) (+24 more)
 
 ### Community 54 - "Community 54"
-Cohesion: 0.27
-Nodes (32): _extract_for(), _has_edge(), _has_no_symbol_to_symbol_edge(), _has_symbol_edge(), _has_symbol_to_symbol_edge(), packages: - '.' in pnpm-workspace.yaml must not raise IndexError on any Python v, test_js_import_resolution_ignores_stale_importer_cache_when_target_appears(), test_pnpm_workspace_dot_package_does_not_crash() (+24 more)
+Cohesion: 0.06
+Nodes (32): dependencies, autoprefixer, date-fns, framer-motion, lucide-react, postcss, react, react-dom (+24 more)
 
 ### Community 55 - "Community 55"
 Cohesion: 0.11
-Nodes (33): _cap_filename(), _cypher_escape(), _cypher_label(), _git_head(), _html_script(), _html_styles(), _hyperedge_script(), _obsidian_tag() (+25 more)
+Nodes (31): _cap_filename(), _cypher_escape(), _cypher_label(), _git_head(), _html_script(), _html_styles(), _hyperedge_script(), _obsidian_tag() (+23 more)
 
 ### Community 56 - "Community 56"
 Cohesion: 0.06
 Nodes (32): _make_symbol_doc(), Helper to build a minimal SCIP document with one symbol., is_reference → relation 'scip_ref'., is_definition → relation 'scip_def'., is_implementation → relation 'scip_impl' (takes priority over is_definition)., is_type_definition → relation 'scip_typed'., Implementation > TypeDefinition > Definition > Reference., When none of is_* flags are set, relation defaults to 'scip_ref'. (+24 more)
 
 ### Community 57 - "Community 57"
-Cohesion: 0.08
-Nodes (37): build_zapier_payload(), check_slot_available(), find_next_available_slots(), format_datetime_for_google_calendar(), handle_approved_meeting_native(), _ist_to_utc(), log_booking_action(), mark_slot_as_booked() (+29 more)
+Cohesion: 0.06
+Nodes (59): build_zapier_payload(), check_slot_available(), find_next_available_slots(), format_datetime_for_google_calendar(), handle_approved_meeting_native(), _ist_to_utc(), log_booking_action(), mark_slot_as_booked() (+51 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.06
@@ -1073,12 +1097,12 @@ Cohesion: 0.06
 Nodes (30): For --cluster-only, For git commit hook, For /graphify add, For /graphify explain, For /graphify path, For /graphify query, For native CLAUDE.md integration, For --update (incremental re-extraction) (+22 more)
 
 ### Community 61 - "Community 61"
-Cohesion: 0.09
-Nodes (8): Limits, Timeout, Cookies, Headers, Core data models: URL, Headers, Cookies, Request, Response. These are the centr, URL, add_unique_constraint(), str
+Cohesion: 0.11
+Nodes (7): Limits, Timeout, Cookies, Headers, Core data models: URL, Headers, Cookies, Request, Response. These are the centr, URL, str
 
 ### Community 62 - "Community 62"
-Cohesion: 0.14
-Nodes (27): build(), build_from_json(), build_merge(), deduplicate_by_label(), edge_data(), edge_datas(), _norm_label(), _norm_source_file() (+19 more)
+Cohesion: 0.11
+Nodes (29): build(), build_from_json(), build_merge(), deduplicate_by_label(), _norm_label(), _norm_source_file(), _normalize_id(), prune_repo_from_graph() (+21 more)
 
 ### Community 63 - "Community 63"
 Cohesion: 0.09
@@ -1105,16 +1129,16 @@ Cohesion: 0.08
 Nodes (29): Resolve Bash source/import edges and source-backed function calls.      Defens, resolve_bash_source_edges(), When a callee function is defined in multiple sourced files, skip it., Non-bash raw_calls inside sourced-file per_file entries are ignored., A `bash_sources` entry missing `target_path` must not raise KeyError., A node tagged as bash_function but missing `id` must not raise KeyError., A raw_call entry missing `caller_nid` must not raise KeyError., A None entry in per_file (e.g. failed extraction) must be silently skipped. (+21 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.09
-Nodes (28): CloseError, ConnectTimeout, CookieConflict, DecodingError, NetworkError, PoolTimeout, ProtocolError, ProxyError (+20 more)
+Cohesion: 0.08
+Nodes (30): Exception, CloseError, ConnectTimeout, CookieConflict, DecodingError, HTTPError, NetworkError, PoolTimeout (+22 more)
 
 ### Community 70 - "Community 70"
-Cohesion: 0.07
-Nodes (44): check_conflicts(), create_event(), create_event_direct(), delete_event(), _format_datetime(), get_free_slots(), _get_service(), calendar_service.py — Google Calendar integration with conflict detection and re (+36 more)
+Cohesion: 0.06
+Nodes (65): check_conflicts(), create_event(), create_event_direct(), delete_event(), _format_datetime(), get_free_slots(), _get_service(), calendar_service.py — Google Calendar integration with conflict detection and re (+57 more)
 
 ### Community 71 - "Community 71"
-Cohesion: 0.10
-Nodes (25): cache_dir(), load_cached(), Returns graphify-out/cache/{kind}/ - creates it if needed.      kind is "ast", Return cached extraction for this file if hash matches, else None.      Cache, Save extraction result for this file.      Stores as graphify-out/cache/{kind}, Save semantic extraction results to cache, keyed by source_file.      Groups n, save_cached(), save_semantic_cache() (+17 more)
+Cohesion: 0.11
+Nodes (27): cache_dir(), cached_files(), check_semantic_cache(), load_cached(), Returns graphify-out/cache/{kind}/ - creates it if needed.      kind is "ast", Return cached extraction for this file if hash matches, else None.      Cache, Save extraction result for this file.      Stores as graphify-out/cache/{kind}, Return set of file hashes that have a valid cache entry (any kind). (+19 more)
 
 ### Community 72 - "Community 72"
 Cohesion: 0.21
@@ -1130,7 +1154,7 @@ Nodes (25): For /graphify add and --watch, For /graphify query, For the commit h
 
 ### Community 75 - "Community 75"
 Cohesion: 0.11
-Nodes (12): DataProcessor, Result, createProcessor(), HasName, Loggable, Result, string, BaseProcessor (+4 more)
+Nodes (12): DataProcessor, createProcessor(), HasName, Loggable, Result, Result, string, BaseProcessor (+4 more)
 
 ### Community 76 - "Community 76"
 Cohesion: 0.08
@@ -1145,16 +1169,16 @@ Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Kilo-specific rules (+16 more)
 
 ### Community 79 - "Community 79"
-Cohesion: 0.11
-Nodes (24): build_section_node_map(), classify_edges(), endpoint_id(), first_list(), first_present(), html_anchor_id(), load_graph(), _node_link_payload() (+16 more)
+Cohesion: 0.16
+Nodes (14): endpoint_id(), first_list(), first_present(), load_graph(), _node_link_payload(), normalize_edge(), normalize_node(), Return the first non-empty value for any candidate key. (+6 more)
 
 ### Community 80 - "Community 80"
 Cohesion: 0.16
-Nodes (22): Export graph as GraphML - opens in Gephi, yEd, and any GraphML-compatible tool., to_graphml(), make_graph(), vis-network script tag must use a pinned versioned URL with a sha384     Subres, to_html accepts member_counts without raising., Node file paths in canvas must be vault-root-relative (just fname.md), not hardc, test_to_canvas_file_paths_relative_to_vault(), test_to_cypher_contains_merge_statements() (+14 more)
+Nodes (24): Export graph as GraphML - opens in Gephi, yEd, and any GraphML-compatible tool., Generate an interactive vis.js HTML visualization of the graph.      Features:, to_graphml(), to_html(), make_graph(), vis-network script tag must use a pinned versioned URL with a sha384     Subres, to_html accepts member_counts without raising., Node file paths in canvas must be vault-root-relative (just fname.md), not hardc (+16 more)
 
 ### Community 81 - "Community 81"
-Cohesion: 0.06
-Nodes (56): extract_cpp(), extract_dmm(), extract_fortran(), extract_julia(), Extract type-path references from a .dmm map file's tile dictionary., Extract functions, classes, and includes from a .cpp/.cc/.cxx/.hpp file., Extract modules, structs, functions, imports, and calls from a .jl file., Extract programs, modules, subroutines, functions, use statements, and calls fro (+48 more)
+Cohesion: 0.02
+Nodes (211): extract_c(), extract_cpp(), extract_csharp(), extract_dm(), extract_groovy(), extract_java(), extract_julia(), extract_kotlin() (+203 more)
 
 ### Community 82 - "Community 82"
 Cohesion: 0.10
@@ -1166,7 +1190,7 @@ Nodes (24): For /graphify add and --watch, For /graphify query, For the commit h
 
 ### Community 84 - "Community 84"
 Cohesion: 0.08
-Nodes (25): _platform_artifacts(), codex (was 4-value) and windows (was 5-value) now carry the superset., The extraction variant differs: codex compact, windows verbose., kiro and pi render no frontmatter trigger (trigger absent in v8)., The other split hosts keep trigger: /graphify in the frontmatter., kilo gets the Kilo-specific rules tail before Honesty Rules., Each dispatch variant lands in the right host's B2 slot., kiro, pi, claw use the compact extraction body; the rest use verbose. (+17 more)
+Nodes (25): _platform_artifacts(), codex (was 4-value) and windows (was 5-value) now carry the superset., The extraction variant differs: codex compact, windows verbose., cli-inline hosts get the NetworkX-fallback stub, not vocab-expansion., kiro and pi render no frontmatter trigger (trigger absent in v8)., The other split hosts keep trigger: /graphify in the frontmatter., kilo gets the Kilo-specific rules tail before Honesty Rules., Each dispatch variant lands in the right host's B2 slot. (+17 more)
 
 ### Community 85 - "Community 85"
 Cohesion: 0.08
@@ -1213,8 +1237,8 @@ Cohesion: 0.08
 Nodes (23): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+15 more)
 
 ### Community 96 - "Community 96"
-Cohesion: 0.09
-Nodes (43): prefix_graph_for_global(), prune_repo_from_graph(), Return a copy of G with all node IDs prefixed with repo_tag::.      Labels are, Remove all nodes tagged with repo_tag from G in-place. Returns count removed., _file_hash(), global_add(), global_list(), global_path() (+35 more)
+Cohesion: 0.17
+Nodes (11): 🏗️ Architectural Topology, 🚀 Backend Cloud Deployment, Backend Variables, 🗄️ Database Provisioning, 📋 Environment Variables Checklist, 💻 Frontend Static Deployment, Frontend Variables, Option A: Render (Recommended) (+3 more)
 
 ### Community 97 - "Community 97"
 Cohesion: 0.09
@@ -1273,24 +1297,24 @@ Cohesion: 0.08
 Nodes (23): 1. Node/Edge Quality - Score: 6/10, 2. Edge Accuracy - Score: 5/10, 3. Community Quality - Score: 6/10, 4. Surprising Connections - Score: 4/10, 5. God Nodes - Score: 7/10, 6. Overall Usefulness - Score: 6/10, Additional Observations, Corpus size and density (+15 more)
 
 ### Community 111 - "Community 111"
-Cohesion: 0.17
-Nodes (13): _extract_generic(), extract_lua(), _find_body(), LanguageConfig, Find the body node using config.body_field, falling back to child types., Generic AST extractor driven by LanguageConfig., Extract functions, methods, require() imports, and calls from a .lua file., Return the leading kind token for a Swift class_declaration: class/struct/enum/e (+5 more)
+Cohesion: 0.22
+Nodes (9): extract_elixir(), Extract modules, functions, imports, and calls from a .ex/.exs file., test_elixir_call_edges_have_call_context(), test_elixir_finds_calls(), test_elixir_finds_functions(), test_elixir_finds_imports(), test_elixir_finds_module(), test_elixir_import_edges_have_import_context() (+1 more)
 
 ### Community 112 - "Community 112"
 Cohesion: 0.08
 Nodes (23): Tests for the tools/skillgen generator and the claude lean-core split.  skillg, Every v8 heading lands in the lean core or exactly one reference., The guard's line scanner flags 4- and 5-value pipe enums, not the superset., check + audit-coverage pass for every rendered progressive host., aider and devin render one inline body, no split and no references dir., A full render carries the always-on files; a --platform render does not., Each always_on/*.md reproduces its former __main__.py constant byte for byte., The live module constants now equal the packaged files they read at load. (+15 more)
 
 ### Community 113 - "Community 113"
-Cohesion: 0.35
-Nodes (22): _base_template(), _booking_received_html(), _cancellation_html(), _cta_button(), _meeting_approved_html(), _meeting_card(), _meeting_rejected_html(), _meeting_rescheduled_html() (+14 more)
+Cohesion: 0.19
+Nodes (42): _base_template(), _booking_received_html(), _cancellation_html(), _cta_button(), _meeting_approved_html(), _meeting_card(), _meeting_rejected_html(), _meeting_rescheduled_html() (+34 more)
 
 ### Community 114 - "Community 114"
 Cohesion: 0.09
 Nodes (22): For /graphify add and --watch, For /graphify query, For the commit hook and native @@HOOKS_TARGET@@ integration, For --update and --cluster-only, /graphify, Interpreter guard for subcommands, Part A - Structural extraction for code files, Part B - Semantic extraction (parallel subagents) (+14 more)
 
 ### Community 115 - "Community 115"
-Cohesion: 0.11
-Nodes (23): detect_lang(), generate_header(), generate_nav(), html_comment_text(), humanize_label(), mermaid_section_id(), node_display_name(), node_mermaid_id() (+15 more)
+Cohesion: 0.13
+Nodes (19): detect_lang(), generate_header(), generate_nav(), html_comment_text(), humanize_label(), node_display_name(), node_label(), Build a readable Mermaid node label. (+11 more)
 
 ### Community 116 - "Community 116"
 Cohesion: 0.17
@@ -1301,12 +1325,12 @@ Cohesion: 0.13
 Nodes (18): attach_hyperedges(), Store hyperedges in the graph's metadata dict., to_json(), _make_report(), Tests for hyperedge support in graphify., Write graph.json then reload it - hyperedges must survive., test_attach_hyperedges_adds_new(), test_attach_hyperedges_deduplicates() (+10 more)
 
 ### Community 118 - "Community 118"
-Cohesion: 0.11
-Nodes (22): extract_php(), Extract classes, functions, methods, namespace uses, and calls from a .php file., Module-level arrow functions must still emit a node and capture their calls (#10, _relations(), test_groovy_finds_imports(), test_js_module_level_arrow_produces_node_and_call_edges(), test_php_config_helper_target_matches_first_segment(), test_php_container_bind_links_contract_to_implementation() (+14 more)
+Cohesion: 0.06
+Nodes (32): dependencies, autoprefixer, date-fns, framer-motion, lucide-react, postcss, react, react-dom (+24 more)
 
 ### Community 119 - "Community 119"
-Cohesion: 0.11
-Nodes (22): extract_scala(), Extract classes, objects, functions, and imports from a .scala file., _edge_labels(), _node_by_label(), _normalize_symbol_label(), test_powershell_method_parameter_and_return_type_contexts(), test_powershell_property_field_type_context(), test_scala_call_edges_have_call_context() (+14 more)
+Cohesion: 0.17
+Nodes (23): build_zapier_payload(), check_slot_available(), find_next_available_slots(), format_datetime_for_google_calendar(), handle_approved_meeting_native(), _ist_to_utc(), log_booking_action(), mark_slot_as_booked() (+15 more)
 
 ### Community 120 - "Community 120"
 Cohesion: 0.20
@@ -1333,12 +1357,12 @@ Cohesion: 0.12
 Nodes (20): Cookies, build_url_with_params(), flatten_queryparams(), is_known_encoding(), normalize_header_key(), obfuscate_sensitive_headers(), parse_content_type(), primitive_value_to_str() (+12 more)
 
 ### Community 126 - "Community 126"
-Cohesion: 0.15
-Nodes (13): extract_csharp(), Extract classes, interfaces, methods, namespaces, and usings from a .cs file., test_csharp_call_edges_have_call_context(), test_csharp_finds_class(), test_csharp_finds_interface(), test_csharp_finds_methods(), test_csharp_finds_usings(), test_csharp_implements_iprocessor() (+5 more)
+Cohesion: 0.16
+Nodes (26): check_conflicts(), create_event(), create_event_direct(), delete_event(), _format_datetime(), get_free_slots(), _get_service(), calendar_service.py — Google Calendar integration with conflict detection and re (+18 more)
 
 ### Community 127 - "Community 127"
-Cohesion: 0.14
-Nodes (21): edge_score(), generate_overview_graph(), generate_section_flowchart(), mermaid_class_defs(), mermaid_init(), node_importance(), node_label(), Build a readable Mermaid node label. (+13 more)
+Cohesion: 0.15
+Nodes (19): edge_score(), generate_overview_graph(), generate_section_flowchart(), mermaid_class_defs(), mermaid_init(), node_importance(), Generate a readable section-level architecture overview., Generate a compact, human-readable call-flow chart for a section. (+11 more)
 
 ### Community 128 - "Community 128"
 Cohesion: 0.20
@@ -1373,8 +1397,8 @@ Cohesion: 0.10
 Nodes (9): Tests for the `claude-cli` backend (#855/#856).  Mocks subprocess.run + shutil, On Windows, npm installs `claude.ps1` alongside `claude.cmd`.     `CreateProces, If `claude.cmd` is somehow unavailable but `claude` resolves     (e.g. WSL-styl, If neither `claude.cmd` nor `claude` are on PATH on Windows,     raise the stan, On non-Windows platforms, behaviour is unchanged: bare `claude`     is passed t, test_non_windows_uses_bare_claude(), test_windows_falls_back_to_bare_claude_when_cmd_missing(), test_windows_prefers_claude_cmd_over_bare_claude() (+1 more)
 
 ### Community 136 - "Community 136"
-Cohesion: 0.15
-Nodes (22): create_access_token(), decode_token(), get_current_user(), hash_password(), login_user(), auth.py — JWT-based authentication for the Sisu platform, Validate password strength based on standard policies., Validate password strength based on standard policies. (+14 more)
+Cohesion: 0.11
+Nodes (35): create_access_token(), decode_token(), get_current_user(), hash_password(), login_user(), auth.py — JWT-based authentication for the Sisu platform, Validate password strength based on standard policies., Validate password strength based on standard policies. (+27 more)
 
 ### Community 137 - "Community 137"
 Cohesion: 0.15
@@ -1441,8 +1465,8 @@ Cohesion: 0.14
 Nodes (17): _make_extraction(), Tests for confidence_score on edges., Edges lacking confidence_score get sensible defaults in to_json., Report summary line should include avg confidence for INFERRED edges., Surprising connections section shows confidence score next to INFERRED edges., Return a minimal extraction dict with one edge of each confidence type., EXTRACTED edges must have confidence_score == 1.0., INFERRED edges must have confidence_score between 0.0 and 1.0. (+9 more)
 
 ### Community 153 - "Community 153"
-Cohesion: 0.20
-Nodes (11): Layout(), adminNav, clientNav, Sidebar(), useAuth(), AdminCalendarSlotsPage(), TIME_SLOTS, NotificationsPage() (+3 more)
+Cohesion: 0.08
+Nodes (7): TIME_SLOTS, PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS, PRIORITY_COLORS, STATUS_COLORS, TYPE_CONFIG
 
 ### Community 154 - "Community 154"
 Cohesion: 0.12
@@ -1457,8 +1481,8 @@ Cohesion: 0.12
 Nodes (16): 1. Corpus Detection, 2. AST Extraction (3 Python files), 3. Community Detection, 4. Query Tests (live BFS traversal), 5. Feedback Loop Test (answers filed back into library), 6. Arabic Image OCR (via Claude vision), 7. Issues Found, 8. Scores (+8 more)
 
 ### Community 157 - "Community 157"
-Cohesion: 0.16
-Nodes (8): HTTPError, HTTPStatusError, A 4xx or 5xx response was received., Base class for all httpx exceptions., Response, bool, bytes, int
+Cohesion: 0.11
+Nodes (9): add_unique_constraint(), HTTPStatusError, A 4xx or 5xx response was received., Response, add_unique_constraint(), bool, bytes, int (+1 more)
 
 ### Community 158 - "Community 158"
 Cohesion: 0.12
@@ -1473,12 +1497,12 @@ Cohesion: 0.23
 Nodes (10): AuthedHttpClient, token_, baseUrl_, tags_, RetryingHttpClient, maxRetries, HttpClient, main() (+2 more)
 
 ### Community 161 - "Community 161"
-Cohesion: 0.17
-Nodes (19): _absolutize_source_files_in(), cached_files(), check_semantic_cache(), _ensure_stat_index(), file_hash(), _flush_stat_index(), _normalize_path(), Mutate ``payload`` to rewrite absolute ``source_file`` fields as     forward-sl (+11 more)
+Cohesion: 0.21
+Nodes (15): _absolutize_source_files_in(), _ensure_stat_index(), file_hash(), _flush_stat_index(), _normalize_path(), Mutate ``payload`` to rewrite absolute ``source_file`` fields as     forward-sl, Inverse of :func:`_relativize_source_files_in`.      Re-anchor relative ``sour, Save semantic extraction results to cache, keyed by source_file.      Groups n (+7 more)
 
 ### Community 162 - "Community 162"
-Cohesion: 0.24
-Nodes (13): clear_cache(), Delete all cache entries (ast/, semantic/, and legacy flat entries)., _count_by_ext(), _format_languages(), main(), Run extraction, return (elapsed_seconds, node_count, edge_count)., Count files by extension., _run_extraction() (+5 more)
+Cohesion: 0.20
+Nodes (15): clear_cache(), Delete all cache entries (ast/, semantic/, and legacy flat entries)., _count_by_ext(), _format_languages(), main(), Run extraction, return (elapsed_seconds, node_count, edge_count)., Count files by extension., _run_extraction() (+7 more)
 
 ### Community 164 - "Community 164"
 Cohesion: 0.20
@@ -1528,10 +1552,6 @@ Nodes (12): The Read|Glob PreToolUse hook nudges toward the graph instead of raw
 Cohesion: 0.13
 Nodes (15): _claude_artifacts(), The default code-corpus run must be fully described inside the core., No reference fragment may duplicate the core build pipeline., Every references/<name>.md the core points at is actually rendered., The query section heading is the lean-core stub; query.md re-homes the rest., claude renders exactly the eight on-demand fragments from the design., Decision A: the file_type enum is the full six-value superset., The core must not inline the execution detail of an on-demand reference. (+7 more)
 
-### Community 176 - "Community 176"
-Cohesion: 0.20
-Nodes (7): Chat(), api, BASE_URL, getConnectionErrorMessage(), getToken(), isLocalApp, request()
-
 ### Community 177 - "Community 177"
 Cohesion: 0.27
 Nodes (13): Export graph as an Obsidian vault - one .md file per node with [[wikilinks]],, to_obsidian(), _graph(), _max_name_bytes(), Regression tests for issue #1094: to_obsidian / to_canvas must cap filenames to, test_canvas_long_label_file_ref_capped(), test_obsidian_distinct_long_labels_sharing_prefix_do_not_collide(), test_obsidian_long_ascii_label_does_not_crash() (+5 more)
@@ -1561,8 +1581,8 @@ Cohesion: 0.14
 Nodes (13): `graph.json`을 LLM과 함께 사용하기, graphify, 개인정보 보호, 결과물, 기술 스택, 다음 계획, 동작 원리, 사용법 (+5 more)
 
 ### Community 184 - "Community 184"
-Cohesion: 0.19
-Nodes (4): Authenticator, ApiClient, BaseProcessor, Result
+Cohesion: 0.24
+Nodes (3): Authenticator, ApiClient, BaseProcessor
 
 ### Community 185 - "Community 185"
 Cohesion: 0.15
@@ -1576,17 +1596,21 @@ Nodes (12): elem "info" [CHILD], elem "infowindow" [MAIN], elem "map" [MAP], ele
 Cohesion: 0.21
 Nodes (7): Override, BaseProcessor, Processor, Result, HttpClient, List, String
 
+### Community 188 - "Community 188"
+Cohesion: 0.04
+Nodes (108): chat(), AgentState, asks_for_user_name(), book_meeting(), call_model(), cancel_my_meeting(), extract_user_name(), generate_chat_response() (+100 more)
+
 ### Community 189 - "Community 189"
-Cohesion: 0.15
-Nodes (13): extract_markdown(), Extract structural nodes and edges from a Markdown file.      Produces nodes f, ### Database Migration is nested under ## Full Deploy., Fenced code blocks should NOT emit nodes (#1077).      They were always orphan, Headings should be connected via 'contains' edges (file->h, h->h)., A '## heading' inside a fenced block must not produce a heading node (#1077)., test_markdown_contains_edges(), test_markdown_fenced_heading_not_parsed() (+5 more)
+Cohesion: 0.14
+Nodes (16): check_update(), _has_non_code(), Check for pending semantic update flag and notify the user if set.      Cron-s, Watch watch_path for new or modified files and auto-update the graph.      For, _relativize_source_files(), watch(), check_update returns True and is silent when needs_update flag is absent., check_update returns True and prints notification when flag exists. (+8 more)
 
 ### Community 190 - "Community 190"
 Cohesion: 0.17
 Nodes (13): gemini_install(), gemini_uninstall(), _install_gemini_hook(), Copy skill file, write GEMINI.md section, and install BeforeTool hook., Remove the graphify section from GEMINI.md, uninstall hook, and remove skill fil, _uninstall_gemini_hook(), test_gemini_install_idempotent(), test_gemini_install_merges_existing_gemini_md() (+5 more)
 
 ### Community 191 - "Community 191"
-Cohesion: 0.14
-Nodes (16): check_update(), _has_non_code(), Check for pending semantic update flag and notify the user if set.      Cron-s, Watch watch_path for new or modified files and auto-update the graph.      For, _relativize_source_files(), watch(), check_update returns True and is silent when needs_update flag is absent., check_update returns True and prints notification when flag exists. (+8 more)
+Cohesion: 0.15
+Nodes (16): build_section_node_map(), classify_edges(), html_anchor_id(), mermaid_section_id(), node_mermaid_id(), normalize_communities(), normalize_sections(), Build a Mermaid-safe ASCII identifier with a hash suffix to avoid collisions. (+8 more)
 
 ### Community 192 - "Community 192"
 Cohesion: 0.15
@@ -1609,8 +1633,8 @@ Cohesion: 0.17
 Nodes (11): 🏗️ Architectural Topology, 🚀 Backend Cloud Deployment, Backend Variables, 🗄️ Database Provisioning, 📋 Environment Variables Checklist, 💻 Frontend Static Deployment, Frontend Variables, Option A: Render (Recommended) (+3 more)
 
 ### Community 197 - "Community 197"
-Cohesion: 0.20
-Nodes (6): CacheManager, NetworkError, connectionFailed, timeout, unauthorized, String
+Cohesion: 0.15
+Nodes (9): CacheManager, NetworkError, connectionFailed, timeout, unauthorized, Bool, Config, Int (+1 more)
 
 ### Community 198 - "Community 198"
 Cohesion: 0.17
@@ -1660,13 +1684,17 @@ Nodes (5): TMainForm, TMemo, TStatusBar, TButton, TPanel
 Cohesion: 0.20
 Nodes (6): GraphifyDemo, IProcessor, Processor, Result, HttpClient, List
 
+### Community 210 - "Community 210"
+Cohesion: 0.35
+Nodes (22): _base_template(), _booking_received_html(), _cancellation_html(), _cta_button(), _meeting_approved_html(), _meeting_card(), _meeting_rejected_html(), _meeting_rescheduled_html() (+14 more)
+
 ### Community 211 - "Community 211"
-Cohesion: 0.18
-Nodes (11): extract_java(), Extract classes, interfaces, methods, constructors, and imports from a .java fil, test_java_finds_class(), test_java_finds_imports(), test_java_finds_interface(), test_java_finds_methods(), test_java_import_edges_have_import_context(), test_java_no_dangling_edges() (+3 more)
+Cohesion: 0.09
+Nodes (7): TIME_SLOTS, PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS, TYPE_CONFIG, TIME_SLOTS, TYPE_CONFIG
 
 ### Community 212 - "Community 212"
-Cohesion: 0.18
-Nodes (11): extract_kotlin(), Extract classes, objects, functions, and imports from a .kt/.kts file., Regression test for the call-walker `simple_identifier` /     `identifier` rena, test_kotlin_emits_in_file_calls(), test_kotlin_finds_class(), test_kotlin_finds_data_class(), test_kotlin_finds_function(), test_kotlin_finds_methods() (+3 more)
+Cohesion: 0.20
+Nodes (20): create_access_token(), decode_token(), get_current_user(), hash_password(), login_user(), LoginRequest, auth.py — JWT-based authentication for the Sisu platform, Validate password strength based on standard policies. (+12 more)
 
 ### Community 213 - "Community 213"
 Cohesion: 0.27
@@ -1685,8 +1713,8 @@ Cohesion: 0.18
 Nodes (11): Per-repo advisory lock around a rebuild.      Yields True if acquired, False i, _rebuild_lock(), GH-858: lock file must be unlinked once the rebuild completes so     downstream, GH-858: each acquisition truncates and rewrites the PID line rather     than ap, GH-858: a non-blocking caller that fails to acquire the lock must not     trunc, #1059: when the rebuild lock is held, an incremental hook must queue     its ch, test_rebuild_code_queues_on_lock_contention(), test_rebuild_lock_does_not_accumulate_pids_across_runs() (+3 more)
 
 ### Community 217 - "Community 217"
-Cohesion: 0.25
-Nodes (5): AuthContext, AuthProvider(), PrivateRoute(), AdminUsersPage(), Login()
+Cohesion: 0.11
+Nodes (38): prefix_graph_for_global(), Return a copy of G with all node IDs prefixed with repo_tag::.      Labels are, _file_hash(), global_add(), global_list(), global_path(), global_remove(), _load_global_graph() (+30 more)
 
 ### Community 218 - "Community 218"
 Cohesion: 0.18
@@ -1721,20 +1749,20 @@ Cohesion: 0.20
 Nodes (9): Docker MCP Toolkit + SQLite MCP server, Install, Prerequisites, Smoke test, Storage layout, Troubleshooting, Uninstall / reset, Why SQLite (and not `sqlite-mcp-server`) (+1 more)
 
 ### Community 226 - "Community 226"
-Cohesion: 0.31
-Nodes (7): BaseProcessor, Logger, Reader, ReaderLogger, NewServer(), Server, main()
+Cohesion: 0.24
+Nodes (8): BaseProcessor, Logger, Reader, ReaderLogger, Result, NewServer(), Server, main()
 
 ### Community 227 - "Community 227"
-Cohesion: 0.36
-Nodes (5): BaseClient, HttpClientFactory, HttpClient, Loggable, String
+Cohesion: 0.32
+Nodes (7): BaseClient, HttpClientFactory, Config, HttpClient, Int, Loggable, String
 
 ### Community 228 - "Community 228"
-Cohesion: 0.33
-Nodes (5): createClient(), BaseProcessor, HttpClient, Loggable, String
+Cohesion: 0.31
+Nodes (6): createClient(), BaseProcessor, Config, HttpClient, Loggable, String
 
 ### Community 229 - "Community 229"
-Cohesion: 0.42
-Nodes (8): _has_edge(), _node_id(), test_python_package_reexport_resolves_import_and_call_to_origin_symbol(), test_python_parameter_return_and_generic_contexts(), _write(), bool, Path, str
+Cohesion: 0.19
+Nodes (15): AdminEmail, AvailabilitySlot, Booking, CaptchaChallenge, DateAvailabilitySignal, Meeting, MeetingPriority, MeetingStatus (+7 more)
 
 ### Community 230 - "Community 230"
 Cohesion: 0.22
@@ -1773,8 +1801,8 @@ Cohesion: 0.22
 Nodes (6): net8.0, FluentValidation (11.9.0), MediatR (12.2.0), Microsoft.AspNetCore.Authentication.JwtBearer (8.0.0), Swashbuckle.AspNetCore (6.5.0), Microsoft.NET.Sdk.Web
 
 ### Community 239 - "Community 239"
-Cohesion: 0.22
-Nodes (5): STATUS_COLORS, TIME_SLOTS, AdminApprovedPage(), PRIORITY_COLORS, STATUS_COLORS
+Cohesion: 0.08
+Nodes (11): STATUS_COLORS, TIME_SLOTS, PRIORITY_COLORS, STATUS_COLORS, PRIORITY_COLORS, STATUS_COLORS, PRIORITY_COLORS, STATUS_COLORS (+3 more)
 
 ### Community 240 - "Community 240"
 Cohesion: 0.22
@@ -1808,20 +1836,16 @@ Nodes (9): iter_raw_calls(), Return raw calls from all per-file extraction fragm
 Cohesion: 0.31
 Nodes (8): _make_graphify_out(), #F4: callflow_html.load_graph must refuse to read a graph.json that     exceeds, test_derive_sections_groups_by_architecture_keywords(), test_export_callflow_html_cli_accepts_positional_graph_path(), test_export_callflow_html_cli_creates_file(), test_load_graph_rejects_oversized_file(), test_write_callflow_html_creates_file_and_uses_report(), Path
 
-### Community 249 - "Community 249"
-Cohesion: 0.18
-Nodes (11): extract_objc(), Extract interfaces, implementations, protocols, methods, and imports from .m/.mm, test_objc_finds_imports(), test_objc_finds_interface(), test_objc_finds_methods(), test_objc_finds_subclass(), test_objc_import_edges_have_import_context(), test_objc_inherits_edge() (+3 more)
-
 ### Community 250 - "Community 250"
 Cohesion: 0.22
 Nodes (8): graphify पर बनाया — Penpax, Star इतिहास, आपको क्या मिलता है, इंस्टॉलेशन, उपयोग, गोपनीयता, प्लेटफॉर्म समर्थन, यह कैसे काम करता है
 
 ### Community 251 - "Community 251"
-Cohesion: 0.33
-Nodes (9): create_calendar_event(), get_credentials(), Updates an existing Google Calendar event., Sends the exact confirmation email template defined in the n8n JSON using Gmail, Loads Google credentials from token.json and refreshes if needed., Creates a Google Calendar event with a Google Meet link.     Matches the Zapier/, send_gmail_confirmation(), update_calendar_event() (+1 more)
+Cohesion: 0.20
+Nodes (16): create_calendar_event(), get_credentials(), Updates an existing Google Calendar event., Sends the exact confirmation email template defined in the n8n JSON using Gmail, Loads Google credentials from token.json and refreshes if needed., Sends the exact confirmation email template defined in the n8n JSON using Gmail, Creates a Google Calendar event with a Google Meet link.     Matches the Zapier/, send_gmail_confirmation() (+8 more)
 
 ### Community 252 - "Community 252"
-Cohesion: 0.29
+Cohesion: 0.33
 Nodes (3): BaseTransport, AsyncHTTPTransport, The async variant of HTTPTransport.
 
 ### Community 253 - "Community 253"
@@ -1908,10 +1932,6 @@ Nodes (7): Optional network calls, Reporting a Vulnerability, Security Model, Se
 Cohesion: 0.25
 Nodes (8): _communities_from_graph(), _filter_blank_stdin(), Filter blank lines from stdin before MCP reads it.      Some MCP clients (Clau, Reconstruct community dict from community property stored on nodes., Start the MCP server. Requires pip install mcp., serve(), test_communities_from_graph_basic(), test_communities_from_graph_isolated()
 
-### Community 274 - "Community 274"
-Cohesion: 0.20
-Nodes (10): extract_c(), Extract functions and includes from a .c/.h file., test_c_call_edges_have_call_context(), test_c_calls_are_extracted(), test_c_emits_calls(), test_c_finds_functions(), test_c_finds_includes(), test_c_import_edges_have_import_context() (+2 more)
-
 ### Community 275 - "Community 275"
 Cohesion: 0.25
 Nodes (7): Corpus Check, God Nodes (most connected - your core abstractions), Graph Report - /home/safi/graphify-benchmark  (2026-04-04), Knowledge Gaps, Suggested Questions, Summary, Surprising Connections (you probably didn't know these)
@@ -1922,7 +1942,7 @@ Nodes (7): Code — clone these 3 repos, Corpus (52 files), How to run, Images �
 
 ### Community 277 - "Community 277"
 Cohesion: 0.25
-Nodes (5): ClientDashboard(), SESSION_TYPES, STATUS_CONFIG, STATUS_HELPER_CONFIG, TIME_SLOTS
+Nodes (4): SESSION_TYPES, STATUS_CONFIG, STATUS_HELPER_CONFIG, TIME_SLOTS
 
 ### Community 278 - "Community 278"
 Cohesion: 0.25
@@ -1993,12 +2013,12 @@ Cohesion: 0.29
 Nodes (7): _body_content(), Strip YAML frontmatter from Markdown content, returning only the body., _body_content correctly strips YAML frontmatter., _body_content returns content unchanged when no frontmatter present., test_body_content_no_frontmatter(), test_body_content_strips_frontmatter(), bytes
 
 ### Community 296 - "Community 296"
-Cohesion: 0.29
-Nodes (7): extract_dmf(), Extract windows and controls from a .dmf interface file., test_dmf_elem_labels_carry_control_type(), test_dmf_elem_under_window(), test_dmf_extracts_windows(), test_dmf_no_dangling_edges(), test_dmf_no_error()
+Cohesion: 0.15
+Nodes (12): 1. Changing the Database, 1. Frontend (Vite + React), 2. Backend (FastAPI + Python), 2. Updating Mobile Responsiveness, 3. Running the Project Locally, 🏗️ Architecture & Tech Stack, Backend Configuration (`backend/.env`), 🛠️ Common Developer Tasks (+4 more)
 
 ### Community 297 - "Community 297"
 Cohesion: 0.29
-Nodes (4): AdminDashboard(), PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS
+Nodes (3): PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS
 
 ### Community 299 - "Community 299"
 Cohesion: 0.29
@@ -2121,12 +2141,12 @@ Cohesion: 0.33
 Nodes (5): directed, graph, links, multigraph, nodes
 
 ### Community 333 - "Community 333"
-Cohesion: 0.33
-Nodes (3): peakData, trendData, weeklyData
+Cohesion: 0.08
+Nodes (8): adminNav, clientNav, peakData, trendData, weeklyData, peakData, trendData, weeklyData
 
 ### Community 334 - "Community 334"
 Cohesion: 0.33
-Nodes (5): BookingPage(), COMM_METHODS, DURATIONS, MEETING_TYPES, PRIORITIES
+Nodes (4): COMM_METHODS, DURATIONS, MEETING_TYPES, PRIORITIES
 
 ### Community 335 - "Community 335"
 Cohesion: 0.33
@@ -2175,14 +2195,6 @@ Nodes (4): Corpus (6 files), How to run, httpx Corpus Benchmark, What to expect
 ### Community 350 - "Community 350"
 Cohesion: 0.40
 Nodes (4): Corpus (5 files), How to run, Mixed Corpus Benchmark, What to expect
-
-### Community 351 - "Community 351"
-Cohesion: 0.40
-Nodes (4): AdminDecisionFeed(), PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS
-
-### Community 352 - "Community 352"
-Cohesion: 0.40
-Nodes (3): AdminReschedulePage(), PRIORITY_COLORS, STATUS_COLORS
 
 ### Community 356 - "Community 356"
 Cohesion: 0.67
@@ -3276,29 +3288,73 @@ Nodes (3): I:\\games\\raid\\siege-web\\.worktrees\\experiment-graphify-dry-run-d
 Cohesion: 0.67
 Nodes (3): I:\\games\\raid\\siege-web\\.worktrees\\experiment-graphify-dry-run-doc\\frontend\\vitest.config.ts, hash, mtime
 
+### Community 698 - "Community 698"
+Cohesion: 0.27
+Nodes (9): create_calendar_event(), get_credentials(), Sends the exact confirmation email template defined in the n8n JSON using Gmail, Loads Google credentials from token.json or environment variables.          Pr, Creates a Google Calendar event with a Google Meet link.     Matches the Zapier, send_gmail_confirmation(), str, Sends the exact confirmation email template defined in the n8n JSON using Gmail (+1 more)
+
+### Community 699 - "Community 699"
+Cohesion: 0.25
+Nodes (7): Brand & Style, Colors, Components, Elevation & Depth, Layout & Spacing, Shapes, Typography
+
+### Community 723 - "Community 723"
+Cohesion: 0.25
+Nodes (4): SESSION_TYPES, STATUS_CONFIG, STATUS_HELPER_CONFIG, TIME_SLOTS
+
 ### Community 726 - "Community 726"
-Cohesion: 0.08
-Nodes (43): _apply_symbol_resolution_facts(), _augment_js_reexport_edges(), _augment_symbol_resolution_edges(), _collect_js_symbol_resolution_facts(), _collect_python_symbol_resolution_facts(), _csharp_classify_base(), _dmm_type_path(), _find_require_call() (+35 more)
+Cohesion: 0.25
+Nodes (4): SESSION_TYPES, STATUS_CONFIG, STATUS_HELPER_CONFIG, TIME_SLOTS
+
+### Community 738 - "Community 738"
+Cohesion: 0.33
+Nodes (3): PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS
+
+### Community 739 - "Community 739"
+Cohesion: 0.33
+Nodes (3): peakData, trendData, weeklyData
+
+### Community 844 - "Community 844"
+Cohesion: 0.33
+Nodes (4): COMM_METHODS, DURATIONS, MEETING_TYPES, PRIORITIES
+
+### Community 845 - "Community 845"
+Cohesion: 0.33
+Nodes (4): COMM_METHODS, DURATIONS, MEETING_TYPES, PRIORITIES
+
+### Community 846 - "Community 846"
+Cohesion: 0.40
+Nodes (4): Run migrations in 'offline' mode.      This configures the context with just a U, Run migrations in 'online' mode.      In this scenario we need to create an Engi, run_migrations_offline(), run_migrations_online()
+
+### Community 850 - "Community 850"
+Cohesion: 0.40
+Nodes (3): PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS
+
+### Community 853 - "Community 853"
+Cohesion: 0.50
+Nodes (3): Expanding the ESLint configuration, React Compiler, React + Vite
+
+### Community 858 - "Community 858"
+Cohesion: 0.50
+Nodes (3): Expanding the ESLint configuration, React Compiler, React + Vite
 
 ## Knowledge Gaps
-- **2460 isolated node(s):** `float`, `Path`, `Graph`, `int`, `bytes` (+2455 more)
+- **2603 isolated node(s):** `float`, `name`, `private`, `version`, `type` (+2598 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **174 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **185 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `_rebuild_code()` connect `Community 150` to `Community 128`, `Community 97`, `Community 2`, `Community 34`, `Community 191`, `Community 5`, `Community 230`, `Community 137`, `Community 141`, `Community 77`, `Community 20`, `Community 117`, `Community 52`, `Community 55`, `Community 148`, `Community 413`, `Community 216`?**
-  _High betweenness centrality (0.083) - this node is a cross-community bridge._
-- **Why does `main()` connect `Community 2` to `Community 128`, `Community 129`, `Community 139`, `Community 18`, `Community 148`, `Community 150`, `Community 28`, `Community 161`, `Community 39`, `Community 179`, `Community 55`, `Community 190`, `Community 62`, `Community 63`, `Community 191`, `Community 200`, `Community 328`, `Community 203`, `Community 82`, `Community 213`, `Community 96`, `Community 98`, `Community 116`, `Community 117`?**
-  _High betweenness centrality (0.080) - this node is a cross-community bridge._
-- **Why does `check_graph_file_size_cap()` connect `Community 34` to `Community 96`, `Community 2`, `Community 39`, `Community 203`, `Community 79`, `Community 18`, `Community 178`, `Community 82`, `Community 117`, `Community 150`, `Community 155`, `Community 62`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **What connects `auth.py — JWT-based authentication for the Sisu platform`, `Validate password strength based on standard policies.`, `float` to the rest of the system?**
-  _4005 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.016 - nodes in this community are weakly interconnected._
-- **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.056179775280898875 - nodes in this community are weakly interconnected._
-- **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.05267326732673267 - nodes in this community are weakly interconnected._
+- **Why does `main()` connect `Community 2` to `Community 128`, `Community 129`, `Community 139`, `Community 18`, `Community 148`, `Community 150`, `Community 28`, `Community 39`, `Community 44`, `Community 179`, `Community 189`, `Community 190`, `Community 63`, `Community 71`, `Community 200`, `Community 328`, `Community 203`, `Community 80`, `Community 82`, `Community 213`, `Community 217`, `Community 98`, `Community 116`, `Community 117`?**
+  _High betweenness centrality (0.090) - this node is a cross-community bridge._
+- **Why does `_rebuild_code()` connect `Community 150` to `Community 128`, `Community 97`, `Community 2`, `Community 34`, `Community 5`, `Community 230`, `Community 137`, `Community 141`, `Community 77`, `Community 80`, `Community 20`, `Community 117`, `Community 148`, `Community 189`, `Community 216`, `Community 413`?**
+  _High betweenness centrality (0.068) - this node is a cross-community bridge._
+- **Why does `check_graph_file_size_cap()` connect `Community 34` to `Community 2`, `Community 39`, `Community 203`, `Community 79`, `Community 18`, `Community 178`, `Community 82`, `Community 117`, `Community 150`, `Community 217`, `Community 155`, `Community 62`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Are the 26 inferred relationships involving `Session` (e.g. with `LoginRequest` and `RegisterRequest`) actually correct?**
+  _`Session` has 26 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 92 inferred relationships involving `User` (e.g. with `LoginRequest` and `RegisterRequest`) actually correct?**
+  _`User` has 92 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 88 inferred relationships involving `Meeting` (e.g. with `AgentState` and `bool`) actually correct?**
+  _`Meeting` has 88 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 88 inferred relationships involving `Notification` (e.g. with `AgentState` and `bool`) actually correct?**
+  _`Notification` has 88 INFERRED edges - model-reasoned connections that need verification._
