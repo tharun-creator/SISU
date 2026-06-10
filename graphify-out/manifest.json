@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/backend/auth.py": {
-    "mtime": 1780921264.2484736,
-    "ast_hash": "e43630df310c61aae8c332af5cbee391",
+    "mtime": 1780921365.810887,
+    "ast_hash": "2fd55d2b1796d9b221b00ab305d52c95",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/backend/calendar_service.py": {
@@ -30,7 +30,7 @@
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/backend/database.py": {
-    "mtime": 1780642539.2159262,
+    "mtime": 1780990719.3619707,
     "ast_hash": "44431048050f25e9378ddc7f3b7d57e7",
     "semantic_hash": ""
   },
@@ -50,8 +50,8 @@
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/backend/google_integration.py": {
-    "mtime": 1780916761.5997066,
-    "ast_hash": "e2203b971d2c16953979f85113a53d7b",
+    "mtime": 1781072331.3230994,
+    "ast_hash": "5f6b60fff8888f1e3d9840018184dcd4",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/backend/graphify/graphify/__init__.py": {
@@ -1035,13 +1035,13 @@
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/backend/main.py": {
-    "mtime": 1780920681.0856633,
-    "ast_hash": "b8d32c52c055da25cb3672b440651646",
+    "mtime": 1780985172.1021671,
+    "ast_hash": "9d3272464e16ed48ceea4dd873af7296",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/backend/meeting_booking_service.py": {
-    "mtime": 1780920744.8418367,
-    "ast_hash": "d769ac3f87fbaedc39e6297c5de599a9",
+    "mtime": 1780984961.5704384,
+    "ast_hash": "17a81bbf0770f7aca6edc916e3888f0f",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/backend/migrate_data.py": {
@@ -1165,8 +1165,8 @@
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/frontend/src/App.jsx": {
-    "mtime": 1780038280.0771182,
-    "ast_hash": "f56c694240ccb86f19165d9996321ef8",
+    "mtime": 1781073121.4113927,
+    "ast_hash": "d57e15f27219679b9bee5c05e863fed4",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/frontend/src/components/Appointments.jsx": {
@@ -1190,8 +1190,8 @@
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/frontend/src/components/Layout.jsx": {
-    "mtime": 1780918086.2251792,
-    "ast_hash": "6aa2cc77cda04302aa602bc0af2210ea",
+    "mtime": 1780996388.3505237,
+    "ast_hash": "1baf0e052ffd82581705eb3e68fbf09a",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/frontend/src/components/Sidebar.jsx": {
@@ -1260,8 +1260,8 @@
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/frontend/src/pages/ClientDashboard.jsx": {
-    "mtime": 1780920752.7178924,
-    "ast_hash": "50867664a0adef2c142cd95bc51c475f",
+    "mtime": 1781071674.6436703,
+    "ast_hash": "86ae68efedfd4efd7877da79b0c7953f",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/frontend/src/pages/ForgotPassword.jsx": {
@@ -1310,18 +1310,18 @@
     "semantic_hash": ""
   },
   ".agents/rules/graphify.md": {
-    "mtime": 1780570960.772856,
+    "mtime": 1780996859.9979618,
     "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
     "semantic_hash": ""
   },
   ".agents/workflows/graphify.md": {
-    "mtime": 1780570960.774854,
+    "mtime": 1780996859.9979618,
     "ast_hash": "637776aa6f7496d069afe7520c845c8a",
     "semantic_hash": ""
   },
   "deployment_guide.md": {
-    "mtime": 1779800014.8581035,
-    "ast_hash": "577495882283cc18616c089fd26ecb4f",
+    "mtime": 1780996860.0054522,
+    "ast_hash": "bce8843b44dfd62ecfa40e0155f1c1c8",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/DESIGN.md": {
@@ -3070,8 +3070,8 @@
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/frontend/index.html": {
-    "mtime": 1778484192.0,
-    "ast_hash": "777d54110a47b269b56b110537998c5b",
+    "mtime": 1781072830.898418,
+    "ast_hash": "a677996059780bd433de45a9115f27df",
     "semantic_hash": ""
   },
   "this/chatmodel/chatmodel/index.html": {
@@ -3139,11 +3139,6 @@
     "ast_hash": "9960a24288958394ac50e57ff638b036",
     "semantic_hash": ""
   },
-  "sisu-mentorship-booking.html": {
-    "mtime": 1780572673.3147411,
-    "ast_hash": "4c898aa1200cb70f5fab826e9920ad9b",
-    "semantic_hash": ""
-  },
   "this/chatmodel/chatmodel/backend/test_native_flow.py": {
     "mtime": 1780640984.6173234,
     "ast_hash": "d351e366d7348afd212525c689b8ff40",
@@ -3154,9 +3149,434 @@
     "ast_hash": "eb7ca5e008ceebb4df8f868f1112c4f3",
     "semantic_hash": ""
   },
-  "sisu-dashboard (1).html": {
-    "mtime": 1780644142.0762825,
-    "ast_hash": "c54c6a844eb91969bb72e77cadf12b5c",
+  "backend/app.py": {
+    "mtime": 1780996918.4608474,
+    "ast_hash": "3d46f6a6671106d9cfa5535847f9e86b",
+    "semantic_hash": ""
+  },
+  "backend/auth.py": {
+    "mtime": 1780996918.461887,
+    "ast_hash": "309917798880574b710cdb29ad2fbf9c",
+    "semantic_hash": ""
+  },
+  "backend/calendar_service.py": {
+    "mtime": 1780996918.461887,
+    "ast_hash": "cdcafe42492a1e09f63ed404e040b656",
+    "semantic_hash": ""
+  },
+  "backend/check_aiven.py": {
+    "mtime": 1780996918.4639292,
+    "ast_hash": "371f949964b542552ceac8c29ecb7f28",
+    "semantic_hash": ""
+  },
+  "backend/check_deps.py": {
+    "mtime": 1780996918.4639292,
+    "ast_hash": "bd4d150a365aeca42b69833ee91cc39b",
+    "semantic_hash": ""
+  },
+  "backend/create_db.py": {
+    "mtime": 1780996918.4665003,
+    "ast_hash": "60c3daf964fe59cef6f05a39722766ee",
+    "semantic_hash": ""
+  },
+  "backend/database.py": {
+    "mtime": 1780996918.4680333,
+    "ast_hash": "44431048050f25e9378ddc7f3b7d57e7",
+    "semantic_hash": ""
+  },
+  "backend/debug_tz.py": {
+    "mtime": 1780996918.4680333,
+    "ast_hash": "3e2096d2ad7c518cb7d067c07ea6c9df",
+    "semantic_hash": ""
+  },
+  "backend/email_service.py": {
+    "mtime": 1780996918.4680333,
+    "ast_hash": "7061fd47d926b52bba8870e069f29f78",
+    "semantic_hash": ""
+  },
+  "backend/google_auth_setup.py": {
+    "mtime": 1780996918.4722092,
+    "ast_hash": "50e212016e9a00a1d64bff0a14ca6775",
+    "semantic_hash": ""
+  },
+  "backend/google_integration.py": {
+    "mtime": 1781002338.732327,
+    "ast_hash": "37e57ddc8030657e3b7c4cbf85af614b",
+    "semantic_hash": ""
+  },
+  "backend/llm.py": {
+    "mtime": 1780996918.4745648,
+    "ast_hash": "d7a265cf77c942fc9c3fff942e0895a1",
+    "semantic_hash": ""
+  },
+  "backend/main.py": {
+    "mtime": 1780996918.4745648,
+    "ast_hash": "8a7c11baedb4ff13b1089b10c81caac0",
+    "semantic_hash": ""
+  },
+  "backend/meeting_booking_service.py": {
+    "mtime": 1780996918.4745648,
+    "ast_hash": "19029dc5db557a396de5928bd97b9129",
+    "semantic_hash": ""
+  },
+  "backend/migrate_data.py": {
+    "mtime": 1780996918.4778936,
+    "ast_hash": "c49f678016b74d12e3e06c8fa8f4599f",
+    "semantic_hash": ""
+  },
+  "backend/migrate_sqlite_to_mysql.py": {
+    "mtime": 1780996918.4778936,
+    "ast_hash": "01ed9a10d44b599f0bc648657c76bc6d",
+    "semantic_hash": ""
+  },
+  "backend/query_db.py": {
+    "mtime": 1780996918.4799097,
+    "ast_hash": "7d51d3252a3897b30dc571044b2aae79",
+    "semantic_hash": ""
+  },
+  "backend/reset_for_production.py": {
+    "mtime": 1780996918.4816682,
+    "ast_hash": "baa430452532be615dc1f6cf3c73c5f3",
+    "semantic_hash": ""
+  },
+  "backend/reset_users.py": {
+    "mtime": 1780996918.48297,
+    "ast_hash": "596ed545c2153d5e528f5cee54b7efb0",
+    "semantic_hash": ""
+  },
+  "backend/run_backend.py": {
+    "mtime": 1780996918.48297,
+    "ast_hash": "114b388e7874ed5627042418ed14f90a",
+    "semantic_hash": ""
+  },
+  "backend/scratch/add_constraint.py": {
+    "mtime": 1780996918.4849987,
+    "ast_hash": "934f02fe91ae97294b588772aa7336d0",
+    "semantic_hash": ""
+  },
+  "backend/scratch/check_routes.py": {
+    "mtime": 1780996918.487175,
+    "ast_hash": "17c3b6c6def3abe34b291c556a5ae17b",
+    "semantic_hash": ""
+  },
+  "backend/scratch/kill_port_8000.py": {
+    "mtime": 1780996918.487175,
+    "ast_hash": "249510c0831f79a22d8b1d09153fa4ee",
+    "semantic_hash": ""
+  },
+  "backend/scratch/search_file.py": {
+    "mtime": 1780996918.4891899,
+    "ast_hash": "d7d57f0a6f5c75f8e9ff05868b203e3d",
+    "semantic_hash": ""
+  },
+  "backend/scratch/search_phone.py": {
+    "mtime": 1780996918.4891899,
+    "ast_hash": "27c782169a4acc4b2ef8700c43eea51e",
+    "semantic_hash": ""
+  },
+  "backend/scratch/verify_backend.py": {
+    "mtime": 1780996918.4891899,
+    "ast_hash": "61e08d44db9cd8dbf2adf10c84dcc7ea",
+    "semantic_hash": ""
+  },
+  "backend/test_cal.py": {
+    "mtime": 1780996918.491803,
+    "ast_hash": "3fb414d8795f6d43ceb4bd82ff171f6e",
+    "semantic_hash": ""
+  },
+  "backend/test_db.py": {
+    "mtime": 1780996918.4933114,
+    "ast_hash": "372556251cc9e71d8756b0c4c20a7c74",
+    "semantic_hash": ""
+  },
+  "backend/test_db_detailed.py": {
+    "mtime": 1780996918.4933114,
+    "ast_hash": "c3422f1ae557639298f99c4726b6d6bc",
+    "semantic_hash": ""
+  },
+  "backend/test_email_calendar_direct.py": {
+    "mtime": 1780996918.4933114,
+    "ast_hash": "64e92f7ee80577ba4f7396e082755300",
+    "semantic_hash": ""
+  },
+  "backend/test_full_cycle.py": {
+    "mtime": 1780996918.4933114,
+    "ast_hash": "c6eae35408e510770b7da4aa121e0386",
+    "semantic_hash": ""
+  },
+  "backend/test_mysql.py": {
+    "mtime": 1780996918.4974282,
+    "ast_hash": "9d5915017aed54a924607dfb18ed3805",
+    "semantic_hash": ""
+  },
+  "backend/test_native_flow.py": {
+    "mtime": 1780996918.4982247,
+    "ast_hash": "1a5e9a6c41acc012d055f0d3fa91f956",
+    "semantic_hash": ""
+  },
+  "backend/test_priority_client.py": {
+    "mtime": 1780996918.4982247,
+    "ast_hash": "ebb68088f5327dfe6906041b31c8410a",
+    "semantic_hash": ""
+  },
+  "backend/test_reset_flow.py": {
+    "mtime": 1780996918.4982247,
+    "ast_hash": "1e66ce7939f9390b072a2a37167071cc",
+    "semantic_hash": ""
+  },
+  "backend/test_zapier.py": {
+    "mtime": 1780996918.4982247,
+    "ast_hash": "828a5335a4040175eb9c58294ea5b867",
+    "semantic_hash": ""
+  },
+  "backend/trigger_test_webhook.py": {
+    "mtime": 1780996918.4982247,
+    "ast_hash": "d0c851232ba6a5e93d1f6a0eabbc3783",
+    "semantic_hash": ""
+  },
+  "frontend/eslint.config.js": {
+    "mtime": 1780996918.5056021,
+    "ast_hash": "fa91453358b56681481f75f81d1bfccd",
+    "semantic_hash": ""
+  },
+  "frontend/package.json": {
+    "mtime": 1780996918.5056021,
+    "ast_hash": "6b630073603dc2dc171761991aa20adb",
+    "semantic_hash": ""
+  },
+  "frontend/postcss.config.js": {
+    "mtime": 1780996918.5056021,
+    "ast_hash": "ac96fa81e8dd4224012bce81068fe169",
+    "semantic_hash": ""
+  },
+  "frontend/src/App.jsx": {
+    "mtime": 1780996918.5151308,
+    "ast_hash": "83ea6c1a40cc55211b4f555156612e5f",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/Appointments.jsx": {
+    "mtime": 1780996918.5207863,
+    "ast_hash": "b5c61bc26335e648f840805454ac5d1c",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/BookingModal.jsx": {
+    "mtime": 1780996918.522546,
+    "ast_hash": "74a7834c1bd9c27affb6e8fb2ff65f88",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/CalendarWidget.jsx": {
+    "mtime": 1780996918.522546,
+    "ast_hash": "1609d0cf8cb7f604cfc7368231c6fb98",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/Chat.jsx": {
+    "mtime": 1780996918.5250556,
+    "ast_hash": "7395f223f5cd2afeaa77b169c459ee27",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/Layout.jsx": {
+    "mtime": 1780996918.5250556,
+    "ast_hash": "998ca12f42f11f58d44d340227fd233c",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/Sidebar.jsx": {
+    "mtime": 1780996918.5250556,
+    "ast_hash": "69a0d303928eeaef5a3102895147942b",
+    "semantic_hash": ""
+  },
+  "frontend/src/main.jsx": {
+    "mtime": 1780996918.5305722,
+    "ast_hash": "51fd21c378330142b61bf8d1ef3795ef",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminApprovedPage.jsx": {
+    "mtime": 1780996918.5352318,
+    "ast_hash": "d1d990d8c55d946dcc7a4c09d4ee0575",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminCalendarSlotsPage.jsx": {
+    "mtime": 1780996918.5352318,
+    "ast_hash": "399322fc4b3abf2dd3e29e1234c2b8ce",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminDashboard.jsx": {
+    "mtime": 1780996918.5387278,
+    "ast_hash": "767440af1b97a315d3acabbff94abdfc",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminDecisionFeed.jsx": {
+    "mtime": 1780996918.5387278,
+    "ast_hash": "9f166e0c36d38dc92dc686872e9950fb",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminReschedulePage.jsx": {
+    "mtime": 1780996918.5419583,
+    "ast_hash": "4e8a4d89ab38627d9dd4cb714eb084b3",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminSlotsBookedPage.jsx": {
+    "mtime": 1780996918.5419583,
+    "ast_hash": "013f13943275ead5e22e870dd688ef28",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminUsersPage.jsx": {
+    "mtime": 1780996918.5419583,
+    "ast_hash": "5101807bcbdd409f48be205c8307ba06",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AnalyticsPage.jsx": {
+    "mtime": 1780996918.5456004,
+    "ast_hash": "14b6e9d2bb8856d70800640698ca6892",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/BookingPage.jsx": {
+    "mtime": 1780996918.5471234,
+    "ast_hash": "aa4ef00151069054acd35f2779b6ace4",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/ClientDashboard.jsx": {
+    "mtime": 1780996918.5489805,
+    "ast_hash": "2afb16623733b2c3a5cef7c1e1eaa60c",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/ForgotPassword.jsx": {
+    "mtime": 1780996918.550996,
+    "ast_hash": "d7d8cd1e34e83739f59e2dbd7634c67e",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/Login.jsx": {
+    "mtime": 1780996918.550996,
+    "ast_hash": "ab55251d58e7d17ccd1aa2aa02b4e3de",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/NotificationsPage.jsx": {
+    "mtime": 1780996918.550996,
+    "ast_hash": "acb394a54a4022a6d97e890cf4e416d9",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/ResetPassword.jsx": {
+    "mtime": 1780996918.555329,
+    "ast_hash": "a663526f5acfd88c71f75263cb4b86fa",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/SettingsPage.jsx": {
+    "mtime": 1780996918.555885,
+    "ast_hash": "b830bd4113417bc950b687b6028ce76a",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/Signup.jsx": {
+    "mtime": 1780996918.555885,
+    "ast_hash": "6fd280f2461140cd05686f54adbfd0b8",
+    "semantic_hash": ""
+  },
+  "frontend/tailwind.config.js": {
+    "mtime": 1780996918.555885,
+    "ast_hash": "38e260e3db050b2a82659228aff41bc5",
+    "semantic_hash": ""
+  },
+  "frontend/vercel.json": {
+    "mtime": 1780996918.555885,
+    "ast_hash": "7708fbf29b99cd92c2a778d60001c5ba",
+    "semantic_hash": ""
+  },
+  "frontend/vite.config.js": {
+    "mtime": 1780996918.5606766,
+    "ast_hash": "e21b3827c1de779f4886eafa0f3de528",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/backend/alembic/env.py": {
+    "mtime": 1780990719.366563,
+    "ast_hash": "266f4e5b2d930d23d3885fa553e55c95",
+    "semantic_hash": ""
+  },
+  "DESIGN.md": {
+    "mtime": 1780996918.4552696,
+    "ast_hash": "59a79889c917c1524b1efad46f1af089",
+    "semantic_hash": ""
+  },
+  "DEVELOPER_GUIDE.md": {
+    "mtime": 1780997171.5073297,
+    "ast_hash": "1945d951cb4f14b2f56e1ee71a56023f",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1780996918.457309,
+    "ast_hash": "837b00f02d6a19f64959c05b5a9de7cb",
+    "semantic_hash": ""
+  },
+  "backend/requirements.txt": {
+    "mtime": 1780996918.4799097,
+    "ast_hash": "86dd77faa9cc7110460e72f978337585",
+    "semantic_hash": ""
+  },
+  "backend/runtime.txt": {
+    "mtime": 1780996918.4849987,
+    "ast_hash": "f963be51467184992bcafe5f6827f55a",
+    "semantic_hash": ""
+  },
+  "frontend/README.md": {
+    "mtime": 1780996918.5056021,
+    "ast_hash": "abfa161e3e5434e3e85394bf03d387a4",
+    "semantic_hash": ""
+  },
+  "render.yaml": {
+    "mtime": 1780996918.5643687,
+    "ast_hash": "74c6d34fb2a2ffff7220830c7ccf91cd",
+    "semantic_hash": ""
+  },
+  "requirements.txt": {
+    "mtime": 1780996918.5643687,
+    "ast_hash": "80d2c577541d4ef67df987a39105c0c2",
+    "semantic_hash": ""
+  },
+  "frontend/public/favicon.svg": {
+    "mtime": 1780996918.5108058,
+    "ast_hash": "7e840862161341271697daa99a40d76b",
+    "semantic_hash": ""
+  },
+  "frontend/public/icons.svg": {
+    "mtime": 1780996918.5108058,
+    "ast_hash": "21c7473c592c67dc87223d49892c8f0a",
+    "semantic_hash": ""
+  },
+  "frontend/src/assets/hero.png": {
+    "mtime": 1780996918.5151308,
+    "ast_hash": "aead493361b27e7510691c5d7072dfc1",
+    "semantic_hash": ""
+  },
+  "frontend/src/assets/react.svg": {
+    "mtime": 1780996918.5187743,
+    "ast_hash": "f0402b67b6ce880f65666bb49e841696",
+    "semantic_hash": ""
+  },
+  "frontend/src/assets/vite.svg": {
+    "mtime": 1780996918.5187743,
+    "ast_hash": "6d5180a782d64c8cf51ba01c2a2184d8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/.agents/rules/graphify.md": {
+    "mtime": 1781072331.3230994,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/.agents/workflows/graphify.md": {
+    "mtime": 1781072331.3230994,
+    "ast_hash": "637776aa6f7496d069afe7520c845c8a",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/deployment_guide.md": {
+    "mtime": 1781072331.3230994,
+    "ast_hash": "bce8843b44dfd62ecfa40e0155f1c1c8",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/sisu-dashboard (1).html": {
+    "mtime": 1781072332.0377386,
+    "ast_hash": "d9c82b4dd1d772e31d4158696cc51e43",
+    "semantic_hash": ""
+  },
+  "this/chatmodel/chatmodel/sisu-mentorship-booking.html": {
+    "mtime": 1781072332.0377386,
+    "ast_hash": "2bf5d8efeb567ace836534ab80391789",
     "semantic_hash": ""
   }
 }
