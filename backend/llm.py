@@ -108,9 +108,19 @@ def book_meeting(title: str, start_time_str: str, reason: Optional[str] = None, 
         import datetime as dt
         import email_service
         
+        # 1. Agenda word and character limit checks
+        if len(title.strip()) > 50:
+            return "Error: The meeting title/agenda cannot exceed 50 characters."
+        if len([w for w in title.split() if w]) > 10:
+            return "Error: The meeting title/agenda exceeds the 10-word limit. Please keep it to 10 words or less."
+
         # Parse time and calculate end time (60 min default)
         start = meeting_booking_service._to_ist_naive(dt.datetime.fromisoformat(start_time_str.replace('Z', '')))
         end = start + dt.timedelta(minutes=60)
+
+        # 2. Working hours check (11:00 AM - 07:00 PM IST)
+        if start.time() < dt.time(11, 0) or end.time() > dt.time(19, 0):
+            return "Error: Meetings must be booked between 11:00 AM and 07:00 PM IST."
         
         with SessionLocal() as db:
             user = db.query(User).filter(User.id == user_id).first()
@@ -322,7 +332,15 @@ def reschedule_my_meeting(meeting_id: int, new_start_time_str: str, reason: Opti
                 
             user = db.query(User).filter(User.id == user_id).first()
             
-            end = start + dt.timedelta(minutes=meeting.duration_minutes or 60)
+            duration = meeting.duration_minutes or 60
+            if duration > 120:
+                return "Error: Meeting duration cannot exceed 2 hours."
+                
+            end = start + dt.timedelta(minutes=duration)
+
+            # 2. Working hours check (11:00 AM - 07:00 PM IST)
+            if start.time() < dt.time(11, 0) or end.time() > dt.time(19, 0):
+                return "Error: Meetings must be booked between 11:00 AM and 07:00 PM IST."
             
             # Conflict check
             if not meeting_booking_service.check_slot_available(db, start, end, exclude_meeting_id=meeting.id):

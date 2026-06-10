@@ -44,7 +44,7 @@ export default function Layout({ children, title, notifCount = 0 }) {
         </header>
 
         {/* Content Wrapper */}
-        <main style={{ flex: 1, padding: 'clamp(16px, 3vw, 32px)', overflowY: 'auto', position: 'relative', zIndex: 1 }}>
+        <main style={{ flex: 1, padding: 'clamp(16px, 3vw, 32px)', overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}>
           {children}
         </main>
       </div>

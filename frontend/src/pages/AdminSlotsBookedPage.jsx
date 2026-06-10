@@ -429,12 +429,10 @@ export default function AdminSlotsBookedPage() {
                                 </div>
                               )}
 
-                              {/* Reason */}
-                              {m.reason && (
-                                <div style={{ marginTop: 6, padding: '8px 12px', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 11.5, color: 'var(--color-text-muted)', fontStyle: 'italic', lineHeight: 1.5 }}>
-                                  "{m.reason}"
-                                </div>
-                              )}
+                              {/* Description */}
+                              <div style={{ marginTop: 6, padding: '8px 12px', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--color-border)', borderRadius: 8, fontSize: 11.5, color: 'var(--color-text-muted)', fontStyle: 'italic', lineHeight: 1.5 }}>
+                                "{m.description && m.description.trim() !== '' && m.description !== 'Booked via Executive Mentorship Workspace' ? m.description : 'no description'}"
+                              </div>
                             </div>
                           </motion.div>
                         );

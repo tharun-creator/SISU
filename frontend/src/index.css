@@ -45,10 +45,10 @@
   --header-height: 64px;
 
   /* Premium Accents */
-  --color-accent: #c5a059; /* Champagne Gold */
-  --color-accent-cyan: #dfc794; /* Light Champagne */
-  --color-accent-orange: #c5a059; /* Luxury Gold */
-  --color-accent-gold: #c5a059; /* Luxury Gold */
+  --color-accent: #B57EDC; /* Lavender */
+  --color-accent-cyan: #D8BFD8; /* Thistle / Light Lavender */
+  --color-accent-orange: #9B86D1; /* Deep Lavender */
+  --color-accent-gold: #9B86D1; /* Deep Lavender */
   
   --color-green: #2c5e43; /* Hunter Green */
   --color-amber: #c5a059; /* Muted Gold */
@@ -248,14 +248,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-premium-primary {
-  background: linear-gradient(135deg, var(--color-accent-gold) 0%, #a37f3d 100%);
+  background: linear-gradient(135deg, var(--color-accent-gold) 0%, #7E65A5 100%);
   color: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(163, 127, 61, 0.2);
+  box-shadow: 0 4px 20px rgba(155, 134, 209, 0.25);
 }
 .btn-premium-primary:hover {
   transform: translateY(-1.5px);
-  box-shadow: 0 6px 28px rgba(163, 127, 61, 0.35);
+  box-shadow: 0 6px 28px rgba(155, 134, 209, 0.4);
 }
 
 .btn-premium-secondary {
@@ -315,7 +315,7 @@ html.light .input-premium {
   background: rgba(255, 255, 255, 0.03) !important;
   border-color: var(--color-accent-gold) !important;
   color: var(--color-text-primary) !important;
-  box-shadow: 0 0 20px rgba(197, 160, 89, 0.15) !important;
+  box-shadow: 0 0 20px rgba(155, 134, 209, 0.15) !important;
 }
 html.light .input-premium:hover,
 html.light .input-premium:focus {
@@ -331,10 +331,10 @@ html.light .input-premium:focus {
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
 }
 .glass-premium button:not(.btn-premium):hover {
-  background: linear-gradient(135deg, rgba(197, 160, 89, 0.1) 0%, rgba(163, 127, 61, 0.1) 100%) !important;
+  background: linear-gradient(135deg, rgba(155, 134, 209, 0.1) 0%, rgba(126, 101, 165, 0.1) 100%) !important;
   border-color: var(--color-accent-gold) !important;
   color: var(--color-text-primary) !important;
-  box-shadow: 0 0 15px rgba(197, 160, 89, 0.2) !important;
+  box-shadow: 0 0 15px rgba(155, 134, 209, 0.2) !important;
 }
 
 /* ── Modern Badges ─────────────────────────────────────────────────────────── */
@@ -701,3 +701,30 @@ html.light .liquid-menu-item:hover {
     margin-left: 0 !important;
   }
 }
+
+/* -- Mobile Optimization Rules ----------------------------------------------- */
+@media (max-width: 768px) {
+  h1, .hero-text { font-size: clamp(24px, 8vw, 40px) !important; }
+  h2 { font-size: 20px !important; }
+  h3 { font-size: 18px !important; }
+  .mobile-flex-col { flex-direction: column !important; align-items: stretch !important; }
+  .mobile-gap-reduce { gap: 12px !important; }
+  .glow-card, .glass-premium, .glass-premium-strong { padding: var(--space-4) !important; }
+  .main-header { padding: 0 16px !important; }
+  .header-actions { gap: 12px !important; }
+  .signout-btn span:last-child { display: none; }
+  .layout-grid { grid-template-columns: 1fr !important; }
+}
+
+
+@media (max-width: 768px) {
+  /* Auto-wrap inline flex layouts that have large gaps (avoids breaking small icon rows) */
+  [style*="display: flex"][style*="gap: 16"],
+  [style*="display: flex"][style*="gap: 20"],
+  [style*="display: flex"][style*="gap: 24"],
+  [style*="display: flex"][style*="gap: 32"],
+  [style*="display: flex"][style*="gap: 40"] {
+    flex-wrap: wrap !important;
+  }
+}
+

@@ -5,8 +5,6 @@ import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
 
 const TIME_SLOTS = [
-  { value: "09:00-10:00", label: "09:00 AM - 10:00 AM" },
-  { value: "10:00-11:00", label: "10:00 AM - 11:00 AM" },
   { value: "11:00-12:00", label: "11:00 AM - 12:00 PM" },
   { value: "12:00-13:00", label: "12:00 PM - 01:00 PM" },
   { value: "13:00-14:00", label: "01:00 PM - 02:00 PM" },
@@ -15,7 +13,6 @@ const TIME_SLOTS = [
   { value: "16:00-17:00", label: "04:00 PM - 05:00 PM" },
   { value: "17:00-18:00", label: "05:00 PM - 06:00 PM" },
   { value: "18:00-19:00", label: "06:00 PM - 07:00 PM" },
-  { value: "19:00-20:00", label: "07:00 PM - 08:00 PM" },
 ];
 
 export default function AdminCalendarSlotsPage() {
@@ -393,7 +390,7 @@ export default function AdminCalendarSlotsPage() {
                 {/* Info Text */}
                 <div style={{ padding: 12, background: 'rgba(255,255,255,0.01)', border: '1px solid var(--color-border)', borderRadius: 12, marginBottom: 20, fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
                   {signalType === 'green' && "🟢 Clients can book any standard time slot for this date."}
-                  {signalType === 'yellow' && "🟡 Clients can only select the checked time slots for this date."}
+                  {signalType === 'yellow' && "🟡 Checked time slots will be hidden and blocked from the client booking view."}
                   {signalType === 'red' && "🔴 This date will be blocked and hidden from the client booking view."}
                 </div>
 
@@ -401,7 +398,7 @@ export default function AdminCalendarSlotsPage() {
                   <button type="button" onClick={() => setSelectedDate(null)} className="btn-premium btn-premium-secondary" style={{ flex: 1 }}>
                     Cancel
                   </button>
-                  <button type="submit" disabled={saving || (signalType === 'yellow' && selectedSlots.length === 0)} className="btn-premium btn-premium-primary" style={{ flex: 1, justifyContent: 'center' }}>
+                  <button type="submit" disabled={saving} className="btn-premium btn-premium-primary" style={{ flex: 1, justifyContent: 'center' }}>
                     {saving ? 'Saving...' : 'Save Signal'}
                   </button>
                 </div>

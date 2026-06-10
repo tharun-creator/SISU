@@ -90,6 +90,16 @@ export default function BookingPage() {
       setError('Please fill all required fields');
       return;
     }
+    const trimmedTitle = form.title.trim();
+    if (trimmedTitle.length > 50) {
+      setError('Meeting title/agenda cannot exceed 50 characters');
+      return;
+    }
+    const wordCount = trimmedTitle.split(/\s+/).filter(Boolean).length;
+    if (wordCount > 10) {
+      setError(`Meeting title/agenda cannot exceed 10 words (currently ${wordCount} words)`);
+      return;
+    }
     const start = new Date(form.start_time);
     if (start < new Date()) { setError('Cannot book a past date'); return; }
 
@@ -222,7 +232,7 @@ export default function BookingPage() {
                   
                   <div>
                     <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>Meeting Title *</label>
-                    <input className="input-premium" placeholder="e.g. Q4 Growth Strategy Discussion" value={form.title} onChange={(e) => field('title', e.target.value)} required />
+                    <input className="input-premium" placeholder="e.g. Q4 Growth Strategy Discussion" value={form.title} onChange={(e) => field('title', e.target.value)} maxLength={50} required />
                   </div>
 
                   <div>
@@ -371,7 +381,13 @@ export default function BookingPage() {
               )}
               {step < 3 ? (
                 <button type="button" className="btn-premium btn-premium-primary" style={{ display: 'flex', alignItems: 'center', gap: 6 }} onClick={() => {
-                  if (step === 1 && !form.title) { setError('Please enter a meeting title'); return; }
+                  if (step === 1) {
+                    if (!form.title) { setError('Please enter a meeting title'); return; }
+                    const trimmedTitle = form.title.trim();
+                    if (trimmedTitle.length > 50) { setError('Meeting title/agenda cannot exceed 50 characters'); return; }
+                    const wordCount = trimmedTitle.split(/\s+/).filter(Boolean).length;
+                    if (wordCount > 10) { setError(`Meeting title/agenda cannot exceed 10 words (currently ${wordCount} words)`); return; }
+                  }
                   if (step === 2 && !form.start_time) { setError('Please select a date and time'); return; }
                   setError(''); setStep(s => s + 1);
                 }}>

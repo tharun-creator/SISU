@@ -19,6 +19,9 @@ export default function AdminUsersPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [message, setMessage] = useState(null); // { text, type: 'success' | 'error' }
   const [newClientCreds, setNewClientCreds] = useState(null); // { email, password, isAdmin }
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [meetings, setMeetings] = useState([]);
 
   const fetchUsers = async () => {
     try {
@@ -32,9 +35,30 @@ export default function AdminUsersPage() {
     }
   };
 
+  const fetchMeetings = async () => {
+    try {
+      const data = await api.adminGetMeetings();
+      setMeetings(data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchMeetings();
   }, []);
+
+  useEffect(() => {
+    if (selectedUser) {
+      const freshUser = users.find(u => u.id === selectedUser.id);
+      if (freshUser) {
+        setSelectedUser(freshUser);
+      } else {
+        setSelectedUser(null);
+      }
+    }
+  }, [users, selectedUser?.id]);
 
   const handleCreateClient = async (e) => {
     e.preventDefault();
@@ -165,6 +189,11 @@ export default function AdminUsersPage() {
     }
   };
 
+  const filteredUsers = users.filter(u => 
+    u.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    u.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Layout title="Manage Users">
       <div style={{ position: 'relative' }}>
@@ -212,10 +241,31 @@ export default function AdminUsersPage() {
 
           {/* Right Column: User list Table */}
           <div className="glass-premium" style={{ padding: 0, overflow: 'hidden' }}>
-            <div style={{ padding: 20, borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: 20, borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
               <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>
-                Registered Accounts ({users.length})
+                Registered Accounts ({filteredUsers.length})
               </h3>
+              
+              {/* Search Bar */}
+              <div style={{ position: 'relative', width: '100%', maxWidth: 300 }}>
+                <span className="material-symbols-outlined" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 18, color: 'var(--color-text-muted)' }}>search</span>
+                <input 
+                  type="text" 
+                  placeholder="Search user by name or email..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="input-premium"
+                  style={{ padding: '8px 12px 8px 38px', fontSize: 13, width: '100%', boxSizing: 'border-box' }}
+                />
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
+                  </button>
+                )}
+              </div>
             </div>
             
             {/* Desktop Table View */}
@@ -242,18 +292,29 @@ export default function AdminUsersPage() {
                           <td style={{ padding: '14px 18px', textAlign: 'right' }}><div className="skeleton-pulse" style={{ height: 24, width: 100, borderRadius: 6, display: 'inline-block' }} /></td>
                         </tr>
                       ))
-                    ) : users.length === 0 ? (
+                    ) : filteredUsers.length === 0 ? (
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-muted)', fontSize: 13 }}>
                           No accounts found.
                         </td>
                       </tr>
-                    ) : users.map((u) => {
+                    ) : filteredUsers.map((u) => {
                       const isSelf = u.id === currentUser?.id;
                       const isAdmin = u.role === 'admin';
                       
                       return (
-                        <tr key={u.id} style={{ borderBottom: '1px solid var(--color-border)', background: isSelf ? 'rgba(59, 130, 246, 0.01)' : 'transparent' }}>
+                        <tr 
+                          key={u.id} 
+                          onClick={() => setSelectedUser(u)}
+                          style={{ 
+                            borderBottom: '1px solid var(--color-border)', 
+                            background: isSelf ? 'rgba(59, 130, 246, 0.01)' : 'transparent',
+                            cursor: 'pointer',
+                            transition: 'var(--transition-fast)'
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = isSelf ? 'rgba(59, 130, 246, 0.01)' : 'transparent'; }}
+                        >
                           <td style={{ padding: '14px 18px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                               <div style={{
@@ -330,7 +391,7 @@ export default function AdminUsersPage() {
                             </span>
                           </td>
                           
-                          <td style={{ padding: '14px 18px', textAlign: 'right' }}>
+                          <td style={{ padding: '14px 18px', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
                             <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
                               {!isSelf && (
                                 <>
@@ -416,17 +477,18 @@ export default function AdminUsersPage() {
                     </div>
                   </div>
                 ))
-              ) : users.length === 0 ? (
+              ) : filteredUsers.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--color-text-muted)', fontSize: 13 }}>
                   No accounts found.
                 </div>
-              ) : users.map((u) => {
+              ) : filteredUsers.map((u) => {
                 const isSelf = u.id === currentUser?.id;
                 const isAdmin = u.role === 'admin';
                 return (
                   <div 
                     key={u.id} 
                     className="glass-premium"
+                    onClick={() => setSelectedUser(u)}
                     style={{ 
                       padding: 16, 
                       borderRadius: 12, 
@@ -434,7 +496,8 @@ export default function AdminUsersPage() {
                       background: isSelf ? 'rgba(59, 130, 246, 0.01)' : 'var(--glass-bg)',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 12
+                      gap: 12,
+                      cursor: 'pointer'
                     }}
                   >
                     {/* User profile row */}
@@ -513,7 +576,7 @@ export default function AdminUsersPage() {
 
                     {/* Actions row */}
                     {!isSelf && (
-                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 2 }}>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.03)', paddingTop: 10, marginTop: 2 }} onClick={(e) => e.stopPropagation()}>
                         {isAdmin ? (
                           u.email?.toLowerCase() !== 'tharunriot@gmail.com' && (
                             <button
@@ -573,6 +636,246 @@ export default function AdminUsersPage() {
           </div>
         </div>
       </div>
+
+      {/* Slide-over User Details Drawer */}
+      <AnimatePresence>
+        {selectedUser && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedUser(null)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: '#000',
+                zIndex: 999
+              }}
+            />
+
+            {/* Slide-over Drawer Panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              style={{
+                position: 'fixed',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                width: '100%',
+                maxWidth: 480,
+                background: 'var(--color-surface-2)',
+                borderLeft: '1px solid var(--color-border)',
+                boxShadow: 'var(--shadow-2xl)',
+                zIndex: 1000,
+                display: 'flex',
+                flexDirection: 'column',
+                padding: 24,
+                boxSizing: 'border-box',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Drawer Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, borderBottom: '1px solid var(--color-border)', paddingBottom: 16 }}>
+                <div>
+                  <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>
+                    User Profile
+                  </h3>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', margin: '4px 0 0 0' }}>
+                    Metrics & Session History
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedUser(null)}
+                  style={{
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: '50%',
+                    width: 32,
+                    height: 32,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: 'var(--color-text-primary)',
+                    transition: 'var(--transition-fast)'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-text-muted)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)'; }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+                </button>
+              </div>
+
+              {/* Drawer Content (Scrollable) */}
+              <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 24, paddingRight: 4 }}>
+                
+                {/* User Card */}
+                <div className="glass-premium" style={{ padding: 18, borderRadius: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    background: selectedUser.role === 'admin' ? 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-cyan) 100%)' : 'rgba(255,255,255,0.04)',
+                    border: '1px solid var(--color-border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 14,
+                    fontWeight: 800,
+                    color: 'white'
+                  }}>
+                    {selectedUser.name ? selectedUser.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase() : '?'}
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: 15, fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>
+                      {selectedUser.name}
+                    </h4>
+                    <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', margin: '2px 0 0 0' }}>{selectedUser.email}</p>
+                    <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                      <span style={{
+                        fontSize: 8,
+                        fontWeight: 800,
+                        padding: '2px 6px',
+                        borderRadius: 4,
+                        background: selectedUser.role === 'admin' ? 'rgba(59,130,246,0.1)' : 'rgba(132,204,22,0.1)',
+                        color: selectedUser.role === 'admin' ? 'var(--color-accent)' : '#84cc16',
+                        border: `1px solid ${selectedUser.role === 'admin' ? 'rgba(59,130,246,0.15)' : 'rgba(132,204,22,0.15)'}`,
+                        fontFamily: 'var(--font-mono)',
+                        textTransform: 'uppercase'
+                      }}>
+                        {selectedUser.role}
+                      </span>
+                      {selectedUser.is_priority && (
+                        <span style={{
+                          fontSize: 8,
+                          fontWeight: 800,
+                          padding: '2px 6px',
+                          borderRadius: 4,
+                          background: 'rgba(234,179,8,0.1)',
+                          color: '#eab308',
+                          border: '1px solid rgba(234,179,8,0.15)',
+                          fontFamily: 'var(--font-mono)',
+                          textTransform: 'uppercase'
+                        }}>
+                          ⭐ Priority
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Metrics Stats Grid */}
+                <div>
+                  <h4 style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)', marginBottom: 10 }}>
+                    Booking Statistics
+                  </h4>
+                  {(() => {
+                    const userMeetings = meetings.filter(m => m.client_email === selectedUser.email);
+                    const total = userMeetings.length;
+                    const approved = userMeetings.filter(m => m.status === 'approved' || m.status === 'completed').length;
+                    const rescheduled = userMeetings.filter(m => m.status === 'rescheduled' || m.status === 'reschedule_requested').length;
+                    const declined = userMeetings.filter(m => m.status === 'rejected' || m.status === 'cancelled').length;
+
+                    return (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+                        <div className="glass-premium" style={{ padding: '12px 8px', borderRadius: 12, textAlign: 'center' }}>
+                          <span style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-text-primary)', display: 'block' }}>{total}</span>
+                          <span style={{ fontSize: 9, color: 'var(--color-text-secondary)', fontWeight: 600 }}>Total</span>
+                        </div>
+                        <div className="glass-premium" style={{ padding: '12px 8px', borderRadius: 12, textAlign: 'center', border: '1px solid rgba(34,197,94,0.15)', background: 'rgba(34,197,94,0.02)' }}>
+                          <span style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-green)', display: 'block' }}>{approved}</span>
+                          <span style={{ fontSize: 9, color: 'var(--color-text-secondary)', fontWeight: 600 }}>Approved</span>
+                        </div>
+                        <div className="glass-premium" style={{ padding: '12px 8px', borderRadius: 12, textAlign: 'center', border: '1px solid rgba(249,115,22,0.15)', background: 'rgba(249,115,22,0.02)' }}>
+                          <span style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-accent-orange)', display: 'block' }}>{rescheduled}</span>
+                          <span style={{ fontSize: 9, color: 'var(--color-text-secondary)', fontWeight: 600 }}>Rescheduled</span>
+                        </div>
+                        <div className="glass-premium" style={{ padding: '12px 8px', borderRadius: 12, textAlign: 'center', border: '1px solid rgba(239,68,68,0.15)', background: 'rgba(239,68,68,0.02)' }}>
+                          <span style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-red)', display: 'block' }}>{declined}</span>
+                          <span style={{ fontSize: 9, color: 'var(--color-text-secondary)', fontWeight: 600 }}>Declined</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Session History List */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <h4 style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)', marginBottom: 10 }}>
+                    Session History
+                  </h4>
+                  {(() => {
+                    const userMeetings = meetings.filter(m => m.client_email === selectedUser.email);
+                    if (userMeetings.length === 0) {
+                      return (
+                        <div style={{ padding: '24px 12px', border: '1px dashed var(--color-border)', borderRadius: 12, textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 12 }}>
+                          No sessions booked yet by this user.
+                        </div>
+                      );
+                    }
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, overflowY: 'auto', maxHeight: 240, paddingRight: 4 }}>
+                        {userMeetings.map((m) => {
+                          const isPending = m.status === 'pending' || m.status === 'reschedule_requested';
+                          const isApproved = m.status === 'approved' || m.status === 'rescheduled';
+                          const isCompleted = m.status === 'completed';
+                          const statusColor = isPending ? 'var(--color-amber)' : isApproved ? 'var(--color-green)' : isCompleted ? 'var(--color-accent-purple)' : 'var(--color-text-muted)';
+                          
+                          return (
+                            <div
+                              key={m.id}
+                              style={{
+                                padding: 12,
+                                borderRadius: 12,
+                                border: '1px solid var(--color-border)',
+                                background: 'rgba(255, 255, 255, 0.01)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 6
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                                <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--color-text-primary)' }}>{m.title}</span>
+                                <span style={{
+                                  fontSize: 8,
+                                  fontWeight: 800,
+                                  padding: '2px 6px',
+                                  borderRadius: 4,
+                                  background: `${statusColor}10`,
+                                  color: statusColor,
+                                  border: `1px solid ${statusColor}20`,
+                                  fontFamily: 'var(--font-mono)',
+                                  textTransform: 'uppercase',
+                                  flexShrink: 0
+                                }}>
+                                  {m.status === 'reschedule_requested' ? 'resched requested' : m.status}
+                                </span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5, color: '#475569', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                                <span>{m.display_date || (m.start_time ? m.start_time.split('T')[0] : 'TBD')}</span>
+                                <span>{m.meeting_type}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </Layout>
   );
 }

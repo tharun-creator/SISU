@@ -13,10 +13,6 @@ const STATUS_COLORS = {
 };
 
 const TIME_SLOTS = [
-  { value: '09:00', label: '09:00 AM' },
-  { value: '09:30', label: '09:30 AM' },
-  { value: '10:00', label: '10:00 AM' },
-  { value: '10:30', label: '10:30 AM' },
   { value: '11:00', label: '11:00 AM' },
   { value: '11:30', label: '11:30 AM' },
   { value: '12:00', label: '12:00 PM' },
@@ -33,11 +29,7 @@ const TIME_SLOTS = [
   { value: '17:30', label: '05:30 PM' },
   { value: '18:00', label: '06:00 PM' },
   { value: '18:30', label: '06:30 PM' },
-  { value: '19:00', label: '07:00 PM' },
-  { value: '19:30', label: '07:30 PM' },
-  { value: '20:00', label: '08:00 PM' },
-  { value: '20:30', label: '08:30 PM' },
-  { value: '21:00', label: '09:00 PM' },
+  { value: '19:00', label: '07:00 PM' }
 ];
 
 export default function BookingModal({ meeting, onClose, onAction }) {
@@ -212,17 +204,11 @@ export default function BookingModal({ meeting, onClose, onAction }) {
             </div>
           </div>
           
-          {meeting.reason && (
-            <div style={{ marginTop: 4, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
-              <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>"{meeting.reason}"</p>
-            </div>
-          )}
-          {meeting.description && meeting.description !== 'Booked via Executive Mentorship Workspace' && (
-            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px dotted var(--color-border)' }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Description</p>
-              <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>{meeting.description}</p>
-            </div>
-          )}
+          <div style={{ marginTop: 4, paddingTop: 12, borderTop: '1px solid var(--color-border)' }}>
+            <p style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>
+              "{meeting.description && meeting.description.trim() !== '' && meeting.description !== 'Booked via Executive Mentorship Workspace' ? meeting.description : 'no description'}"
+            </p>
+          </div>
         </div>
 
         <div>

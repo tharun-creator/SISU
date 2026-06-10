@@ -341,8 +341,8 @@ def get_free_slots(
             date = date.astimezone(IST).replace(tzinfo=None)
             
         # Ensure input date is treated as local date boundaries in IST
-        day_start = date.replace(hour=10, minute=0, second=0, microsecond=0).replace(tzinfo=IST)
-        day_end = date.replace(hour=20, minute=0, second=0, microsecond=0).replace(tzinfo=IST)
+        day_start = date.replace(hour=11, minute=0, second=0, microsecond=0).replace(tzinfo=IST)
+        day_end = date.replace(hour=19, minute=0, second=0, microsecond=0).replace(tzinfo=IST)
 
         service = _get_service()
 
@@ -390,8 +390,8 @@ def get_free_slots(
         IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
         if date.tzinfo is not None:
             date = date.astimezone(IST).replace(tzinfo=None)
-        c = date.replace(hour=10, minute=0, second=0, microsecond=0)
-        end_time = date.replace(hour=20, minute=0, second=0, microsecond=0)
+        c = date.replace(hour=11, minute=0, second=0, microsecond=0)
+        end_time = date.replace(hour=19, minute=0, second=0, microsecond=0)
         while c + datetime.timedelta(minutes=duration_minutes) <= end_time:
             se = c + datetime.timedelta(minutes=duration_minutes)
             slots.append({

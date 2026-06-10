@@ -712,6 +712,39 @@ async def create_meeting(
     start = parse_dt_to_ist(req.start_time)
     end = parse_dt_to_ist(req.end_time)
 
+    # 1. Agenda word and character limit checks
+    if len(req.title.strip()) > 50:
+        raise HTTPException(
+            status_code=400,
+            detail="The meeting title/agenda cannot exceed 50 characters."
+        )
+    if len([w for w in req.title.split() if w]) > 10:
+        raise HTTPException(
+            status_code=400,
+            detail="The meeting title/agenda exceeds the 10-word limit. Please keep it to 10 words or less."
+        )
+
+    # 2. Duration limit check (max 2 hours / 120 minutes)
+    duration_secs = (end - start).total_seconds()
+    if duration_secs > 7200:
+        raise HTTPException(
+            status_code=400,
+            detail="Meeting duration cannot exceed 2 hours."
+        )
+    if duration_secs <= 0:
+        raise HTTPException(
+            status_code=400,
+            detail="End time must be after start time."
+        )
+
+    # 3. Working hours check (11:00 AM - 07:00 PM IST)
+    import datetime as dt_module
+    if start.time() < dt_module.time(11, 0) or end.time() > dt_module.time(19, 0):
+        raise HTTPException(
+            status_code=400,
+            detail="Meetings must be booked between 11:00 AM and 07:00 PM IST."
+        )
+
     # Duplicate check for the user
     user_existing = db.query(Meeting).filter(
         Meeting.client_id == current_user.id,
@@ -909,6 +942,27 @@ async def client_reschedule_request(
 
     if start < datetime.datetime.now():
         raise HTTPException(status_code=400, detail="Cannot reschedule to a past date")
+
+    # 1. Duration limit check (max 2 hours / 120 minutes)
+    duration_secs = (end - start).total_seconds()
+    if duration_secs > 7200:
+        raise HTTPException(
+            status_code=400,
+            detail="Meeting duration cannot exceed 2 hours."
+        )
+    if duration_secs <= 0:
+        raise HTTPException(
+            status_code=400,
+            detail="End time must be after start time."
+        )
+
+    # 2. Working hours check (11:00 AM - 07:00 PM IST)
+    import datetime as dt_module
+    if start.time() < dt_module.time(11, 0) or end.time() > dt_module.time(19, 0):
+        raise HTTPException(
+            status_code=400,
+            detail="Meetings must be booked between 11:00 AM and 07:00 PM IST."
+        )
 
     # Conflict check (excluding this meeting itself)
     conflict = db.query(Meeting).filter(
@@ -1300,6 +1354,25 @@ async def admin_update_meeting_status(
         
         # Only process if time actually changed
         if new_start != meeting.start_time or new_end != meeting.end_time:
+            # Validate duration and working hours (max 2 hours, 11 AM - 7 PM IST)
+            duration_secs = (new_end - new_start).total_seconds()
+            if duration_secs > 7200:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Meeting duration cannot exceed 2 hours."
+                )
+            if duration_secs <= 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail="End time must be after start time."
+                )
+            import datetime as dt_module
+            if new_start.time() < dt_module.time(11, 0) or new_end.time() > dt_module.time(19, 0):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Meetings must be booked between 11:00 AM and 07:00 PM IST."
+                )
+
             old_start = meeting.start_time
             meeting.start_time = new_start
             meeting.end_time = new_end
@@ -1330,6 +1403,7 @@ async def admin_update_meeting_status(
     local_start = to_local(meeting.start_time)
     meeting_dict = {
         "title": meeting.title,
+        "description": meeting.description or "",
         "date": local_start.strftime("%B %d, %Y"),
         "time": f"{local_start.strftime('%I:%M %p')} IST",
         "type": meeting.meeting_type,
@@ -1527,64 +1601,21 @@ async def get_free_slots(date: str, duration: int = 60, db: Session = Depends(ge
     dt_str = date.split('T')[0]
     sig = db.query(DateAvailabilitySignal).filter(DateAvailabilitySignal.date == dt_str).first()
     
-    if sig:
-        if sig.signal == "red":
-            return []
-        elif sig.signal == "yellow":
-            if not sig.custom_slots:
-                return []
-            
-            custom_slots_list = []
-            for slot_str in sig.custom_slots.split(","):
-                if "-" not in slot_str:
-                    continue
-                start_part, end_part = slot_str.split("-")
+    if sig and sig.signal == "red":
+        return []
+
+    # Get blocked slots if signal is yellow (blacklist flow)
+    blocked_slots = []
+    if sig and sig.signal == "yellow" and sig.custom_slots:
+        for slot_str in sig.custom_slots.split(","):
+            if "-" in slot_str:
                 try:
-                    t_start = datetime.datetime.strptime(start_part.strip(), "%H:%M")
-                    label = t_start.strftime("%I:%M %p")
-                    custom_slots_list.append({
-                        "start": start_part.strip(),
-                        "end": end_part.strip(),
-                        "label": label + " IST"
-                    })
+                    b_s_str, b_e_str = slot_str.strip().split("-")
+                    b_start = datetime.datetime.strptime(b_s_str, "%H:%M").time()
+                    b_end = datetime.datetime.strptime(b_e_str, "%H:%M").time()
+                    blocked_slots.append((b_start, b_end))
                 except Exception:
-                    custom_slots_list.append({
-                        "start": start_part.strip(),
-                        "end": end_part.strip(),
-                        "label": f"{start_part.strip()} - {end_part.strip()} IST"
-                    })
-            
-            # Filter out locally booked meetings conflict
-            day_start = datetime.datetime.fromisoformat(dt_str).replace(hour=0, minute=0, second=0, microsecond=0)
-            day_end = day_start + datetime.timedelta(days=1)
-            local_meetings = db.query(Meeting).filter(
-                Meeting.start_time >= day_start,
-                Meeting.start_time < day_end,
-                Meeting.status.in_(["pending", "approved", "rescheduled", "reschedule_proposed", "reschedule_requested"]),
-                Meeting.deleted_at == None
-            ).all()
-            
-            final_slots = []
-            for slot in custom_slots_list:
-                try:
-                    slot_start_time = datetime.datetime.strptime(slot["start"], "%H:%M").time()
-                    slot_end_time = datetime.datetime.strptime(slot["end"], "%H:%M").time()
-                    
-                    slot_start_dt = datetime.datetime.combine(day_start.date(), slot_start_time).replace(tzinfo=IST)
-                    slot_end_dt = datetime.datetime.combine(day_start.date(), slot_end_time).replace(tzinfo=IST)
-                    
-                    conflict = False
-                    for m in local_meetings:
-                        m_start = to_local(m.start_time)
-                        m_end = to_local(m.end_time)
-                        if slot_start_dt < m_end and slot_end_dt > m_start:
-                            conflict = True
-                            break
-                    if not conflict:
-                        final_slots.append(slot)
-                except Exception:
-                    final_slots.append(slot)
-            return final_slots
+                    pass
 
     try:
         dt = datetime.datetime.fromisoformat(date)
@@ -1593,8 +1624,8 @@ async def get_free_slots(date: str, duration: int = 60, db: Session = Depends(ge
         # Fallback slots if calendar fails
         dt = datetime.datetime.fromisoformat(date)
         slots = []
-        c = dt.replace(hour=10, minute=0, second=0, microsecond=0)
-        end_time = dt.replace(hour=20, minute=0, second=0, microsecond=0)
+        c = dt.replace(hour=11, minute=0, second=0, microsecond=0)
+        end_time = dt.replace(hour=19, minute=0, second=0, microsecond=0)
         while c + datetime.timedelta(minutes=duration) <= end_time:
             se = c + datetime.timedelta(minutes=duration)
             slots.append({
@@ -1620,6 +1651,15 @@ async def get_free_slots(date: str, duration: int = 60, db: Session = Depends(ge
         try:
             slot_start_time = datetime.datetime.strptime(slot["start"], "%H:%M").time()
             slot_end_time = datetime.datetime.strptime(slot["end"], "%H:%M").time()
+            
+            # Check if slot overlaps with any blocked/blacklisted in yellow signal
+            blocked = False
+            for b_start, b_end in blocked_slots:
+                if slot_start_time < b_end and slot_end_time > b_start:
+                    blocked = True
+                    break
+            if blocked:
+                continue
             
             # Treat candidate slot as local time (IST)
             slot_start_dt = datetime.datetime.combine(dt.date(), slot_start_time).replace(tzinfo=IST)

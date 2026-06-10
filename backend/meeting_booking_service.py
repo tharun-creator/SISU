@@ -80,9 +80,43 @@ def check_slot_available(
     exclude_meeting_id: Optional[int] = None,
 ) -> bool:
     """
-    Return True if [start, end) has no approved/pending meetings in the DB.
+    Return True if [start, end) has no approved/pending meetings in the DB
+    and is not blocked by admin DateAvailabilitySignal.
     Both start & end must be naive IST datetimes (as stored in the DB).
     """
+    from database import DateAvailabilitySignal
+    
+    # 1. Check Admin Availability Signals
+    date_str = start.strftime("%Y-%m-%d")
+    sig = db.query(DateAvailabilitySignal).filter(DateAvailabilitySignal.date == date_str).first()
+    if sig:
+        if sig.signal == "red":
+            return False
+        if sig.signal == "yellow" and sig.custom_slots:
+            blocked_slots = sig.custom_slots.split(",")
+            for bs in blocked_slots:
+                bs = bs.strip()
+                if not bs:
+                    continue
+                try:
+                    b_start_str, b_end_str = bs.split("-")
+                    b_start = start.replace(
+                        hour=int(b_start_str.split(":")[0]), 
+                        minute=int(b_start_str.split(":")[1]), 
+                        second=0, microsecond=0
+                    )
+                    b_end = start.replace(
+                        hour=int(b_end_str.split(":")[0]), 
+                        minute=int(b_end_str.split(":")[1]), 
+                        second=0, microsecond=0
+                    )
+                    # If the candidate slot overlaps with the blocked slot
+                    if start < b_end and end > b_start:
+                        return False
+                except Exception as e:
+                    logger.error(f"Error parsing blocked slot {bs}: {e}")
+
+    # 2. Check Database Meetings
     q = db.query(Meeting).filter(
         Meeting.deleted_at == None,
         Meeting.status.in_(["pending", "approved", "rescheduled", "reschedule_proposed", "reschedule_requested"]),
@@ -143,8 +177,8 @@ def find_next_available_slots(
     if not results:
         logger.info("[BookingService] No admin slots found – generating fallback slots")
         
-        # Step dynamically based on the requested duration
-        step_minutes = duration_minutes if duration_minutes > 0 else 30
+        # Step by 30 minutes always to support overlapping slots
+        step_minutes = 30
         rem = after.minute % step_minutes
         
         if rem == 0 and after.second == 0 and after.microsecond == 0:
@@ -155,10 +189,10 @@ def find_next_available_slots(
         limit = after + datetime.timedelta(days=7)
 
         while candidate < limit and len(results) < count:
-            # Working hours: 10:00–20:00 IST
-            if 10 <= candidate.hour < 20:
+            # Working hours: 11:00–19:00 IST
+            if 11 <= candidate.hour < 19:
                 slot_end = candidate + duration
-                if slot_end <= candidate.replace(hour=20, minute=0, second=0, microsecond=0):
+                if slot_end <= candidate.replace(hour=19, minute=0, second=0, microsecond=0):
                     if check_slot_available(db, candidate, slot_end):
                         results.append(_slot_to_dict(candidate, slot_end))
             candidate += datetime.timedelta(minutes=step_minutes)
@@ -271,20 +305,31 @@ def handle_approved_meeting_native(
     start_iso = start_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30")
     end_iso = end_ist.strftime("%Y-%m-%dT%H:%M:%S+05:30")
     
-    cal_resp = google_integration.create_calendar_event(
-        title=meeting.title,
-        description=meeting.description or "",
-        start_iso=start_iso,
-        end_iso=end_iso,
-        attendee_email=client_email,
-        attendee_name=client_name
-    )
+    if meeting.google_event_id:
+        logger.info(f"[BookingService] Meeting #{meeting.id} has existing Google Event ID: {meeting.google_event_id}. Updating event.")
+        cal_resp = google_integration.update_calendar_event(
+            event_id=meeting.google_event_id,
+            title=meeting.title,
+            description=meeting.description or "",
+            start_iso=start_iso,
+            end_iso=end_iso
+        )
+    else:
+        logger.info(f"[BookingService] Creating new calendar event.")
+        cal_resp = google_integration.create_calendar_event(
+            title=meeting.title,
+            description=meeting.description or "",
+            start_iso=start_iso,
+            end_iso=end_iso,
+            attendee_email=client_email,
+            attendee_name=client_name
+        )
     
     if not cal_resp.get("success"):
-        logger.error(f"[BookingService] Calendar event creation failed: {cal_resp.get('error')}")
+        logger.error(f"[BookingService] Calendar event integration failed: {cal_resp.get('error')}")
         return {"success": False, "error": cal_resp.get("error")}
         
-    logger.info(f"[BookingService] Calendar event created successfully.")
+    logger.info(f"[BookingService] Calendar event synced successfully.")
     
     mail_resp = google_integration.send_gmail_confirmation(
         title=meeting.title,

@@ -114,6 +114,14 @@ def _meeting_approved_html(client_name: str, meeting: dict, meet_link: str = "")
   <p style="color:rgba(255,255,255,0.6);font-size:12px;margin:0 0 8px;text-transform:uppercase;letter-spacing:1px;">Meeting Link</p>
   <a href="{meet_link}" style="color:#818cf8;font-size:14px;word-break:break-all;">{meet_link}</a>
 </div>""" if meet_link else ""
+
+    description = meeting.get("description", "")
+    description_section = f"""
+<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;margin:16px 0;">
+  <p style="color:rgba(255,255,255,0.5);font-size:12px;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px;">Things We Discussed / Agenda</p>
+  <p style="color:rgba(255,255,255,0.8);font-size:14px;margin:0;line-height:1.5;">{description}</p>
+</div>""" if description else ""
+
     content = f"""
 <div style="text-align:center;margin-bottom:32px;">
   <div style="display:inline-block;background:rgba(110,231,183,0.1);border:1px solid rgba(110,231,183,0.3);border-radius:50%;width:64px;height:64px;line-height:64px;font-size:28px;">✓</div>
@@ -121,6 +129,7 @@ def _meeting_approved_html(client_name: str, meeting: dict, meet_link: str = "")
 <h1 style="color:#6ee7b7;font-size:28px;font-weight:700;margin:0 0 8px;text-align:center;">Meeting Approved!</h1>
 <p style="color:rgba(255,255,255,0.6);font-size:15px;margin:0 0 24px;text-align:center;">Hi {client_name}, the meeting is booked and please make sure to check it in the google calendar.</p>
 {_meeting_card(meeting.get('title','Meeting'), meeting.get('date','TBD'), meeting.get('time','TBD'), meeting.get('type','Session'), meeting.get('duration','60 mins'), meeting.get('priority','normal'))}
+{description_section}
 {meet_section}
 {_cta_button("Add to Calendar", "#", "#6ee7b7")}"""
     return _base_template(content, "Great news! Your meeting has been approved.")

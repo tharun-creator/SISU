@@ -137,6 +137,16 @@ export default function Chat({ onMeetingBooked }) {
       addMsg('ai', "Please enter an Agenda or Topic for the meeting in the right card so we know what to prepare!");
       return;
     }
+    const trimmedAgenda = (form.agenda || '').trim();
+    if (trimmedAgenda.length > 50) {
+      addMsg('ai', `⚠️ The meeting agenda exceeds the 50-character limit. Please keep it to 50 characters or less (currently ${trimmedAgenda.length} characters).`);
+      return;
+    }
+    const wordCount = trimmedAgenda.split(/\s+/).filter(Boolean).length;
+    if (wordCount > 10) {
+      addMsg('ai', `⚠️ The meeting agenda exceeds the 10-word limit. Please keep it to 10 words or less (currently ${wordCount} words).`);
+      return;
+    }
     if (!form.date || !form.slot) {
       addMsg('ai', "Please pick a date and time slot from the scheduling calendar!");
       return;

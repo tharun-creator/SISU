@@ -111,6 +111,60 @@ def create_calendar_event(
         logger.error(f"[Google Calendar API] An error occurred: {error}")
         return {"success": False, "error": str(error)}
 
+def update_calendar_event(
+    event_id: str,
+    title: str,
+    description: str,
+    start_iso: str,
+    end_iso: str,
+    organizer_email: str = "tharunriot@gmail.com"
+):
+    """
+    Updates an existing Google Calendar event.
+    """
+    creds = get_credentials()
+    if not creds:
+        return {"success": False, "error": "Google Authentication failed. Missing or expired token."}
+        
+    try:
+        service = build('calendar', 'v3', credentials=creds)
+        
+        # Fetch the existing event
+        event = service.events().get(calendarId=organizer_email, eventId=event_id).execute()
+        
+        # Update fields
+        event['summary'] = title
+        event['description'] = description
+        event['start'] = {'dateTime': start_iso}
+        event['end'] = {'dateTime': end_iso}
+        
+        updated_event = service.events().update(
+            calendarId=organizer_email,
+            eventId=event_id,
+            body=event,
+            conferenceDataVersion=1,
+            sendUpdates='none'
+        ).execute()
+        
+        # Extract Meet link if available
+        meet_link = None
+        if 'conferenceData' in updated_event and 'entryPoints' in updated_event['conferenceData']:
+            for entry in updated_event['conferenceData']['entryPoints']:
+                if entry.get('entryPointType') == 'video':
+                    meet_link = entry.get('uri')
+                    break
+                    
+        return {
+            "success": True, 
+            "meet_link": meet_link,
+            "calendar_link": updated_event.get('htmlLink'),
+            "event_id": updated_event.get('id')
+        }
+
+    except HttpError as error:
+        logger.error(f"[Google Calendar API] An error occurred updating event: {error}")
+        return {"success": False, "error": str(error)}
+
 def send_gmail_confirmation(
     title: str,
     description: str,
@@ -153,8 +207,7 @@ def send_gmail_confirmation(
           <!-- Header -->
           <tr>
             <td style="background-color:#000000;padding:36px 48px;text-align:center;">
-              <p style="margin:0 0 12px 0;font-size:13px;font-weight:500;letter-spacing:0.08em;color:rgba(255,255,255,0.5);text-transform:uppercase;">Meeting Confirmed</p>
-              <h1 style="margin:0;font-size:26px;font-weight:600;color:#ffffff;letter-spacing:-0.3px;line-height:1.3;">{title}</h1>
+              <h1 style="margin:0;font-size:26px;font-weight:600;color:#ffffff;letter-spacing:-0.3px;line-height:1.3;">Meeting Confirmed</h1>
             </td>
           </tr>
 
@@ -191,7 +244,7 @@ def send_gmail_confirmation(
                 </tr>
                 <tr>
                   <td style="padding:10px 0;">
-                    <span style="font-size:13px;color:#6e6e73;display:block;margin-bottom:3px;">Description</span>
+                    <span style="font-size:13px;color:#6e6e73;display:block;margin-bottom:3px;">Things We Discussed / Agenda</span>
                     <span style="font-size:15px;color:#1d1d1f;font-weight:500;line-height:1.5;">{description}</span>
                   </td>
                 </tr>

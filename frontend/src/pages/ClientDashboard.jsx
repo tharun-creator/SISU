@@ -5,10 +5,6 @@ import { useAuth } from '../lib/auth';
 import { format, parseISO } from 'date-fns';
 
 const TIME_SLOTS = [
-  { value: '09:00', label: '09:00 AM' },
-  { value: '09:30', label: '09:30 AM' },
-  { value: '10:00', label: '10:00 AM' },
-  { value: '10:30', label: '10:30 AM' },
   { value: '11:00', label: '11:00 AM' },
   { value: '11:30', label: '11:30 AM' },
   { value: '12:00', label: '12:00 PM' },
@@ -25,11 +21,7 @@ const TIME_SLOTS = [
   { value: '17:30', label: '05:30 PM' },
   { value: '18:00', label: '06:00 PM' },
   { value: '18:30', label: '06:30 PM' },
-  { value: '19:00', label: '07:00 PM' },
-  { value: '19:30', label: '07:30 PM' },
-  { value: '20:00', label: '08:00 PM' },
-  { value: '20:30', label: '08:30 PM' },
-  { value: '21:00', label: '09:00 PM' },
+  { value: '19:00', label: '07:00 PM' }
 ];
 
 const STATUS_CONFIG = {
@@ -108,34 +100,86 @@ const SESSION_TYPES = [
   { id: 'custom', label: 'Custom Time (IST)', duration: 60, desc: 'Specify custom time slot.', icon: 'more_time' }
 ];
 
-const parseCustomTimeToSlot = (timeStr, duration = 60) => {
+const parseCustomTimeToSlot = (timeStr) => {
   if (!timeStr) return null;
-  let match = timeStr.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
-  if (!match) return null;
+  // Normalize string: lowercase, replace dot with colon for standard parsing, trim
+  let normalized = timeStr.toLowerCase().trim();
   
-  let hours = parseInt(match[1], 10);
-  let minutes = match[2] ? parseInt(match[2], 10) : 0;
-  let ampm = match[3].toLowerCase();
+  // Split by "to" or "-"
+  let parts = normalized.split(/\s+to\s+|\s*-\s*/);
+  if (parts.length !== 2) {
+    return {
+      error: "Use format: '1:00 pm to 3:00 pm' or '1.00 pm to 3.00 pm'"
+    };
+  }
   
-  if (hours < 1 || hours > 12) return null;
-  if (minutes < 0 || minutes > 59) return null;
+  const parseSingleTime = (str) => {
+    let match = str.trim().match(/^(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)$/i);
+    if (!match) return null;
+    
+    let hours = parseInt(match[1], 10);
+    let minutes = match[2] ? parseInt(match[2], 10) : 0;
+    let ampm = match[3].toLowerCase();
+    
+    if (hours < 1 || hours > 12) return null;
+    if (minutes < 0 || minutes > 59) return null;
+    
+    if (ampm === 'pm' && hours < 12) hours += 12;
+    if (ampm === 'am' && hours === 12) hours = 0;
+    
+    return { hours, minutes };
+  };
   
-  if (ampm === 'pm' && hours < 12) hours += 12;
-  if (ampm === 'am' && hours === 12) hours = 0;
+  let startObj = parseSingleTime(parts[0]);
+  let endObj = parseSingleTime(parts[1]);
   
-  const startStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  if (!startObj || !endObj) {
+    return {
+      error: "Invalid time format. Use e.g. '1:00 pm to 3:00 pm'"
+    };
+  }
   
-  let endMinutes = minutes + parseInt(duration, 10);
-  let endHours = hours + Math.floor(endMinutes / 60);
-  endMinutes = endMinutes % 60;
-  endHours = endHours % 24;
+  let startDate = new Date(2000, 0, 1, startObj.hours, startObj.minutes);
+  let endDate = new Date(2000, 0, 1, endObj.hours, endObj.minutes);
   
-  const endStr = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+  if (endDate <= startDate) {
+    return {
+      error: "End time must be after start time"
+    };
+  }
   
+  let diffMinutes = (endDate - startDate) / 60000;
+  if (diffMinutes > 120) {
+    return {
+      error: "Meeting duration cannot exceed 2 hours"
+    };
+  }
+  
+  // Check working hours: 11:00 AM to 7:00 PM IST
+  let startMinutesTotal = startObj.hours * 60 + startObj.minutes;
+  let endMinutesTotal = endObj.hours * 60 + endObj.minutes;
+  
+  if (startMinutesTotal < 660 || endMinutesTotal > 1140) {
+    return {
+      error: "Meetings must be between 11:00 AM and 07:00 PM IST"
+    };
+  }
+  
+  const startStr = `${String(startObj.hours).padStart(2, '0')}:${String(startObj.minutes).padStart(2, '0')}`;
+  const endStr = `${String(endObj.hours).padStart(2, '0')}:${String(endObj.minutes).padStart(2, '0')}`;
+  
+  const formatTime12h = (hours, minutes) => {
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    let h12 = hours % 12;
+    if (h12 === 0) h12 = 12;
+    return `${h12}:${String(minutes).padStart(2, '0')} ${ampm}`;
+  };
+
   return {
-    label: `${timeStr.trim().toUpperCase()} IST`,
+    label: `${formatTime12h(startObj.hours, startObj.minutes)} to ${formatTime12h(endObj.hours, endObj.minutes)} IST`,
     start: startStr,
-    end: endStr
+    end: endStr,
+    duration: diffMinutes
   };
 };
 
@@ -332,15 +376,18 @@ export default function ClientDashboard() {
     } catch {
       // Offline fallback slots
       const mock = [];
-      const base = new Date(d.year, d.month, d.day, 15, 0);
-      for (let i = 0; i < 5; i++) {
-        const start = new Date(base.getTime() + i * 60 * 60 * 1000);
+      const base = new Date(d.year, d.month, d.day, 11, 0); // Start at 11:00 AM local
+      let current = base;
+      const limit = new Date(d.year, d.month, d.day, 19, 0); // End at 7:00 PM local
+      while (new Date(current.getTime() + duration * 60 * 1000) <= limit) {
+        const start = current;
         const end = new Date(start.getTime() + duration * 60 * 1000);
         mock.push({
-          label: start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          label: `${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} IST`,
           start: start.toTimeString().slice(0, 5),
           end: end.toTimeString().slice(0, 5)
         });
+        current = new Date(current.getTime() + 30 * 60 * 1000); // step by 30 mins
       }
       setAvailableSlots(mock);
     } finally {
@@ -483,12 +530,26 @@ Ready to launch Phase 3 during your next call!`
 
   const handleFinalSubmit = async () => {
     setValidationError('');
-    if (!agenda.trim()) {
+    const trimmedAgenda = (agenda || '').trim();
+    if (!trimmedAgenda) {
       setValidationError("Please provide an Agenda topic first.");
+      return;
+    }
+    if (trimmedAgenda.length > 50) {
+      setValidationError("Meeting title/agenda cannot exceed 50 characters.");
+      return;
+    }
+    const wordCount = trimmedAgenda.split(/\s+/).filter(Boolean).length;
+    if (wordCount > 10) {
+      setValidationError(`Meeting title/agenda cannot exceed 10 words (currently ${wordCount} words)`);
       return;
     }
     if (!selectedDate || !selectedSlot) {
       setValidationError("Please lock in a coaching date and slot.");
+      return;
+    }
+    if (selectedSlot.error) {
+      setValidationError(`Invalid custom time: ${selectedSlot.error}`);
       return;
     }
     if (meetType === 'custom_location' && !customLocationAddress.trim()) {
@@ -508,7 +569,7 @@ Ready to launch Phase 3 during your next call!`
     const startStr = `${selectedDate.year}-${String(selectedDate.month + 1).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}T${selectedSlot.start}:00`;
     const endStr = `${selectedDate.year}-${String(selectedDate.month + 1).padStart(2, '0')}-${String(selectedDate.day).padStart(2, '0')}T${selectedSlot.end}:00`;
 
-    const dur = sessionType.id === 'custom' ? 60 : sessionType.duration;
+    const dur = sessionType.id === 'custom' ? (selectedSlot.duration || 60) : sessionType.duration;
     const typeLabel = sessionType.id === 'custom' ? 'Custom Time Slot' : sessionType.label;
 
     try {
@@ -772,7 +833,7 @@ Ready to launch Phase 3 during your next call!`
         </header>
 
         {/* WORKSPACE VIEW CONTENT */}
-        <main style={{ flex: 1, padding: 'clamp(16px, 3vw, 32px)', overflowY: 'auto', position: 'relative', zIndex: 1 }}>
+        <main style={{ flex: 1, padding: 'clamp(16px, 3vw, 32px)', overflowY: 'auto', position: 'relative' }}>
           <AnimatePresence mode="wait">
             
             {activeView === 'sessions' ? (
@@ -833,9 +894,21 @@ Ready to launch Phase 3 during your next call!`
                                     {m.preferred_communication === 'video' ? 'videocam' : 
                                      m.preferred_communication === 'in_person' ? 'home_pin' : 'location_on'}
                                   </span>
-                                  <span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                                     {m.preferred_communication === 'video' ? 'Google Meet' : 
-                                     m.preferred_communication === 'in_person' ? 'Spi Edge (In-Office)' : 
+                                     m.preferred_communication === 'in_person' ? (
+                                       <>
+                                         <span>Spi Edge (In-Office)</span>
+                                         <a 
+                                           href="https://maps.google.com/?q=Spi+Edge+Sector+96+Noida" 
+                                           target="_blank" 
+                                           rel="noopener noreferrer"
+                                           style={{ color: '#38bdf8', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 2, marginLeft: 4 }}
+                                         >
+                                           <span className="material-symbols-outlined" style={{ fontSize: 13 }}>map</span> (Maps)
+                                         </a>
+                                       </>
+                                     ) : 
                                      m.preferred_communication?.startsWith('custom_location:') ? m.preferred_communication.replace('custom_location:', '').trim() : 'In-Person'}
                                   </span>
                                 </p>
@@ -1225,9 +1298,11 @@ Ready to launch Phase 3 during your next call!`
                         <input
                           className="input-premium"
                           type="text"
-                          placeholder="e.g. Auditing outbound sales pipeline and optimizing customer SOPs..."
+                          placeholder="e.g. Meeting from John..."
                           value={agenda}
                           onChange={(e) => setAgenda(e.target.value)}
+                          maxLength={50}
+                          style={{ maxWidth: '520px' }}
                         />
                       </div>
 
@@ -1248,6 +1323,24 @@ Ready to launch Phase 3 during your next call!`
                             <option value="in_person" style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>Spi Edge (Inoffice Meet)</option>
                             <option value="custom_location" style={{ background: 'var(--color-surface-3)', color: 'var(--color-text-primary)' }}>Preferred Location</option>
                           </select>
+                          {meetType === 'in_person' && (
+                            <div style={{ marginTop: 12, padding: 12, background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', borderRadius: 10 }}>
+                              <p style={{ fontSize: 13, color: 'var(--color-accent)', fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)' }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>home_pin</span> Noida Office Location
+                              </p>
+                              <p style={{ fontSize: 12, color: 'var(--color-text-primary)', fontWeight: 500, margin: 0 }}>
+                                Spi Edge Office, Sector 96, Noida, UP
+                              </p>
+                              <a 
+                                href="https://maps.google.com/?q=Spi+Edge+Sector+96+Noida" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#38bdf8', textDecoration: 'none', fontWeight: 600, marginTop: 6 }}
+                              >
+                                <span className="material-symbols-outlined" style={{ fontSize: 13 }}>map</span> View on Google Maps
+                              </a>
+                            </div>
+                          )}
                           {meetType === 'custom_location' && (
                             <div style={{ marginTop: 12 }}>
                               <label style={{ display: 'block', fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-accent)', fontWeight: 800, marginBottom: 6, fontFamily: 'var(--font-mono)' }}>Address / Location Name *</label>
@@ -1294,11 +1387,11 @@ Ready to launch Phase 3 during your next call!`
                                     <input
                                       type="text"
                                       className="input-premium"
-                                      placeholder="e.g. 5:30 PM"
+                                      placeholder="e.g. 1.00 pm to 3.00pm"
                                       value={customTime}
                                       onChange={(e) => {
                                         setCustomTime(e.target.value);
-                                        const parsedSlot = parseCustomTimeToSlot(e.target.value, 60);
+                                        const parsedSlot = parseCustomTimeToSlot(e.target.value);
                                         if (parsedSlot) {
                                           setSelectedSlot(parsedSlot);
                                         } else {
@@ -1307,10 +1400,15 @@ Ready to launch Phase 3 during your next call!`
                                       }}
                                     />
                                   </div>
-                                  {selectedSlot && (
+                                  {selectedSlot && selectedSlot.error ? (
+                                    <div style={{ fontSize: 12, color: 'var(--color-red)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>error</span>
+                                      {selectedSlot.error}
+                                    </div>
+                                  ) : selectedSlot && (
                                     <div style={{ fontSize: 12, color: 'var(--color-green)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
                                       <span className="material-symbols-outlined" style={{ fontSize: 14 }}>task_alt</span>
-                                      Slot parsed: {selectedSlot.start} to {selectedSlot.end} IST
+                                      Slot parsed: {selectedSlot.label}
                                     </div>
                                   )}
                                 </div>
@@ -1335,7 +1433,6 @@ Ready to launch Phase 3 during your next call!`
                                         className={`apple-slot-pill ${isSelected ? 'selected' : ''}`}
                                       >
                                         <span>{slot.label}</span>
-                                        {isSelected && <span style={{ fontSize: 9, fontWeight: 800, background: 'white', color: 'black', padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Locked</span>}
                                       </button>
                                     );
                                   })}
@@ -2082,9 +2179,9 @@ Ready to launch Phase 3 during your next call!`
           width: 100%;
           padding: 10px 16px;
           border-radius: 10px;
-          border: 1px solid rgba(0, 0, 0, 0.15) !important;
-          background: rgba(0, 0, 0, 0.02) !important;
-          color: #000000 !important;
+          border: 1px solid #E6E6FA !important; /* Lavender border */
+          background: rgba(230, 230, 250, 0.2) !important; /* Very soft lavender bg */
+          color: #333333 !important;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -2096,13 +2193,13 @@ Ready to launch Phase 3 during your next call!`
         }
 
         .apple-slot-pill:hover {
-          background: rgba(0, 0, 0, 0.05) !important;
-          border-color: rgba(0, 0, 0, 0.3) !important;
+          background: rgba(230, 230, 250, 0.6) !important;
+          border-color: #D8BFD8 !important; /* Thistle / slightly darker lavender */
         }
 
         .apple-slot-pill.selected {
-          border-color: var(--color-accent) !important;
-          background: var(--color-accent) !important;
+          border-color: #9B86D1 !important; /* Deep lavender */
+          background: #9B86D1 !important;
           color: white !important;
         }
 
