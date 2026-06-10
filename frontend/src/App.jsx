@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider, PrivateRoute } from './lib/auth.jsx';
 import ClientDashboard from './pages/ClientDashboard.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
@@ -18,6 +19,45 @@ import AdminReschedulePage from './pages/AdminReschedulePage.jsx';
 
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 4500); // 4 seconds of fade in + 0.5s pause
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showSplash) {
+    return (
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'var(--color-bg-base)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 99999
+      }}>
+        <motion.h1
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 4 }}
+          style={{
+            fontFamily: "'Kavivanar', cursive",
+            fontSize: '5rem',
+            color: 'var(--color-text-primary)',
+            textAlign: 'center',
+            margin: 0,
+            padding: '20px'
+          }}
+        >
+          வாழ்க வளமுடன். நற்பவி.
+        </motion.h1>
+      </div>
+    );
+  }
+
   return (
     <AuthProvider>
       <Router>

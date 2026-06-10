@@ -59,3 +59,9 @@ backend.log
 .idea/
 .vscode/
 *.swp
+
+# Sensitive credentials
+token.json
+backend/token.json
+client_secret_*.json
+backend/graphify/
