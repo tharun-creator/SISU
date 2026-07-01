@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '../components/Layout';
-import { api } from '../lib/api';
+import { api } from '../constants/api';
 import { useAuth } from '../lib/auth';
 
 const STATUS_ACCENT = {

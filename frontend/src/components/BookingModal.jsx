@@ -34,8 +34,8 @@ const TIME_SLOTS = [
 
 export default function BookingModal({ meeting, onClose, onAction }) {
   const [status, setStatus] = useState(meeting.status === 'reschedule_requested' ? 'rescheduled' : 'approved');
-  const [notes] = useState('');
-  const [meetLink] = useState('');
+  const [notes, setNotes] = useState(meeting.admin_notes || '');
+  const [meetLink, setMeetLink] = useState(meeting.meet_link || '');
   const [selectedPriority, setSelectedPriority] = useState(meeting.priority || 'medium');
   
   const getInitialDate = () => {
@@ -209,6 +209,21 @@ export default function BookingModal({ meeting, onClose, onAction }) {
               "{meeting.description && meeting.description.trim() !== '' && meeting.description !== 'Booked via Executive Mentorship Workspace' ? meeting.description : 'no description'}"
             </p>
           </div>
+          {meeting.notes && (meeting.status === 'reschedule_requested' || meeting.status === 'rescheduled') && (
+            <div style={{ 
+              marginTop: 12,
+              paddingTop: 12,
+              borderTop: '1px solid var(--color-border)', 
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4
+            }}>
+              <h4 style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', margin: 0, letterSpacing: '0.05em' }}>Reschedule Request Details</h4>
+              <p style={{ fontSize: 12, color: 'var(--color-text-primary)', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.5 }}>
+                {meeting.notes}
+              </p>
+            </div>
+          )}
         </div>
 
         <div>
@@ -282,6 +297,30 @@ export default function BookingModal({ meeting, onClose, onAction }) {
                 </button>
               );
             })}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>Meeting Link (Google Meet)</label>
+            <input 
+              className="input-premium" 
+              type="text" 
+              placeholder="https://meet.google.com/..."
+              value={meetLink} 
+              onChange={(e) => setMeetLink(e.target.value)} 
+              style={{ width: '100%', padding: '8px 12px', boxSizing: 'border-box' }} 
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>Admin Notes</label>
+            <textarea 
+              className="input-premium" 
+              placeholder="Write any administrative notes..."
+              value={notes} 
+              onChange={(e) => setNotes(e.target.value)} 
+              style={{ width: '100%', padding: '8px 12px', boxSizing: 'border-box', minHeight: 60, resize: 'vertical' }} 
+            />
           </div>
         </div>
 

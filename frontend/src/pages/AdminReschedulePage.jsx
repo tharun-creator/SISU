@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '../components/Layout';
 import BookingModal from '../components/BookingModal';
-import { api } from '../lib/api';
+import { api } from '../constants/api';
 import { useAuth } from '../lib/auth';
 import { format, parseISO } from 'date-fns';
 

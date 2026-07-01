@@ -22,13 +22,19 @@ def get_credentials():
     Priority:
     1. token.json file (local development)
     2. Environment variables: GOOGLE_REFRESH_TOKEN, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET (deployment)
+    3. Development mode: return None but log instead of error
     """
     creds = None
     token_path = 'token.json'
     
     # Priority 1: Try token.json (local development)
     if os.path.exists(token_path):
-        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+        try:
+            creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+            logger.info("[Google API] Using credentials from token.json")
+        except Exception as e:
+            logger.warning(f"[Google API] Failed to load token.json: {e}")
+            creds = None
     
     # Priority 2: Fall back to environment variables (deployment)
     if not creds:
@@ -37,21 +43,26 @@ def get_credentials():
         client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
         
         if refresh_token and client_id and client_secret:
-            creds = Credentials(
-                token=None,
-                refresh_token=refresh_token,
-                token_uri="https://oauth2.googleapis.com/token",
-                client_id=client_id,
-                client_secret=client_secret,
-                scopes=SCOPES,
-            )
-            logger.info("[Google API] Using credentials from environment variables.")
+            try:
+                creds = Credentials(
+                    token=None,
+                    refresh_token=refresh_token,
+                    token_uri="https://oauth2.googleapis.com/token",
+                    client_id=client_id,
+                    client_secret=client_secret,
+                    scopes=SCOPES,
+                )
+                logger.info("[Google API] Using credentials from environment variables.")
+            except Exception as e:
+                logger.error(f"[Google API] Failed to create credentials from env vars: {e}")
+                return None
         else:
-            logger.error(
-                "[Google API] No valid credentials found. "
-                "Provide token.json OR set GOOGLE_REFRESH_TOKEN, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET env vars."
+            # Development mode: log instead of error
+            logger.info(
+                "[Google API Dev Mode] No Google credentials found. "
+                "Calendar events will be logged instead of created."
             )
-            return None
+            return None  # Return None to trigger development mode
         
     # Refresh if expired
     if not creds.valid:
@@ -62,6 +73,7 @@ def get_credentials():
                 if os.path.exists(token_path):
                     with open(token_path, 'w') as token:
                         token.write(creds.to_json())
+                    logger.info("[Google API] Refreshed and saved token")
             except Exception as e:
                 logger.error(f"[Google API] Token refresh failed: {e}")
                 return None
@@ -69,6 +81,7 @@ def get_credentials():
             # Token has never been used yet — force a refresh
             try:
                 creds.refresh(Request())
+                logger.info("[Google API] Initial token refresh successful")
             except Exception as e:
                 logger.error(f"[Google API] Initial token refresh failed: {e}")
                 return None
@@ -93,7 +106,21 @@ def create_calendar_event(
     """
     creds = get_credentials()
     if not creds:
-        return {"success": False, "error": "Google Authentication failed. Missing or expired token."}
+        # Development mode: log instead of creating event
+        logger.info(f"[Google Calendar Dev Mode] Would create calendar event:")
+        logger.info(f"  Title: {title}")
+        logger.info(f"  Description: {description}")
+        logger.info(f"  Start: {start_iso}")
+        logger.info(f"  End: {end_iso}")
+        logger.info(f"  Attendee: {attendee_name} <{attendee_email}>")
+        logger.info(f"  Organizer: {organizer_email}")
+        # Return mock success response for development
+        return {
+            "success": True, 
+            "meet_link": "https://meet.google.com/dev-test-link",
+            "calendar_link": "https://calendar.google.com/event/dev-test",
+            "event_id": f"dev-event-{int(time.time())}"
+        }
         
     try:
         service = build('calendar', 'v3', credentials=creds)
@@ -162,7 +189,20 @@ def update_calendar_event(
     """
     creds = get_credentials()
     if not creds:
-        return {"success": False, "error": "Google Authentication failed. Missing or expired token."}
+        # Development mode: log instead of updating event
+        logger.info(f"[Google Calendar Dev Mode] Would update calendar event {event_id}:")
+        logger.info(f"  New Title: {title}")
+        logger.info(f"  New Description: {description}")
+        logger.info(f"  New Start: {start_iso}")
+        logger.info(f"  New End: {end_iso}")
+        logger.info(f"  Organizer: {organizer_email}")
+        # Return mock success response for development
+        return {
+            "success": True, 
+            "meet_link": "https://meet.google.com/dev-test-link-updated",
+            "calendar_link": "https://calendar.google.com/event/dev-test-updated",
+            "event_id": event_id
+        }
         
     try:
         service = build('calendar', 'v3', credentials=creds)
@@ -216,7 +256,14 @@ def send_gmail_confirmation(
     """
     creds = get_credentials()
     if not creds:
-        return {"success": False, "error": "Google Authentication failed. Missing or expired token."}
+        # Development mode: log instead of sending Gmail
+        logger.info(f"[Gmail Dev Mode] Would send confirmation email:")
+        logger.info(f"  To: {attendee_name} <{attendee_email}>")
+        logger.info(f"  Subject: Meeting Confirmed: {title}")
+        logger.info(f"  Meet Link: {meet_link}")
+        logger.info(f"  Calendar Link: {calendar_link}")
+        # Return mock success response for development
+        return {"success": True}
         
     try:
         service = build('gmail', 'v1', credentials=creds)

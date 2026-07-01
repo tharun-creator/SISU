@@ -2,7 +2,7 @@ import sys
 import os
 try:
     print("Starting backend wrapper...", flush=True)
-    import main
+    from app import main
     print("Main imported", flush=True)
     import uvicorn
     print("Uvicorn imported", flush=True)

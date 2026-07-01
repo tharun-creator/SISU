@@ -65,3 +65,6 @@ token.json
 backend/token.json
 client_secret_*.json
 backend/graphify/
+
+graphify-out/
+AUDIT_REPORT.md

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '../components/Layout';
-import { api } from '../lib/api';
+import { api } from '../constants/api';
 import { useAuth } from '../lib/auth';
 
 const TIME_SLOTS = [
@@ -41,7 +41,7 @@ export default function AdminCalendarSlotsPage() {
 
   const fetchSignals = async () => {
     try {
-      const data = await api.getCalendarSignals();
+      const data = await api.getCalendarSignals(viewMonth, viewYear);
       setSignals(data || {});
     } catch (err) {
       console.error(err);
@@ -343,7 +343,7 @@ export default function AdminCalendarSlotsPage() {
                 {signalType === 'yellow' && (
                   <div style={{ marginBottom: 24, flex: 1 }}>
                     <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10, fontFamily: 'var(--font-mono)' }}>
-                      Select Active Time Slots
+                      Select Custom Availability Slots
                     </label>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 220, overflowY: 'auto', paddingRight: 4 }}>
                       {TIME_SLOTS.map((slot) => {

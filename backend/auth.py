@@ -10,13 +10,19 @@ import bcrypt
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy.orm import Session
+from google.oauth2 import id_token
+from google.auth.transport import requests
+import secrets
 
 from database import get_db, User, AdminEmail
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-SECRET_KEY = os.getenv("JWT_SECRET", "sisu-super-secret-key-change-in-production")
+SECRET_KEY = os.getenv("JWT_SECRET")
+if not SECRET_KEY or SECRET_KEY == "sisu-super-secret-key-change-in-production":
+    raise RuntimeError("CRITICAL ERROR: JWT_SECRET environment variable is missing or set to the default insecure value. Please set a secure JWT_SECRET in your .env file.")
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 72
 
@@ -24,21 +30,22 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 # ── Pydantic Schemas ────────────────────────────────────────────────────────────
 class RegisterRequest(BaseModel):
-    name: str
-    email: str
-    password: str
-    phone: Optional[str] = None
+    name: str = Field(..., min_length=1, max_length=100)
+    email: EmailStr
+    password: str = Field(..., min_length=8, max_length=128)
+    phone: Optional[str] = Field(None, max_length=30)
     role: str = "client"
-    company: Optional[str] = None
-    job_title: Optional[str] = None
-    timezone: Optional[str] = "Asia/Kolkata"
+    company: Optional[str] = Field(None, max_length=100)
+    job_title: Optional[str] = Field(None, max_length=100)
+    timezone: Optional[str] = Field("Asia/Kolkata", max_length=100)
 
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
+    email: Optional[EmailStr] = None
+    password: Optional[str] = Field(None, max_length=128)
     captcha_id: Optional[str] = None
     captcha_answer: Optional[str] = None
+    google_credential: Optional[str] = None
 
 
 
@@ -112,8 +119,17 @@ def get_current_user(
     return user
 
 
+def is_email_admin(email: str, db: Session) -> bool:
+    email_clean = email.strip().lower()
+    env_admins_env = os.getenv("ADMIN_EMAILS", "tharunriot@gmail.com")
+    env_admins = [e.strip().lower() for e in env_admins_env.split(",") if e.strip()]
+    if email_clean in env_admins:
+        return True
+    return db.query(AdminEmail).filter(AdminEmail.email.ilike(email_clean)).first() is not None
+
+
 def require_admin(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> User:
-    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(current_user.email)).first() is not None or current_user.email.lower() == "tharunriot@gmail.com"
+    is_admin = is_email_admin(current_user.email, db)
     if not is_admin:
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
@@ -121,12 +137,18 @@ def require_admin(current_user: User = Depends(get_current_user), db: Session = 
 
 # ── Route Handlers (to be registered in main.py) ────────────────────────────
 def register_user(req: RegisterRequest, db: Session) -> TokenResponse:
+    # Enforce password strength check during signup
+    try:
+        validate_password_strength(req.password)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     email_clean = req.email.strip()
     existing = db.query(User).filter(User.email.ilike(email_clean)).first()
     if existing:
         raise HTTPException(status_code=409, detail="Email already registered")
 
-    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(email_clean)).first() is not None or email_clean.lower() == "tharunriot@gmail.com"
+    is_admin = is_email_admin(email_clean, db)
     role = "admin" if is_admin else "client"
 
     user = User(
@@ -156,7 +178,7 @@ def login_user(req: LoginRequest, db: Session) -> TokenResponse:
         raise HTTPException(status_code=403, detail="Account is disabled")
 
     # Enforce role logic
-    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(user.email)).first() is not None or user.email.lower() == "tharunriot@gmail.com"
+    is_admin = is_email_admin(user.email, db)
     if is_admin:
         if user.role != "admin":
             user.role = "admin"
@@ -168,6 +190,65 @@ def login_user(req: LoginRequest, db: Session) -> TokenResponse:
             db.commit()
             db.refresh(user)
 
+    token = create_access_token({"sub": str(user.id), "role": user.role, "pwd": user.password_hash[-10:]})
+    return TokenResponse(access_token=token, user=user_to_dict(user))
+
+
+def login_google_user(credential: str, db: Session) -> TokenResponse:
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "793728037081-03p54l6ntfisafaavflhpmtq5o3dfs1g.apps.googleusercontent.com")
+    try:
+        idinfo = id_token.verify_oauth2_token(credential, requests.Request(), GOOGLE_CLIENT_ID)
+        email_clean = idinfo['email'].strip()
+        name = idinfo.get('name', email_clean.split('@')[0])
+        picture = idinfo.get('picture')
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid Google token: {str(e)}")
+        
+    user = db.query(User).filter(User.email.ilike(email_clean)).first()
+    
+    if not user:
+        is_admin = is_email_admin(email_clean, db)
+        total_users = db.query(User).count()
+        role = "admin" if (is_admin or total_users == 0) else "client"
+        
+        user = User(
+            name=name,
+            email=email_clean,
+            password_hash=hash_password(secrets.token_urlsafe(24)),
+            role=role,
+            avatar=picture,
+            timezone="Asia/Kolkata",
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    else:
+        if not user.is_active:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is disabled")
+            
+        updated = False
+        if picture and user.avatar != picture:
+            user.avatar = picture
+            updated = True
+        if name and user.name != name:
+            user.name = name
+            updated = True
+        if updated:
+            db.commit()
+            db.refresh(user)
+            
+    is_admin = is_email_admin(user.email, db)
+    if is_admin:
+        if user.role != "admin":
+            user.role = "admin"
+            db.commit()
+            db.refresh(user)
+    else:
+        if user.role == "admin":
+            user.role = "client"
+            db.commit()
+            db.refresh(user)
+            
     token = create_access_token({"sub": str(user.id), "role": user.role, "pwd": user.password_hash[-10:]})
     return TokenResponse(access_token=token, user=user_to_dict(user))
 

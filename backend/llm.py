@@ -109,10 +109,10 @@ def book_meeting(title: str, start_time_str: str, reason: Optional[str] = None, 
         import email_service
         
         # 1. Agenda word and character limit checks
-        if len(title.strip()) > 50:
-            return "Error: The meeting title/agenda cannot exceed 50 characters."
-        if len([w for w in title.split() if w]) > 10:
-            return "Error: The meeting title/agenda exceeds the 10-word limit. Please keep it to 10 words or less."
+        if len(title.strip()) > 150:
+            return "Error: The meeting title/agenda cannot exceed 150 characters."
+        if len([w for w in title.split() if w]) > 30:
+            return "Error: The meeting title/agenda exceeds the 30-word limit. Please keep it to 30 words or less."
 
         # Parse time and calculate end time (60 min default)
         start = meeting_booking_service._to_ist_naive(dt.datetime.fromisoformat(start_time_str.replace('Z', '')))

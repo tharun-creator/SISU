@@ -1,28 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth.jsx';
+import { api } from '../constants/api';
 
 const clientNav = [
   { icon: 'grid_view', label: 'Dashboard', path: '/' },
-  { icon: 'calendar_today', label: 'Book Meeting', path: '/book' },
-  { icon: 'notifications', label: 'Notifications', path: '/notifications' },
-  { icon: 'settings', label: 'Settings', path: '/settings' },
+  { icon: 'calendar_today', label: 'Schedule', path: '/?view=book' },
+  { icon: 'description', label: 'Notebook', path: '/notebook' },
+  { icon: 'receipt_long', label: 'Invoices', path: '/invoices' },
+  { icon: 'settings', label: 'Settings', path: '/?view=settings' },
 ];
 
 const adminNav = [
   { icon: 'grid_view', label: 'Dashboard', path: '/admin' },
+  { icon: 'receipt_long', label: 'Manage Invoices', path: '/admin/invoices' },
   { icon: 'calendar_month', label: 'Calendar Slots', path: '/admin/calendar-slots' },
   { icon: 'event_available', label: 'Slots Booked', path: '/admin/slots-booked' },
-  { icon: 'pending_actions', label: 'Pending Requests', path: '/admin/pending' },
+  { icon: 'inbox', label: 'Inbox', path: '/admin/pending' },
   { icon: 'update', label: 'Rescheduled', path: '/admin/rescheduled' },
   { icon: 'admin_panel_settings', label: 'Manage Users', path: '/admin/users' },
-  { icon: 'notifications', label: 'Notifications', path: '/notifications' },
-  { icon: 'settings', label: 'Settings', path: '/settings' },
+  { icon: 'settings', label: 'Settings', path: '/?view=settings' },
 ];
+
 
 export default function Sidebar({ notifCount = 0, active, onClose }) {
   const { logout, isAdmin, user } = useAuth();
   const navItems = isAdmin ? adminNav : clientNav;
   const currentPath = window.location.pathname;
+
+  const [inboxCount, setInboxCount] = useState(0);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    const fetchInboxCount = async () => {
+      try {
+        const all = await api.adminGetMeetings();
+        if (all && Array.isArray(all)) {
+          const count = all.filter(m => m.status === 'pending' || m.status === 'reschedule_requested').length;
+          setInboxCount(count);
+        }
+      } catch (err) {
+        console.error('Failed to fetch inbox count:', err);
+      }
+    };
+    fetchInboxCount();
+    const interval = setInterval(fetchInboxCount, 30000);
+    return () => clearInterval(interval);
+  }, [isAdmin]);
 
   return (
     <>
@@ -61,12 +85,17 @@ export default function Sidebar({ notifCount = 0, active, onClose }) {
 
         <nav className="sidebar-nav">
           {navItems.map((item) => {
-            const isActive = currentPath === item.path || (item.path !== '/' && item.path !== '/admin' && currentPath.startsWith(item.path));
+            const currentFullPath = currentPath + window.location.search;
+            const isActive = (item.path.includes('?') 
+              ? currentFullPath === item.path 
+              : currentPath === item.path) || 
+              (item.path !== '/' && item.path !== '/admin' && currentPath.startsWith(item.path.split('?')[0]));
             return (
-              <a
+              <Link
                 key={item.path}
-                href={item.path}
+                to={item.path}
                 className={`sidebar-link ${isActive ? 'active' : ''}`}
+                onClick={onClose}
               >
                 <span className="material-symbols-outlined">
                   {item.icon}
@@ -79,7 +108,12 @@ export default function Sidebar({ notifCount = 0, active, onClose }) {
                     {notifCount > 99 ? '99+' : notifCount}
                   </span>
                 )}
-              </a>
+                {item.label === 'Inbox' && inboxCount > 0 && (
+                  <span style={{ marginLeft: 'auto', background: 'var(--color-accent)', color: 'white', fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 100, minWidth: 18, textAlign: 'center' }}>
+                    {inboxCount}
+                  </span>
+                )}
+              </Link>
             );
           })}
         </nav>

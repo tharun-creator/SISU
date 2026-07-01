@@ -23,7 +23,6 @@ if "mysql" in db_url:
         db_url = db_url.split("?")[0]
     connect_args = {"ssl": {}}
 
-fallback_to_sqlite = False
 if "mysql" in db_url:
     try:
         # Create a temporary engine with pool_pre_ping to check connectivity
@@ -56,38 +55,23 @@ if "mysql" in db_url:
                     conn.commit()
                 sys_engine.dispose()
                 print(f"[Database Init] Database '{db_name}' successfully created!")
-                
-                # Retry connection test
-                with temp_engine.connect() as conn:
-                    pass
-                temp_engine.dispose()
             except Exception as creation_err:
-                print(f"\n[Database Warning] Failed to connect to MySQL and failed to auto-create database '{db_name}'.")
+                print(f"\n[Database Error] Failed to connect to MySQL and failed to auto-create database '{db_name}'.")
                 print(f"Creation Error detail: {creation_err}")
-                print("-> Falling back to local SQLite database 'sqlite:///sisu.db' to keep the system running...\n")
-                fallback_to_sqlite = True
+                raise creation_err
         else:
-            print(f"\n[Database Warning] Failed to connect to MySQL database.")
+            print(f"\n[Database Error] Failed to connect to MySQL database.")
             print(f"Error detail: {e}")
-            print("-> Falling back to local SQLite database 'sqlite:///sisu.db' to keep the system running...\n")
-            fallback_to_sqlite = True
+            raise e
 
-if fallback_to_sqlite:
-    db_url = "sqlite:///sisu.db"
-    connect_args = {"check_same_thread": False}
-    engine = create_engine(
-        db_url,
-        connect_args=connect_args
-    )
-else:
-    engine = create_engine(
-        db_url,
-        connect_args=connect_args,
-        pool_size=10,
-        max_overflow=20,
-        pool_recycle=3600,
-        pool_pre_ping=True
-    )
+engine = create_engine(
+    db_url,
+    connect_args=connect_args,
+    pool_size=10,
+    max_overflow=20,
+    pool_recycle=3600,
+    pool_pre_ping=True
+)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -130,6 +114,7 @@ class User(Base):
     timezone = Column(String(100), default="Asia/Kolkata")
     phone = Column(String(50), nullable=True)
     is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False, nullable=False)
     is_priority = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
@@ -143,12 +128,12 @@ class Meeting(Base):
     __tablename__ = "meetings"
 
     id = Column(Integer, primary_key=True, index=True)
-    client_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    client_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     reason = Column(Text, nullable=True)
     meeting_type = Column(String(100), default="Mentorship Session")
-    status = Column(String(30), default="pending")
+    status = Column(String(30), default="pending", index=True)
     priority = Column(String(20), default="normal")
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
@@ -185,7 +170,7 @@ class MeetingStatusLog(Base):
     __tablename__ = "meeting_status_logs"
 
     id = Column(Integer, primary_key=True, index=True)
-    meeting_id = Column(Integer, ForeignKey("meetings.id"), nullable=False)
+    meeting_id = Column(Integer, ForeignKey("meetings.id"), nullable=False, index=True)
     old_status = Column(String(30), nullable=True)
     new_status = Column(String(30), nullable=False)
     changed_by = Column(String(255), nullable=True)
@@ -200,7 +185,7 @@ class Notification(Base):
     __tablename__ = "notifications"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     type = Column(String(50), nullable=False)   # "approved","rejected","reminder",etc.
     title = Column(String(255), nullable=False)
     message = Column(Text, nullable=False)
@@ -228,7 +213,7 @@ class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     hashed_token = Column(String(255), unique=True, nullable=False, index=True)
     expires_at = Column(DateTime, nullable=False)
     is_used = Column(Boolean, default=False, nullable=False)
@@ -274,6 +259,27 @@ class AdminEmail(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
+    role = Column(String(50), default="admin", nullable=False)
+
+
+# ── Notebook Notes ─────────────────────────────────────────────────────────────
+class NotebookNote(Base):
+    __tablename__ = "notebook_notes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    meeting_id = Column(Integer, ForeignKey("meetings.id"), nullable=True, index=True)
+    title = Column(String(255), nullable=False)
+    content = Column(Text, nullable=True)
+    photo_url = Column(String(512), nullable=True)
+    is_shared = Column(Boolean, default=False, nullable=False)
+    share_token = Column(String(100), unique=True, nullable=True, index=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    user = relationship("User")
+    meeting = relationship("Meeting")
+
 
 
 # Self-migrating database logic: drop old password_reset_tokens table if it uses legacy column schema
@@ -290,46 +296,109 @@ try:
 except Exception as e:
     print(f"Error checking/migrating password_reset_tokens: {e}")
 
-# Self-migrating database logic: ensure users table has 'is_priority' column
+# Self-migrating database logic: ensure users table has all required columns
 try:
     from sqlalchemy import inspect, text
     inspector = inspect(engine)
     if "users" in inspector.get_table_names():
         columns = [col["name"] for col in inspector.get_columns("users")]
-        if "is_priority" not in columns:
-            print("Adding 'is_priority' column to users table...")
-            with engine.connect() as conn:
-                dialect = engine.url.drivername
-                if "mysql" in dialect:
-                    conn.execute(text("ALTER TABLE users ADD COLUMN is_priority TINYINT(1) NOT NULL DEFAULT 0"))
-                else:
-                    conn.execute(text("ALTER TABLE users ADD COLUMN is_priority BOOLEAN NOT NULL DEFAULT 0"))
-                conn.commit()
-            print("Successfully added 'is_priority' column to users table!")
+        dialect = engine.url.drivername
+        is_mysql = "mysql" in dialect
+        
+        user_missing = {
+            "is_priority": "TINYINT(1) NOT NULL DEFAULT 0" if is_mysql else "BOOLEAN NOT NULL DEFAULT 0",
+            "phone": "VARCHAR(50) NULL" if is_mysql else "VARCHAR(50)",
+            "timezone": "VARCHAR(100) NOT NULL DEFAULT 'Asia/Kolkata'" if is_mysql else "VARCHAR(100) DEFAULT 'Asia/Kolkata'",
+            "is_active": "TINYINT(1) NOT NULL DEFAULT 1" if is_mysql else "BOOLEAN DEFAULT 1",
+            "avatar": "VARCHAR(512) NULL" if is_mysql else "VARCHAR(512)",
+            "company": "VARCHAR(255) NULL" if is_mysql else "VARCHAR(255)",
+            "job_title": "VARCHAR(255) NULL" if is_mysql else "VARCHAR(255)",
+        }
+        for col_name, col_def in user_missing.items():
+            if col_name not in columns:
+                print(f"Adding '{col_name}' column to users table...")
+                with engine.connect() as conn:
+                    conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_def}"))
+                    conn.commit()
+                print(f"Successfully added '{col_name}' column to users table!")
 except Exception as e:
-    print(f"Error checking/migrating users table for is_priority: {e}")
+    print(f"Error checking/migrating users table: {e}")
+
+# Self-migrating database logic: ensure meetings table has all required columns
+try:
+    from sqlalchemy import inspect, text
+    inspector = inspect(engine)
+    if "meetings" in inspector.get_table_names():
+        columns = [col["name"] for col in inspector.get_columns("meetings")]
+        dialect = engine.url.drivername
+        is_mysql = "mysql" in dialect
+        
+        meetings_missing = {
+            "phone": "VARCHAR(50) NULL" if is_mysql else "VARCHAR(50)",
+            "otter_notes": "TEXT NULL" if is_mysql else "TEXT",
+            "preferred_communication": "VARCHAR(100) NOT NULL DEFAULT 'video'" if is_mysql else "VARCHAR(100) DEFAULT 'video'",
+            "attachment_url": "VARCHAR(512) NULL" if is_mysql else "VARCHAR(512)",
+            "deleted_at": "DATETIME NULL" if is_mysql else "DATETIME",
+        }
+        for col_name, col_def in meetings_missing.items():
+            if col_name not in columns:
+                print(f"Adding '{col_name}' column to meetings table...")
+                with engine.connect() as conn:
+                    conn.execute(text(f"ALTER TABLE meetings ADD COLUMN {col_name} {col_def}"))
+                    conn.commit()
+                print(f"Successfully added '{col_name}' column to meetings table!")
+except Exception as e:
+    print(f"Error checking/migrating meetings table: {e}")
+
+# Self-migrating database logic: ensure notebook_notes table has all required columns
+try:
+    from sqlalchemy import inspect, text
+    inspector = inspect(engine)
+    if "notebook_notes" in inspector.get_table_names():
+        columns = [col["name"] for col in inspector.get_columns("notebook_notes")]
+        dialect = engine.url.drivername
+        is_mysql = "mysql" in dialect
+        
+        notes_missing = {
+            "meeting_id": "INT NULL" if is_mysql else "INTEGER",
+            "is_shared": "TINYINT(1) NOT NULL DEFAULT 0" if is_mysql else "BOOLEAN NOT NULL DEFAULT 0",
+            "share_token": "VARCHAR(100) NULL" if is_mysql else "VARCHAR(100)",
+        }
+        for col_name, col_def in notes_missing.items():
+            if col_name not in columns:
+                print(f"Adding '{col_name}' column to notebook_notes table...")
+                with engine.connect() as conn:
+                    conn.execute(text(f"ALTER TABLE notebook_notes ADD COLUMN {col_name} {col_def}"))
+                    conn.commit()
+                print(f"Successfully added '{col_name}' column to notebook_notes table!")
+except Exception as e:
+    print(f"Error checking/migrating notebook_notes table: {e}")
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
 
-# Seed default admin email if not present, and ensure correct role
+# Seed default admin emails if not present, and ensure correct role
 db = SessionLocal()
 try:
-    admin_exists = db.query(AdminEmail).filter(AdminEmail.email == "tharunriot@gmail.com").first()
-    if not admin_exists:
-        default_admin = AdminEmail(email="tharunriot@gmail.com")
-        db.add(default_admin)
-        db.commit()
-        print("Seeded default admin email: tharunriot@gmail.com")
+    admin_emails_env = os.getenv("ADMIN_EMAILS", "tharunriot@gmail.com")
+    admin_emails = [email.strip().lower() for email in admin_emails_env.split(",") if email.strip()]
     
-    # Check if user exists and enforce role
-    tharun_user = db.query(User).filter(User.email == "tharunriot@gmail.com").first()
-    if tharun_user and tharun_user.role != "admin":
-        tharun_user.role = "admin"
-        db.commit()
-        print("Forced tharunriot@gmail.com user role to 'admin' in database.")
+    for email in admin_emails:
+        admin_exists = db.query(AdminEmail).filter(AdminEmail.email == email).first()
+        if not admin_exists:
+            new_admin = AdminEmail(email=email)
+            db.add(new_admin)
+            db.commit()
+            print(f"Seeded admin email: {email}")
+        
+        # Check if user exists and enforce role
+        user_record = db.query(User).filter(User.email == email).first()
+        if user_record and user_record.role != "admin":
+            user_record.role = "admin"
+            db.commit()
+            print(f"Forced user role to 'admin' for: {email}")
 except Exception as e:
-    print(f"Error seeding default admin / verifying user: {e}")
+    print(f"Error seeding admin emails / verifying users: {e}")
     db.rollback()
 finally:
     db.close()

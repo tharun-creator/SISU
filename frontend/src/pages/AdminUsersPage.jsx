@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '../components/Layout';
-import { api } from '../lib/api';
+import { api } from '../constants/api';
 import { useAuth } from '../lib/auth';
 
 export default function AdminUsersPage() {

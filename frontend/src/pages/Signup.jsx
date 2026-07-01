@@ -1,23 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../lib/auth';
 
 export default function Signup() {
-  const { register } = useAuth();
-  const [form, setForm] = useState({ name: '', email: '', password: '', phone: '', company: '', job_title: '', timezone: 'Asia/Kolkata' });
+  const { register, login } = useAuth(); // OIDC login handles registration automatically in backend
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleCredentialSignup = async (e) => {
     e.preventDefault();
+    if (!name || !email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
     setError('');
-    if (form.password.length < 8) { setError('Password must be at least 8 characters'); return; }
-    if (!form.company.trim()) { setError('Company name is required'); return; }
-    if (!form.phone.trim()) { setError('Mobile number is required'); return; }
     setLoading(true);
     try {
-      const user = await register({ ...form, role: 'client' });
+      const user = await register({
+        name,
+        email,
+        password,
+        role: 'client'
+      });
       window.location.href = (user.role?.toLowerCase() === 'admin' || user.email?.toLowerCase() === 'tharunriot@gmail.com') ? '/admin' : '/';
     } catch (err) {
       setError(err.message || 'Registration failed');
@@ -26,172 +39,264 @@ export default function Signup() {
     }
   };
 
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative', overflow: 'hidden' }}>
-      {/* Background radial glow */}
-      <div style={{ position: 'absolute', top: '10%', right: '10%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(60px)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '10%', left: '10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(60px)', pointerEvents: 'none' }} />
+  const handleGoogleSignup = async (response) => {
+    setError('');
+    setLoading(true);
+    try {
+      const user = await login({ google_credential: response.credential });
+      window.location.href = (user.role?.toLowerCase() === 'admin' || user.email?.toLowerCase() === 'tharunriot@gmail.com') ? '/admin' : '/';
+    } catch (err) {
+      setError(err.message || 'Google signup failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        style={{ width: '100%', maxWidth: 520, position: 'relative', zIndex: 1 }}
-      >
-        {/* Logo and title */}
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <span style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.5px', color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>SISU</span>
-          </div>
-          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 8, color: 'var(--color-text-primary)', fontFamily: 'var(--font-heading)' }}>
-            Create your account
+  useEffect(() => {
+    const initializeGoogleSignUp = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: "793728037081-03p54l6ntfisafaavflhpmtq5o3dfs1g.apps.googleusercontent.com",
+          callback: handleGoogleSignup,
+        });
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signup-btn"),
+          { theme: "outline", size: "large", width: "100%", text: "signup_with" }
+        );
+      } else {
+        setTimeout(initializeGoogleSignUp, 100);
+      }
+    };
+    initializeGoogleSignUp();
+  }, []);
+
+  return (
+    <div className="login-split-container" style={{ display: 'flex', minHeight: '100vh', fontFamily: "'Inter', sans-serif", background: '#ffffff' }}>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+      
+      {/* Left panel - Dark blue brand display */}
+      <div className="brand-side" style={{ flex: '0 0 45%', background: 'linear-gradient(135deg, #030f26 0%, #081b3b 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '48px', color: '#ffffff', position: 'relative', overflow: 'hidden' }}>
+        {/* Glow decoration */}
+        <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(50px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(50px)', pointerEvents: 'none' }} />
+
+        {/* Logo */}
+        <div style={{ zIndex: 2 }}>
+          <span style={{ fontSize: '24px', fontWeight: 900, letterSpacing: '1px', fontFamily: "'Outfit', sans-serif" }}>
+            SISU<span style={{ color: '#007AFF' }}>.</span>
+          </span>
+        </div>
+
+        {/* Hero Title */}
+        <div style={{ zIndex: 2, margin: 'auto 0' }}>
+          <h1 style={{ fontSize: '64px', fontWeight: 800, fontStyle: 'italic', lineHeight: 1.1, color: '#ffffff', fontFamily: "'Outfit', sans-serif", marginBottom: '16px' }}>
+            Signup page
           </h1>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: 14 }}>
-            Join the executive scheduling platform
+          <p style={{ fontSize: '20px', color: 'rgba(255,255,255,0.7)', fontWeight: 400 }}>
+            Start your journey now with us
           </p>
         </div>
 
-        {/* Card */}
-        <div className="glass-premium" style={{ padding: '36px 32px', borderRadius: 20 }}>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {/* Footer info/copyright */}
+        <div style={{ zIndex: 2, fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
+          © Sisu Executive Mentorship Portal
+        </div>
+      </div>
+
+      {/* Right panel - Form container */}
+      <div className="form-side" style={{ flex: '1', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: '#f8f9fc', padding: '40px' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          style={{ width: '100%', maxWidth: '420px' }}
+        >
+          {/* Card */}
+          <div style={{ background: '#ffffff', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.02)', padding: '40px 32px' }}>
+            <h2 style={{ fontSize: '28px', fontWeight: 700, color: '#0f172a', fontFamily: "'Outfit', sans-serif", marginBottom: '28px', textAlign: 'center' }}>
+              Create an account
+            </h2>
+
             {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239, 68, 68, 0.15)', borderRadius: 10, padding: '12px 16px', color: 'var(--color-red)', fontSize: 13.5, display: 'flex', alignItems: 'center', gap: 8 }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>warning</span>
-                <span style={{ fontWeight: 500 }}>{error}</span>
-              </motion.div>
+              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '12px', color: '#991b1b', fontSize: '13.5px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>warning</span>
+                <span>{error}</span>
+              </div>
             )}
 
-            <div className="layout-grid grid-cols-2" style={{ gap: 16 }}>
+            <form onSubmit={handleCredentialSignup} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {/* Name field */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Full Name *</label>
-                <input id="signup-name" className="input-premium" type="text" placeholder="John Smith" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Email *</label>
-                <input id="signup-email" className="input-premium" type="email" placeholder="you@company.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-              </div>
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Password *</label>
-              <div style={{ position: 'relative' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#475569', marginBottom: '6px' }}>Full Name</label>
                 <input
-                  id="signup-password"
-                  className="input-premium"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="At least 8 characters"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required
-                  style={{ paddingRight: 44 }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
                   style={{
-                    position: 'absolute',
-                    right: 12,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--color-text-muted)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: 4,
+                    width: '100%',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '15px',
+                    color: '#0f172a',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
                   }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                    {showPassword ? 'visibility_off' : 'visibility'}
-                  </span>
-                </button>
+                  className="input-focus-effect"
+                />
               </div>
-            </div>
 
-            <div className="layout-grid grid-cols-2" style={{ gap: 16 }}>
+              {/* Email field */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
-                  Company <span style={{ color: 'var(--color-red)' }}>*</span>
-                </label>
-                <input id="signup-company" className="input-premium" type="text" placeholder="Acme Corp" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} required />
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#475569', marginBottom: '6px' }}>Email</label>
+                <input
+                  type="email"
+                  placeholder="balamia@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '15px',
+                    color: '#0f172a',
+                    outline: 'none',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                  }}
+                  className="input-focus-effect"
+                />
               </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>
-                  Mobile Number <span style={{ color: 'var(--color-red)' }}>*</span>
-                </label>
-                <input id="signup-phone" className="input-premium" type="tel" placeholder="e.g. +91 9876543210" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} required />
-              </div>
-            </div>
 
-            <div className="layout-grid grid-cols-2" style={{ gap: 16 }}>
+              {/* Password field */}
               <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Role / Title</label>
-                <input id="signup-title" className="input-premium" type="text" placeholder="CEO, Founder…" value={form.job_title} onChange={(e) => setForm({ ...form, job_title: e.target.value })} />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>Timezone</label>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 500, color: '#475569', marginBottom: '6px' }}>Password</label>
                 <div style={{ position: 'relative' }}>
-                  <select
-                    id="signup-tz"
-                    className="input-premium"
-                    value={form.timezone}
-                    onChange={(e) => setForm({ ...form, timezone: e.target.value })}
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
                     style={{
-                      appearance: 'none',
-                      paddingRight: 40,
-                      background: 'rgba(255, 255, 255, 0.02)',
-                      cursor: 'pointer'
+                      width: '100%',
+                      padding: '12px 48px 12px 16px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '15px',
+                      color: '#0f172a',
+                      outline: 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
+                    }}
+                    className="input-focus-effect"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: '#64748b',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: 4
                     }}
                   >
-                    <option value="Asia/Kolkata">India (IST)</option>
-                    <option value="America/New_York">New York (EST)</option>
-                    <option value="America/Los_Angeles">Los Angeles (PST)</option>
-                    <option value="Europe/London">London (GMT)</option>
-                    <option value="Asia/Dubai">Dubai (GST)</option>
-                    <option value="Asia/Singapore">Singapore (SGT)</option>
-                    <option value="Australia/Sydney">Sydney (AEDT)</option>
-                  </select>
-                  <div style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', display: 'flex', alignItems: 'center', color: 'var(--color-text-muted)' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>expand_more</span>
-                  </div>
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                      {showPassword ? 'visibility_off' : 'visibility'}
+                    </span>
+                  </button>
                 </div>
               </div>
+
+              {/* Register Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  background: '#007AFF',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '14px',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'background 0.2s, transform 0.1s',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginTop: '4px'
+                }}
+                className="btn-login-hover"
+              >
+                {loading ? 'Creating account...' : 'Create account'}
+              </button>
+            </form>
+
+            <div style={{ display: 'flex', alignItems: 'center', margin: '24px 0', color: '#cbd5e1' }}>
+              <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
+              <span style={{ padding: '0 12px', fontSize: '13px', color: '#94a3b8', fontWeight: 500 }}>or</span>
+              <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
             </div>
 
-            <button
-              id="signup-submit"
-              type="submit"
-              className="btn-premium btn-premium-primary"
-              disabled={loading}
-              style={{ width: '100%', padding: '13px', fontSize: 14, marginTop: 8 }}
-            >
-              {loading ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  <svg style={{ animation: 'spin-slow 2s linear infinite', width: 16, height: 16 }} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="31.4" strokeDashoffset="10" /></svg>
-                  Creating account...
-                </span>
-              ) : (
-                <>Create Account <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span></>
-              )}
-            </button>
-          </form>
+            {/* Google Sign in */}
+            <div style={{ width: '100%' }}>
+              <div id="google-signup-btn" style={{ width: '100%', display: 'flex', justifyContent: 'center' }} />
+            </div>
 
-          <div className="divider-premium" />
+            <p style={{ textAlign: 'center', marginTop: '28px', color: '#64748b', fontSize: '14px', margin: '28px 0 0 0' }}>
+              Already have an account?{' '}
+              <a href="/login" style={{ color: '#007AFF', fontWeight: 600, textDecoration: 'none' }}>
+                Log in
+              </a>
+            </p>
+          </div>
 
-          <p style={{ textAlign: 'center', color: 'var(--color-text-secondary)', fontSize: 13.5, margin: 0 }}>
-            Already have an account?{' '}
-            <a href="/login" style={{ color: 'var(--color-accent)', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              Sign in <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
-            </a>
-          </p>
-        </div>
-      </motion.div>
+          {/* Demo hint info box */}
+          <div style={{ marginTop: '20px', padding: '12px 16px', textAlign: 'center', borderRadius: '12px', background: 'rgba(0,0,0,0.02)', border: '1px dashed rgba(0,0,0,0.06)' }}>
+            <p style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
+              First registered account becomes <strong style={{ color: '#007AFF' }}>Admin</strong>.<br />
+              Subsequent accounts become <strong style={{ color: '#0ea5e9' }}>Clients</strong>.
+            </p>
+          </div>
+        </motion.div>
+      </div>
+
+      <style>{`
+        .input-focus-effect:focus {
+          border-color: #007AFF !important;
+          box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12) !important;
+        }
+        .btn-login-hover:hover {
+          background: #0066d6 !important;
+        }
+        .btn-login-hover:active {
+          transform: scale(0.98);
+        }
+        @media (max-width: 768px) {
+          .login-split-container {
+            flex-direction: column !important;
+          }
+          .brand-side {
+            display: none !important;
+          }
+          .form-side {
+            padding: 24px !important;
+            min-height: 100vh !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

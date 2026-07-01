@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '../components/Layout';
-import { api } from '../lib/api';
+import { api } from '../constants/api';
 import { useAuth } from '../lib/auth';
 import { format, parseISO } from 'date-fns';
 
@@ -256,12 +257,12 @@ export default function AdminDecisionFeed() {
                 All pending client meeting requests and reschedule tickets have been resolved. You are completely caught up!
               </p>
               <div style={{ display: 'flex', gap: 12 }}>
-                <a href="/admin" className="btn-premium btn-premium-primary" style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Link to="/admin" className="btn-premium btn-premium-primary" style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   Go to Dashboard
-                </a>
-                <a href="/admin/meetings" className="btn-premium btn-premium-secondary" style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                </Link>
+                <Link to="/admin/meetings" className="btn-premium btn-premium-secondary" style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   View Calendar
-                </a>
+                </Link>
               </div>
             </motion.div>
           ) : (

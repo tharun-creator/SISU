@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { api } from '../lib/api';
+import { api } from '../constants/api';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
