@@ -10,6 +10,7 @@ class MeetingService:
         db: Session,
         client_id: int,
         title: str,
+        description: str,
         start: datetime.datetime,
         end: datetime.datetime,
         duration_minutes: int,
@@ -22,10 +23,18 @@ class MeetingService:
                 status_code=400,
                 detail="The meeting title/agenda cannot exceed 150 characters."
             )
-        if len([w for w in title.split() if w]) > 30:
+        if len([w for w in title.split() if w]) > 20:
             raise HTTPException(
                 status_code=400,
-                detail="The meeting title/agenda exceeds the 30-word limit. Please keep it to 30 words or less."
+                detail="The meeting title/agenda exceeds the 20-word limit. Please keep it to 20 words or less."
+            )
+
+        # 1b. Description word check (optional, max 30 words)
+        desc_words = [w for w in (description or "").split() if w]
+        if len(desc_words) > 30:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Description cannot exceed 30 words (currently {len(desc_words)} words)."
             )
 
         # 2. Duration limit check (max 2 hours / 120 minutes)

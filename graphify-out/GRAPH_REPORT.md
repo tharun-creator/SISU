@@ -1,16 +1,16 @@
-# Graph Report - chatmodel  (2026-07-01)
+# Graph Report - chatmodel  (2026-07-03)
 
 ## Corpus Check
-- 179 files · ~97,367 words
+- 173 files · ~87,860 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4295 nodes · 7217 edges · 465 communities (342 shown, 123 thin omitted)
+- 4275 nodes · 7214 edges · 458 communities (337 shown, 121 thin omitted)
 - Extraction: 77% EXTRACTED · 23% INFERRED · 0% AMBIGUOUS · INFERRED: 1691 edges (avg confidence: 0.51)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9bb54750`
+- Built from commit: `58081b7a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -37,7 +37,6 @@
 - [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
-- [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
@@ -75,18 +74,14 @@
 - [[_COMMUNITY_Community 63|Community 63]]
 - [[_COMMUNITY_Community 64|Community 64]]
 - [[_COMMUNITY_Community 72|Community 72]]
-- [[_COMMUNITY_Community 73|Community 73]]
 - [[_COMMUNITY_Community 74|Community 74]]
 - [[_COMMUNITY_Community 75|Community 75]]
 - [[_COMMUNITY_Community 76|Community 76]]
 - [[_COMMUNITY_Community 77|Community 77]]
 - [[_COMMUNITY_Community 78|Community 78]]
 - [[_COMMUNITY_Community 79|Community 79]]
-- [[_COMMUNITY_Community 80|Community 80]]
-- [[_COMMUNITY_Community 81|Community 81]]
 - [[_COMMUNITY_Community 82|Community 82]]
 - [[_COMMUNITY_Community 83|Community 83]]
-- [[_COMMUNITY_Community 84|Community 84]]
 - [[_COMMUNITY_Community 85|Community 85]]
 - [[_COMMUNITY_Community 86|Community 86]]
 - [[_COMMUNITY_Community 87|Community 87]]
@@ -112,13 +107,19 @@
 - [[_COMMUNITY_Community 108|Community 108]]
 - [[_COMMUNITY_Community 109|Community 109]]
 - [[_COMMUNITY_Community 110|Community 110]]
-- [[_COMMUNITY_Community 111|Community 111]]
+- [[_COMMUNITY_Community 113|Community 113]]
 - [[_COMMUNITY_Community 114|Community 114]]
 - [[_COMMUNITY_Community 115|Community 115]]
 - [[_COMMUNITY_Community 116|Community 116]]
 - [[_COMMUNITY_Community 117|Community 117]]
+- [[_COMMUNITY_Community 118|Community 118]]
+- [[_COMMUNITY_Community 119|Community 119]]
+- [[_COMMUNITY_Community 120|Community 120]]
 - [[_COMMUNITY_Community 121|Community 121]]
+- [[_COMMUNITY_Community 122|Community 122]]
+- [[_COMMUNITY_Community 123|Community 123]]
 - [[_COMMUNITY_Community 124|Community 124]]
+- [[_COMMUNITY_Community 125|Community 125]]
 - [[_COMMUNITY_Community 126|Community 126]]
 - [[_COMMUNITY_Community 151|Community 151]]
 - [[_COMMUNITY_Community 153|Community 153]]
@@ -399,11 +400,9 @@
 - [[_COMMUNITY_Community 722|Community 722]]
 - [[_COMMUNITY_Community 724|Community 724]]
 - [[_COMMUNITY_Community 725|Community 725]]
-- [[_COMMUNITY_Community 727|Community 727]]
 - [[_COMMUNITY_Community 731|Community 731]]
 - [[_COMMUNITY_Community 735|Community 735]]
 - [[_COMMUNITY_Community 736|Community 736]]
-- [[_COMMUNITY_Community 738|Community 738]]
 - [[_COMMUNITY_Community 782|Community 782]]
 - [[_COMMUNITY_Community 783|Community 783]]
 - [[_COMMUNITY_Community 784|Community 784]]
@@ -429,8 +428,6 @@
 - [[_COMMUNITY_Community 804|Community 804]]
 - [[_COMMUNITY_Community 805|Community 805]]
 - [[_COMMUNITY_Community 853|Community 853]]
-- [[_COMMUNITY_Community 854|Community 854]]
-- [[_COMMUNITY_Community 855|Community 855]]
 - [[_COMMUNITY_Community 858|Community 858]]
 - [[_COMMUNITY_Community 881|Community 881]]
 - [[_COMMUNITY_Community 882|Community 882]]
@@ -448,29 +445,29 @@
 10. `EmailService` - 64 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `HTTPAuthorizationCredentials` --uses--> `User`  [INFERRED]
+  backend/app/dependencies.py → backend/app/models/user.py
+- `Session` --uses--> `User`  [INFERRED]
+  backend/app/dependencies.py → backend/app/models/user.py
+- `str` --uses--> `User`  [INFERRED]
+  backend/app/dependencies.py → backend/app/models/user.py
 - `reset_database_users()` --calls--> `AdminEmail`  [INFERRED]
   backend/reset/reset_users.py → backend/database.py
 - `run_full_cycle_test()` --calls--> `AdminEmail`  [INFERRED]
   backend/tests/test_full_cycle.py → backend/database.py
-- `datetime` --uses--> `Meeting`  [INFERRED]
-  backend/api/helpers.py → backend/database.py
-- `datetime` --uses--> `MeetingStatusLog`  [INFERRED]
-  backend/api/helpers.py → backend/database.py
-- `datetime` --uses--> `Notification`  [INFERRED]
-  backend/api/helpers.py → backend/database.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (465 total, 123 thin omitted)
+## Communities (458 total, 121 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.02
 Nodes (124): 0.1.0 (2026-04-03), 0.1.1 (2026-04-04), 0.1.3 (2026-04-04), 0.1.4 (2026-04-05), 0.1.5 (2026-04-05), 0.1.6 (2026-04-05), 0.1.7 (2026-04-05), 0.1.8 (2026-04-05) (+116 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.12
-Nodes (62): create_notification(), log_status_change(), meeting_to_dict(), parse_dt_to_ist(), Parse ISO string and return a naive IST datetime for storage., Simple serializer for Meeting model., Ensure datetime is in IST context. If naive, assume it's already IST., to_local() (+54 more)
+Cohesion: 0.13
+Nodes (43): create_notification(), log_status_change(), meeting_to_dict(), parse_dt_to_ist(), Parse ISO string and return a naive IST datetime for storage., Simple serializer for Meeting model., Ensure datetime is in IST context. If naive, assume it's already IST., to_local() (+35 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.18
@@ -485,40 +482,40 @@ Cohesion: 0.17
 Nodes (11): 🏗️ Architectural Topology, 🚀 Backend Cloud Deployment, Backend Variables, 🗄️ Database Provisioning, 📋 Environment Variables Checklist, 💻 Frontend Static Deployment, Frontend Variables, Option A: Render (Recommended) (+3 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.10
-Nodes (72): CaptchaResponse, ChangePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest, UpdateProfileRequest, BackgroundTasks, ChangePasswordRequest, ForgotPasswordRequest (+64 more)
+Cohesion: 0.08
+Nodes (79): CaptchaResponse, ChangePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest, UpdateProfileRequest, BackgroundTasks, ChangePasswordRequest, ForgotPasswordRequest (+71 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.22
-Nodes (13): bool, str, _base_template(), _cta_button(), EmailProvider, GmailProvider, _html_to_text(), MailgunProvider (+5 more)
+Cohesion: 0.05
+Nodes (49): Run migrations in 'offline' mode.      This configures the context with just a U, Run migrations in 'offline' mode., Run migrations in 'offline' mode., Run migrations in 'online' mode., Run migrations in 'online' mode., Run migrations in 'online' mode.      In this scenario we need to create an Engi, run_migrations_offline(), run_migrations_online() (+41 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.27
-Nodes (56): LoginRequest, RegisterRequest, AdminEmail, AvailabilitySlot, Booking, CaptchaChallenge, DateAvailabilitySignal, Meeting (+48 more)
+Cohesion: 0.30
+Nodes (52): LoginRequest, RegisterRequest, AdminEmail, AvailabilitySlot, Booking, CaptchaChallenge, DateAvailabilitySignal, Meeting (+44 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.03
 Nodes (71): Communities (141 total, 52 thin omitted), Community 0 - "Community 0", Community 10 - "Community 10", Community 11 - "Community 11", Community 12 - "Community 12", Community 13 - "Community 13", Community 14 - "Community 14", Community 15 - "Community 15" (+63 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.06
-Nodes (46): ChatMessage, ChatResponse, MeetingUpdate, ChatMessage, User, BaseModel, ChatMessage, chat_endpoint() (+38 more)
+Cohesion: 0.07
+Nodes (40): MeetingUpdate, BaseModel, ChangePasswordRequest, EmailVerificationRequest, ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest (+32 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.18
-Nodes (7): failedQueue, Env, Notification, ApiResponse, ErrorDetails, ErrorResponse, SuccessResponse
+Cohesion: 0.15
+Nodes (10): client, failedQueue, LoginPage(), Window, Env, Notification, ApiResponse, ErrorDetails (+2 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.12
-Nodes (38): admin_create_user(), admin_delete_user(), admin_demote_user(), admin_get_all_meetings(), admin_get_users(), admin_promote_user(), admin_set_date_signal(), admin_update_user_priority() (+30 more)
+Nodes (44): admin_create_user(), admin_demote_user(), admin_get_all_meetings(), admin_get_users(), admin_update_meeting_status(), cancel_meeting(), change_password(), chat_endpoint() (+36 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.38
-Nodes (10): AvailabilityCreate, int, Session, User, create_availability(), delete_availability(), get_availability(), get_calendar_signals() (+2 more)
+Cohesion: 0.16
+Nodes (9): Invoice, invoicesApi, StatsCardsProps, ClientInvoiceTracker(), ClientInvoiceTrackerProps, ClientStats, User, InvoicesPage() (+1 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.29
-Nodes (6): 1. Frontend: Calendar Widget Visual Refinement, 2. Backend: SOLID Principles Architectural Refactoring, 3. Verification & Testing, Automated Test Runs, Improvements, Walkthrough - Visual Refinement & SOLID Backend Refactoring
+Cohesion: 0.13
+Nodes (17): 1. Client Invoice Tracker (Admin Dashboard), 1. Frontend: Calendar Widget Visual Refinement, 2. Backend: SOLID Principles Architectural Refactoring, 2. Currency Transition (USD to Rupees), 3. Dynamic User Email Autocomplete, 3. Verification & Testing, 4. Google Docs Style Executive Notebook, 5. Backend Server & Manage Users Drawer (+9 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.06
@@ -537,80 +534,76 @@ Cohesion: 0.08
 Nodes (41): build_zapier_payload(), check_slot_available(), find_next_available_slots(), format_datetime_for_google_calendar(), handle_approved_meeting_native(), _ist_to_utc(), mark_slot_as_booked(), _naive_to_ist_aware() (+33 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.16
-Nodes (27): admin_update_meeting_status(), cancel_meeting(), client_confirm_reschedule(), client_reschedule_request(), create_meeting(), create_notification(), get_available_slots(), get_free_slots() (+19 more)
+Cohesion: 0.18
+Nodes (12): asks_for_user_name(), extract_user_name(), get_direct_context_response(), introduces_user_name(), Extract user's name from current input or conversation history., Extract user's name from current input or conversation history., Detects if the user is asking what their name is., Detects if the user is asking what their name is. (+4 more)
 
 ### Community 25 - "Community 25"
-Cohesion: 0.09
-Nodes (24): client, Invoice, invoicesApi, ForgotPasswordPage(), LoginPage(), Window, ResetPasswordPage(), SignupPage() (+16 more)
-
-### Community 26 - "Community 26"
-Cohesion: 0.29
-Nodes (8): Any, int, str, APIException, AuthenticationException, AuthorizationException, NotFoundException, ValidationException
+Cohesion: 0.10
+Nodes (18): ForgotPasswordPage(), ResetPasswordPage(), SignupPage(), Notification, NotificationsPage(), TYPE_CONFIG, SessionDetailPage(), SettingsPage() (+10 more)
 
 ### Community 27 - "Community 27"
 Cohesion: 0.08
 Nodes (16): adminApi, authApi, chatApi, ChatMessagePayload, ChatResponse, CalendarWidgetProps, BookingFormState, ChatBookingFormProps (+8 more)
 
 ### Community 28 - "Community 28"
-Cohesion: 0.11
-Nodes (14): meetingsApi, ClientDashboard(), MeetingCardProps, STATUS_HELPER_CONFIG, MeetingListProps, StatsCardsProps, STATUS_CONFIG, StatusBadgeProps (+6 more)
+Cohesion: 0.13
+Nodes (13): meetingsApi, ClientDashboard(), MeetingCardProps, STATUS_HELPER_CONFIG, MeetingListProps, STATUS_CONFIG, StatusBadgeProps, useMeetings() (+5 more)
 
 ### Community 29 - "Community 29"
-Cohesion: 0.15
-Nodes (29): get_current_user(), require_admin(), require_role(), require_verified_user(), ChatMessage, User, int, NotebookNote (+21 more)
+Cohesion: 0.29
+Nodes (17): int, NotebookNote, NoteCreate, NoteUpdate, Session, str, UploadFile, User (+9 more)
 
 ### Community 30 - "Community 30"
-Cohesion: 0.27
-Nodes (12): Meeting, str, bool, datetime, int, Meeting, MeetingService, Session (+4 more)
+Cohesion: 0.20
+Nodes (25): AvailabilityCreate, int, Session, str, User, MeetingCreate, bool, bool (+17 more)
 
 ### Community 31 - "Community 31"
 Cohesion: 0.08
-Nodes (40): admin_create_user(), admin_demote_user(), admin_promote_user(), admin_set_date_signal(), admin_update_user_priority(), admin_update_user_status(), AvailabilityCreate, BookingBase (+32 more)
+Nodes (37): admin_create_user(), admin_demote_user(), admin_promote_user(), admin_set_date_signal(), admin_update_user_priority(), admin_update_user_status(), AvailabilityCreate, BookingBase (+29 more)
 
 ### Community 32 - "Community 32"
 Cohesion: 0.30
 Nodes (24): NoteCreate, NoteOut, NoteUpdate, int, NotebookNote, NoteCreate, NoteUpdate, Session (+16 more)
 
 ### Community 33 - "Community 33"
-Cohesion: 0.29
-Nodes (4): Note, notesApi, NoteCardProps, NoteEditorProps
+Cohesion: 0.23
+Nodes (6): Note, notesApi, NotebookPage(), NoteCardProps, NoteEditorProps, TodoItem
 
 ### Community 34 - "Community 34"
-Cohesion: 0.15
-Nodes (5): AppLayoutProps, HeaderProps, adminNav, clientNav, SidebarProps
+Cohesion: 0.25
+Nodes (25): AvailabilityCreate, BookingBase, BookingCreate, BookingOut, ChatMessage, ChatResponse, Config, MeetingCreate (+17 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.12
-Nodes (20): bool, int, str, AgentState, AIService, book_meeting(), cancel_my_meeting(), get_availability() (+12 more)
+Cohesion: 0.11
+Nodes (22): int, str, AgentState, AIService, book_meeting(), cancel_my_meeting(), get_availability(), get_my_meetings() (+14 more)
 
 ### Community 36 - "Community 36"
 Cohesion: 0.10
 Nodes (20): compilerOptions, allowImportingTsExtensions, allowJs, checkJs, isolatedModules, jsx, lib, module (+12 more)
 
 ### Community 37 - "Community 37"
-Cohesion: 0.30
-Nodes (10): bool, datetime, float, int, str, _format_datetime(), get_google_credentials(), _get_service() (+2 more)
+Cohesion: 0.09
+Nodes (32): bool, datetime, float, int, str, create_calendar_event(), get_credentials(), create_calendar_event() (+24 more)
 
 ### Community 38 - "Community 38"
 Cohesion: 0.13
-Nodes (23): create_notification(), log_status_change(), meeting_to_dict(), parse_dt_to_ist(), to_local(), datetime, int, Session (+15 more)
+Nodes (24): create_notification(), log_status_change(), meeting_to_dict(), parse_dt_to_ist(), to_local(), datetime, int, Meeting (+16 more)
 
 ### Community 39 - "Community 39"
-Cohesion: 0.37
-Nodes (13): int, Session, str, User, Booking, cancel_meeting(), client_confirm_reschedule(), client_reschedule_request() (+5 more)
+Cohesion: 0.34
+Nodes (14): int, RescheduleRequest, Session, str, User, Booking, cancel_meeting(), client_confirm_reschedule() (+6 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.25
-Nodes (13): bool, float, int, InvoiceCreate, InvoiceUpdate, Session, str, User (+5 more)
+Cohesion: 0.24
+Nodes (16): InvoiceCreate, InvoiceUpdate, bool, float, int, InvoiceCreate, InvoiceUpdate, Session (+8 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.18
-Nodes (18): admin_get_all_meetings(), admin_update_meeting_status(), cancel_meeting(), client_confirm_reschedule(), client_reschedule_request(), create_meeting(), create_notification(), get_free_slots() (+10 more)
+Nodes (12): book_meeting(), cancel_my_meeting(), book_meeting(), cancel_my_meeting(), get_availability(), Fetch available meeting slots for a specific date (YYYY-MM-DD)., Directly book a new meeting slot for the current client.          Args:, str (+4 more)
 
 ### Community 42 - "Community 42"
-Cohesion: 0.16
-Nodes (4): Session, sync_fathom_transcript(), sync_fireflies_transcript(), WebhookPayload
+Cohesion: 0.12
+Nodes (7): ChatMessage, User, Session, chat_endpoint(), sync_fathom_transcript(), sync_fireflies_transcript(), WebhookPayload
 
 ### Community 43 - "Community 43"
 Cohesion: 0.18
@@ -653,8 +646,8 @@ Cohesion: 0.06
 Nodes (32): dependencies, autoprefixer, date-fns, framer-motion, lucide-react, postcss, react, react-dom (+24 more)
 
 ### Community 57 - "Community 57"
-Cohesion: 0.11
-Nodes (10): sessionLogsApi, useSessionLogs(), SessionLogCardProps, SessionLogModalProps, SessionLogsPage(), ActionItem, SessionLog, EmptyStateProps (+2 more)
+Cohesion: 0.16
+Nodes (8): sessionLogsApi, useSessionLogs(), SessionLogCardProps, SessionLogsPage(), ActionItem, SessionLog, EmptyStateProps, SkeletonProps
 
 ### Community 58 - "Community 58"
 Cohesion: 0.06
@@ -669,12 +662,8 @@ Cohesion: 0.06
 Nodes (30): For --cluster-only, For git commit hook, For /graphify add, For /graphify explain, For /graphify path, For /graphify query, For native CLAUDE.md integration, For --update (incremental re-extraction) (+22 more)
 
 ### Community 72 - "Community 72"
-Cohesion: 0.24
-Nodes (14): change_password(), ChangePasswordRequest, check_brute_force_and_verify_captcha(), forgot_password(), ForgotPasswordRequest, log_security_event(), login(), register() (+6 more)
-
-### Community 73 - "Community 73"
-Cohesion: 0.17
-Nodes (10): APIException, api_exception_handler(), global_exception_handler(), validation_exception_handler(), Request, Exception, Request, BaseHTTPMiddleware (+2 more)
+Cohesion: 0.22
+Nodes (11): generate_chat_response(), get_mock_response(), is_clearly_unrelated(), off_topic_response(), Returns True if the message is clearly off-topic with no SISU relevance., Return a warm, redirecting response for off-topic queries., Return a warm, redirecting response for off-topic queries., Fallback response when the LLM call fails. (+3 more)
 
 ### Community 74 - "Community 74"
 Cohesion: 0.08
@@ -686,35 +675,23 @@ Nodes (25): For /graphify add and --watch, For /graphify query, For the commit h
 
 ### Community 77 - "Community 77"
 Cohesion: 0.24
-Nodes (27): DateSignalRequest, int, MeetingStatusUpdate, Session, str, User, MeetingCreate, RescheduleRequest (+19 more)
+Nodes (24): DateSignalRequest, int, MeetingStatusUpdate, Session, str, User, MeetingService, AdminEmail (+16 more)
 
 ### Community 78 - "Community 78"
 Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Kilo-specific rules (+16 more)
 
 ### Community 79 - "Community 79"
-Cohesion: 0.35
-Nodes (10): int, InvoiceCreate, InvoiceUpdate, Session, User, create_invoice(), delete_invoice(), get_invoices() (+2 more)
-
-### Community 80 - "Community 80"
-Cohesion: 0.31
-Nodes (7): bool, CaptchaService, Session, str, Generates a math CAPTCHA fallback, stores it, and returns (challenge_id, questio, Verifies Turnstile token with Cloudflare's API., Verifies captcha. Supports both Turnstile and math fallback.
-
-### Community 81 - "Community 81"
-Cohesion: 0.22
-Nodes (8): Run migrations in 'offline' mode.      This configures the context with just a U, Run migrations in 'offline' mode., Run migrations in 'offline' mode., Run migrations in 'online' mode., Run migrations in 'online' mode., Run migrations in 'online' mode.      In this scenario we need to create an Engi, run_migrations_offline(), run_migrations_online()
+Cohesion: 0.18
+Nodes (16): get_current_user(), require_admin(), require_role(), require_verified_user(), int, Session, User, HTTPAuthorizationCredentials (+8 more)
 
 ### Community 82 - "Community 82"
-Cohesion: 0.39
-Nodes (5): datetime, int, Session, str, Validates Sisu booking rules (agenda limits, duration, working hours, duplicatio
+Cohesion: 0.33
+Nodes (6): datetime, int, Session, str, Validates Sisu booking rules (agenda limits, duration, working hours, duplicatio, Validates Sisu booking rules (agenda limits, duration, working hours, duplicatio
 
 ### Community 83 - "Community 83"
 Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native CLAUDE.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Kilo-specific rules (+16 more)
-
-### Community 84 - "Community 84"
-Cohesion: 0.39
-Nodes (8): bool, str, create_access_token(), create_refresh_token(), decode_token(), hash_password(), validate_password_strength(), verify_password()
 
 ### Community 85 - "Community 85"
 Cohesion: 0.08
@@ -816,33 +793,57 @@ Nodes (23): For /graphify add and --watch, For /graphify query, For the commit h
 Cohesion: 0.08
 Nodes (23): 1. Node/Edge Quality - Score: 6/10, 2. Edge Accuracy - Score: 5/10, 3. Community Quality - Score: 6/10, 4. Surprising Connections - Score: 4/10, 5. God Nodes - Score: 7/10, 6. Overall Usefulness - Score: 6/10, Additional Observations, Corpus size and density (+15 more)
 
-### Community 111 - "Community 111"
-Cohesion: 0.50
-Nodes (3): Settings, str, BaseSettings
+### Community 113 - "Community 113"
+Cohesion: 0.40
+Nodes (5): get_my_meetings(), get_my_meetings(), Get a list of all current, upcoming, and past meetings booked by the active clie, Get a list of all current, upcoming, and past meetings booked by the active clie, Get a list of all current, upcoming, and past meetings booked by the active clie
 
 ### Community 114 - "Community 114"
 Cohesion: 0.09
 Nodes (22): For /graphify add and --watch, For /graphify query, For the commit hook and native @@HOOKS_TARGET@@ integration, For --update and --cluster-only, /graphify, Interpreter guard for subcommands, Part A - Structural extraction for code files, Part B - Semantic extraction (parallel subagents) (+14 more)
 
 ### Community 115 - "Community 115"
-Cohesion: 0.07
-Nodes (14): adminNav, clientNav, api, BASE_URL, getConnectionErrorMessage(), getToken(), isLocalApp, request() (+6 more)
+Cohesion: 0.05
+Nodes (27): BookingModalProps, Meeting, STATUS_COLORS, TIME_SLOTS, api, BASE_URL, getConnectionErrorMessage(), getToken() (+19 more)
 
 ### Community 116 - "Community 116"
-Cohesion: 0.27
-Nodes (10): create_calendar_event(), get_credentials(), str, Creates a Google Calendar event with a Google Meet link.     Matches the Zapier/, Updates an existing Google Calendar event., Loads Google credentials from token.json or environment variables.          Prio, Sends the exact confirmation email template defined in the n8n JSON using Gmail, send_gmail_confirmation() (+2 more)
+Cohesion: 0.38
+Nodes (6): AgentState, call_model(), get_availability(), Fetch available meeting slots for a specific date (YYYY-MM-DD)., should_continue(), TypedDict
 
 ### Community 117 - "Community 117"
-Cohesion: 0.28
-Nodes (8): create_calendar_event(), get_credentials(), Sends the exact confirmation email template defined in the n8n JSON using Gmail, Loads Google credentials from token.json or environment variables.          Pr, Creates a Google Calendar event with a Google Meet link.     Matches the Zapier, send_gmail_confirmation(), Sends the exact confirmation email template defined in the n8n JSON using Gmail, Creates a Google Calendar event with a Google Meet link.     Matches the Zapier
+Cohesion: 0.40
+Nodes (5): is_sisu_or_chat_context(), is_sisu_or_chat_context(), Returns True if the message relates to SISU or normal chat context., Returns True if the message relates to SISU or normal chat context., Returns True if the message relates to SISU or normal chat context.
+
+### Community 118 - "Community 118"
+Cohesion: 0.24
+Nodes (11): AgentState, asks_for_user_name(), call_model(), extract_user_name(), get_direct_context_response(), introduces_user_name(), should_continue(), Extract user's name from current input or conversation history. (+3 more)
+
+### Community 119 - "Community 119"
+Cohesion: 0.40
+Nodes (5): reschedule_my_meeting(), Request to reschedule an existing meeting to a new start time.          Args:, Request to reschedule an existing meeting to a new start time.          Args:, Request to reschedule an existing meeting to a new start time.          Args:, reschedule_my_meeting()
+
+### Community 120 - "Community 120"
+Cohesion: 0.12
+Nodes (24): admin_delete_user(), admin_promote_user(), admin_set_date_signal(), admin_update_user_priority(), admin_update_user_status(), delete_availability(), get_available_slots(), get_calendar_signals() (+16 more)
 
 ### Community 121 - "Community 121"
 Cohesion: 0.09
 Nodes (21): Built on graphify — Penpax, Common commands, Development setup, Environment variables, Full command reference, Git workflow, Ignoring files, Install (+13 more)
 
+### Community 122 - "Community 122"
+Cohesion: 0.18
+Nodes (18): admin_get_all_meetings(), admin_update_meeting_status(), cancel_meeting(), client_confirm_reschedule(), client_reschedule_request(), create_meeting(), create_notification(), get_free_slots() (+10 more)
+
+### Community 123 - "Community 123"
+Cohesion: 0.19
+Nodes (17): global_exception_handler(), change_password(), ChangePasswordRequest, check_brute_force_and_verify_captcha(), forgot_password(), ForgotPasswordRequest, global_exception_handler(), log_security_event() (+9 more)
+
 ### Community 124 - "Community 124"
 Cohesion: 0.09
 Nodes (21): Використання графу напряму, Вимоги, Вирішення проблем, Встановлення, Додаткові пакети (опціонально), Дізнатися більше, Запуск тестів, Змусьте асистента завжди використовувати граф (+13 more)
+
+### Community 125 - "Community 125"
+Cohesion: 0.50
+Nodes (4): get_meeting_zapier_payload(), get_meeting_zapier_payload(), Secure endpoint for Zapier to FETCH meeting details., Secure endpoint for Zapier to FETCH meeting details.
 
 ### Community 126 - "Community 126"
 Cohesion: 0.09
@@ -873,8 +874,8 @@ Cohesion: 0.14
 Nodes (13): `graph.json`을 LLM과 함께 사용하기, graphify, 개인정보 보호, 결과물, 기술 스택, 다음 계획, 동작 원리, 사용법 (+5 more)
 
 ### Community 188 - "Community 188"
-Cohesion: 0.06
-Nodes (66): AgentState, asks_for_user_name(), book_meeting(), call_model(), cancel_my_meeting(), extract_user_name(), generate_chat_response(), get_availability() (+58 more)
+Cohesion: 0.32
+Nodes (8): generate_chat_response(), get_mock_response(), is_clearly_unrelated(), off_topic_response(), Returns True if the message is clearly off-topic with no SISU relevance., Return a warm, redirecting response for off-topic queries., Fallback response when the LLM call fails., Generate a dynamic, client-friendly response.      Args:         user_input:
 
 ### Community 192 - "Community 192"
 Cohesion: 0.15
@@ -894,7 +895,7 @@ Nodes (43): _base_template(), _booking_received_html(), _cancellation_html(), _c
 
 ### Community 212 - "Community 212"
 Cohesion: 0.12
-Nodes (39): create_access_token(), decode_token(), get_current_user(), hash_password(), is_email_admin(), login_google_user(), login_user(), create_access_token() (+31 more)
+Nodes (38): create_access_token(), decode_token(), get_current_user(), hash_password(), is_email_admin(), login_google_user(), login_user(), create_access_token() (+30 more)
 
 ### Community 218 - "Community 218"
 Cohesion: 0.18
@@ -1632,14 +1633,6 @@ Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphif
 Cohesion: 0.25
 Nodes (7): Brand & Style, Colors, Components, Elevation & Depth, Layout & Spacing, Shapes, Typography
 
-### Community 727 - "Community 727"
-Cohesion: 0.08
-Nodes (6): TIME_SLOTS, PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS, STATUS_ACCENT, STATUS_ACCENT
-
-### Community 738 - "Community 738"
-Cohesion: 0.10
-Nodes (10): STATUS_COLORS, TIME_SLOTS, PRIORITY_COLORS, STATUS_COLORS, TIME_SLOTS, PRIORITY_COLORS, STATUS_COLORS, PRIORITY_COLORS (+2 more)
-
 ### Community 853 - "Community 853"
 Cohesion: 0.50
 Nodes (3): Expanding the ESLint configuration, React Compiler, React + Vite
@@ -1649,18 +1642,18 @@ Cohesion: 0.50
 Nodes (3): Expanding the ESLint configuration, React Compiler, React + Vite
 
 ## Knowledge Gaps
-- **2171 isolated node(s):** `Config`, `int`, `LogRecord`, `str`, `Request` (+2166 more)
+- **2164 isolated node(s):** `Config`, `int`, `LogRecord`, `str`, `Request` (+2159 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **123 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **121 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `User` connect `Community 29` to `Community 2`, `Community 35`, `Community 5`, `Community 38`, `Community 39`, `Community 40`, `Community 7`, `Community 42`, `Community 12`, `Community 77`, `Community 79`, `Community 30`?**
+- **Why does `User` connect `Community 40` to `Community 2`, `Community 35`, `Community 5`, `Community 38`, `Community 39`, `Community 7`, `Community 42`, `Community 77`, `Community 79`, `Community 29`, `Community 30`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
-- **Why does `Meeting` connect `Community 7` to `Community 1`, `Community 97`, `Community 11`, `Community 77`, `Community 18`, `Community 82`, `Community 23`, `Community 24`, `Community 188`?**
-  _High betweenness centrality (0.008) - this node is a cross-community bridge._
-- **Why does `CalendarService` connect `Community 77` to `Community 35`, `Community 37`, `Community 39`, `Community 12`, `Community 30`?**
+- **Why does `User` connect `Community 7` to `Community 32`, `Community 1`, `Community 34`, `Community 5`, `Community 41`, `Community 11`, `Community 18`, `Community 212`, `Community 116`, `Community 120`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `Meeting` connect `Community 7` to `Community 1`, `Community 34`, `Community 97`, `Community 41`, `Community 11`, `Community 77`, `Community 18`, `Community 82`, `Community 116`, `Community 23`, `Community 120`?**
   _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **Are the 104 inferred relationships involving `User` (e.g. with `AvailabilityCreate` and `BackgroundTasks`) actually correct?**
   _`User` has 104 INFERRED edges - model-reasoned connections that need verification._
@@ -1669,4 +1662,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 85 inferred relationships involving `User` (e.g. with `ActionItemToggleRequest` and `DateSignalRequest`) actually correct?**
   _`User` has 85 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `Run migrations in 'offline' mode.`, `Run migrations in 'online' mode.`, `Config` to the rest of the system?**
-  _2270 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _2282 weakly-connected nodes found - possible documentation gaps or missing edges._

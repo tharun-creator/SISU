@@ -117,6 +117,13 @@ export const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, onCancel, onR
         </div>
       )}
 
+      {meeting.admin_notes && (
+        <div className="mt-3.5 bg-slate-50 border border-slate-200/50 rounded-xl p-3.5 text-xs leading-relaxed text-slate-700">
+          <span className="font-bold uppercase tracking-wider text-[9px] text-slate-400 block mb-1">Admin Remarks / Notes</span>
+          <p className="font-medium text-slate-600">{meeting.admin_notes}</p>
+        </div>
+      )}
+
       {/* Meeting actions & Join buttons */}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-50 pt-4">
         <div className="flex items-center gap-2">

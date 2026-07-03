@@ -14,7 +14,7 @@ export interface Note {
 export const notesApi = {
   getNotes: () => client.get<any, Note[]>('/notes'),
   createNote: (data: { title: string; content: string }) => client.post<any, Note>('/notes', data),
-  updateNote: (id: number, data: { title: string; content: string }) => client.put<any, Note>(`/notes/${id}`, data),
+  updateNote: (id: number, data: { title: string; content: string; is_shared?: boolean }) => client.put<any, Note>(`/notes/${id}`, data),
   deleteNote: (id: number) => client.delete(`/notes/${id}`),
   deleteNotePhoto: (id: number) => client.delete(`/notes/${id}/photo`),
   uploadNotePhoto: async (id: number, file: File) => {

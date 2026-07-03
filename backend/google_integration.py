@@ -2,7 +2,6 @@ import os
 import base64
 from email.message import EmailMessage
 import logging
-
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build

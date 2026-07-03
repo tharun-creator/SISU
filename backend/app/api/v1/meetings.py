@@ -48,6 +48,7 @@ async def create_meeting(req: MeetingCreate, db: Session = Depends(get_db), curr
         db=db,
         client_id=current_user.id,
         title=req.title,
+        description=req.description,
         start=start,
         end=end,
         duration_minutes=req.duration_minutes
@@ -224,7 +225,6 @@ async def cancel_meeting(meeting_id: int, db: Session = Depends(get_db), current
 
     old_status = meeting.status
     meeting.status = "cancelled"
-    meeting.deleted_at = datetime.datetime.utcnow()
     db.commit()
 
     log_status_change(db, meeting.id, old_status, "cancelled", current_user.email)
@@ -270,6 +270,7 @@ async def client_reschedule_request(meeting_id: int, req: RescheduleRequest, db:
         db=db,
         client_id=current_user.id,
         title=meeting.title,
+        description=meeting.description,
         start=start,
         end=end,
         duration_minutes=meeting.duration_minutes,

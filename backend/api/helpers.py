@@ -33,15 +33,13 @@ def meeting_to_dict(m: Meeting) -> dict:
     local_end = to_local(m.end_time)
     client_name = m.client.name if m.client else "Unknown"
     company_name = m.client.company if m.client and m.client.company else "Unknown Company"
-    formatted_title = f"{client_name}, {company_name} x {m.title}, Sales Review"
     return {
         "id": m.id,
         "client_id": m.client_id,
         "client_name": client_name,
         "client_email": m.client.email if m.client else "",
         "client_is_priority": getattr(m.client, "is_priority", False) if m.client else False,
-        "title": formatted_title,
-        "raw_title": m.title,
+        "title": m.title,
         "description": m.description,
         "reason": m.reason,
         "meeting_type": m.meeting_type,

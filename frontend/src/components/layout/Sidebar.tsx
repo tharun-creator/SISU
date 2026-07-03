@@ -8,7 +8,6 @@ const clientNav = [
   { icon: 'calendar_today', label: 'Schedule Session', path: '/book' },
   { icon: 'description', label: 'Notebook', path: '/notebook' },
   { icon: 'receipt_long', label: 'Invoices', path: '/invoices' },
-  { icon: 'history', label: 'Points Note', path: '/session-logs' },
   { icon: 'settings', label: 'Settings', path: '/settings' },
 ];
 
@@ -20,7 +19,6 @@ const adminNav = [
   { icon: 'inbox', label: 'Inbox', path: '/admin/pending' },
   { icon: 'update', label: 'Rescheduled', path: '/admin/rescheduled' },
   { icon: 'admin_panel_settings', label: 'Manage Users', path: '/admin/users' },
-  { icon: 'history', label: 'Points Note', path: '/session-logs' },
 ];
 
 interface SidebarProps {

@@ -8,10 +8,16 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Skeleton from '../components/ui/Skeleton';
 import { useToast } from '../components/ui/Toast';
+import { ClientInvoiceTracker } from '../features/invoices/ClientInvoiceTracker';
+import { api } from '../constants/api';
 
 export const InvoicesPage: React.FC = () => {
   const { isAdmin } = useAuth();
   const toast = useToast();
+  const [viewMode, setViewMode] = useState<'list' | 'tracker'>('list');
+
+  const [users, setUsers] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +46,21 @@ export const InvoicesPage: React.FC = () => {
 
   useEffect(() => {
     fetchInvoices();
-  }, []);
+    if (isAdmin) {
+      api.adminGetUsers()
+        .then((data: any) => setUsers(data || []))
+        .catch((e: any) => console.error("Failed to load users for autocomplete", e));
+    }
+  }, [isAdmin]);
+
+  const filteredUsers = React.useMemo(() => {
+    if (!recipientEmail) return [];
+    const query = recipientEmail.toLowerCase();
+    return users.filter((u) => 
+      u.email.toLowerCase().includes(query) || 
+      (u.name && u.name.toLowerCase().includes(query))
+    );
+  }, [users, recipientEmail]);
 
   const handleCreateInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,6 +164,27 @@ export const InvoicesPage: React.FC = () => {
           
           {/* Main List Column */}
           <div className="lg:col-span-2 space-y-4">
+            {isAdmin && (
+              <div className="flex gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200/60 w-fit mb-4">
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer font-mono ${
+                    viewMode === 'list' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  All Invoices
+                </button>
+                <button
+                  onClick={() => setViewMode('tracker')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer font-mono ${
+                    viewMode === 'tracker' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-700'
+                  }`}
+                >
+                  Client Tracker
+                </button>
+              </div>
+            )}
+
             {loading ? (
               <div className="space-y-4">
                 <Skeleton className="h-28 w-full rounded-2xl" />
@@ -153,6 +194,12 @@ export const InvoicesPage: React.FC = () => {
               <div className="rounded-2xl bg-rose-50 border border-rose-100 p-4 text-xs font-body text-rose-600">
                 {error}
               </div>
+            ) : viewMode === 'tracker' && isAdmin ? (
+              <ClientInvoiceTracker
+                invoices={invoices}
+                onToggleStatus={handleToggleStatus}
+                onDeleteInvoice={handleDeleteInvoice}
+              />
             ) : invoices.length === 0 ? (
               <Card className="p-8 text-center text-slate-400">
                 <span className="material-symbols-outlined text-3xl text-slate-350">receipt_long</span>
@@ -184,7 +231,7 @@ export const InvoicesPage: React.FC = () => {
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-slate-500 pt-1">
                           <div>
                             <span className="block text-[9px] uppercase font-bold text-slate-400">Value</span>
-                            <span className="font-bold text-slate-800 text-sm">${inv.value.toFixed(2)}</span>
+                            <span className="font-bold text-slate-800 text-sm">₹{inv.value.toFixed(2)}</span>
                           </div>
                           <div>
                             <span className="block text-[9px] uppercase font-bold text-slate-400">Raised Date</span>
@@ -236,14 +283,47 @@ export const InvoicesPage: React.FC = () => {
               <Card className="p-6 border border-slate-100 bg-white shadow-sm space-y-4">
                 <h2 className="font-heading text-lg font-bold text-slate-800">Raise New Invoice</h2>
                 <form onSubmit={handleCreateInvoice} className="space-y-4">
-                  <Input
-                    label="Recipient User Email *"
-                    type="email"
-                    placeholder="client@company.com"
-                    value={recipientEmail}
-                    onChange={(e) => setRecipientEmail(e.target.value)}
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      label="Recipient User Email *"
+                      type="email"
+                      placeholder="client@company.com"
+                      value={recipientEmail}
+                      onChange={(e) => {
+                        setRecipientEmail(e.target.value);
+                        setShowSuggestions(true);
+                      }}
+                      onFocus={() => setShowSuggestions(true)}
+                      onBlur={() => {
+                        // Delay hiding suggestions so click event on option registers
+                        setTimeout(() => setShowSuggestions(false), 200);
+                      }}
+                      required
+                      autoComplete="off"
+                    />
+                    {showSuggestions && filteredUsers.length > 0 && (
+                      <div className="absolute z-50 left-0 right-0 top-[calc(100%-12px)] bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto overflow-x-hidden divide-y divide-slate-100 animate-in fade-in slide-in-from-top-2 duration-150">
+                        {filteredUsers.map((u) => (
+                          <div
+                            key={u.id || u.email}
+                            onMouseDown={(e) => {
+                              e.preventDefault(); // Prevents input onBlur from firing before click registers
+                              setRecipientEmail(u.email);
+                              setShowSuggestions(false);
+                            }}
+                            className="px-4 py-2.5 hover:bg-slate-50 cursor-pointer flex flex-col items-start gap-0.5 text-left transition-colors"
+                          >
+                            <span className="text-xs font-bold text-slate-800 font-heading">
+                              {u.name || 'No Name'}
+                            </span>
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              {u.email}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <Input
                     label="Invoice Title / Description *"
                     type="text"
@@ -253,7 +333,7 @@ export const InvoicesPage: React.FC = () => {
                     required
                   />
                   <Input
-                    label="Value ($ USD) *"
+                    label="Value (₹ INR) *"
                     type="number"
                     step="0.01"
                     placeholder="1500.00"

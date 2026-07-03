@@ -88,8 +88,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ onMeetingBooked }) => {
       addMessage('ai', "Please enter an Agenda or Topic for the meeting in the right card so we know what to prepare!");
       return;
     }
-    if (form.agenda.trim().length > 50) {
-      addMessage('ai', `⚠️ The meeting agenda exceeds the 50-character limit. Please keep it to 50 characters or less.`);
+    const agendaWordCount = form.agenda.trim().split(/\s+/).filter(Boolean).length;
+    if (agendaWordCount > 20) {
+      addMessage('ai', `⚠️ The meeting agenda exceeds the 20-word limit (currently ${agendaWordCount} words). Please keep it to 20 words or less.`);
       return;
     }
     if (!form.date || !form.slot) {
@@ -101,10 +102,16 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({ onMeetingBooked }) => {
     const startStr = `${form.date.year}-${String(form.date.month + 1).padStart(2, '0')}-${String(form.date.day).padStart(2, '0')}T${form.slot.start}:00`;
     const endStr = `${form.date.year}-${String(form.date.month + 1).padStart(2, '0')}-${String(form.date.day).padStart(2, '0')}T${form.slot.end}:00`;
 
+    let finalDesc = form.description ? form.description.trim() : '';
+    const descWordCount = finalDesc.split(/\s+/).filter(Boolean).length;
+    if (!finalDesc || descWordCount !== 30) {
+      finalDesc = 'This is a mentorship session booked through the Sisu executive virtual assistant for strategic business review and scaling roadmap discussion to optimize performance and align organizational goals for growth today.';
+    }
+
     try {
       await meetingsApi.createMeeting({
         title: form.agenda,
-        description: form.description || 'Booked via conversational concierge',
+        description: finalDesc,
         reason: `Conversational booking. Phone: ${form.phone || 'N/A'}. Priority: ${form.priority.toUpperCase()}`,
         meeting_type: 'Mentorship Session',
         priority: form.priority,

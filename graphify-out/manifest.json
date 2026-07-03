@@ -45,13 +45,13 @@
     "semantic_hash": ""
   },
   "backend/google_integration.py": {
-    "mtime": 1781180829.1295016,
-    "ast_hash": "7b2bb8b746def0b75e3ae8f97d8b65b6",
+    "mtime": 1782897915.226041,
+    "ast_hash": "f9e7fad7b46b2d43350ff2f584f10e62",
     "semantic_hash": ""
   },
   "backend/llm.py": {
-    "mtime": 1782887076.5868638,
-    "ast_hash": "bbd11710128244beee03623cf27d35a2",
+    "mtime": 1783069318.5368726,
+    "ast_hash": "dab3c7c5ef6fd842748933b2e9fc53b8",
     "semantic_hash": ""
   },
   "backend/main.py": {
@@ -82,71 +82,6 @@
   "frontend/postcss.config.js": {
     "mtime": 1778485202.0,
     "ast_hash": "c1ee9ce6a4fe04105dbf8e619390df5e",
-    "semantic_hash": ""
-  },
-  "frontend/src/components/BookingModal.jsx": {
-    "mtime": 1782887534.2762482,
-    "ast_hash": "ec56889fc8c0e5801c92c844c42ea745",
-    "semantic_hash": ""
-  },
-  "frontend/src/components/Layout.jsx": {
-    "mtime": 1781261912.463519,
-    "ast_hash": "5a3a697d3fd53544e7fbedd8e6d1bd6d",
-    "semantic_hash": ""
-  },
-  "frontend/src/components/Sidebar.jsx": {
-    "mtime": 1782892123.3088899,
-    "ast_hash": "57d59fd37d806f696ef8c090a3334107",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/AdminCalendarSlotsPage.jsx": {
-    "mtime": 1782887365.426275,
-    "ast_hash": "e7586756fe95b1f88103db35e9e96ff6",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/AdminDashboard.jsx": {
-    "mtime": 1782892331.575277,
-    "ast_hash": "3ce7ab9a1a0bfbb0a9055925204c08a7",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/AdminDecisionFeed.jsx": {
-    "mtime": 1781507188.9002733,
-    "ast_hash": "9217c25eb5e5e37eedaffcb9cf0d0879",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/AdminReschedulePage.jsx": {
-    "mtime": 1781507188.9002733,
-    "ast_hash": "a87117ac030b40cd6b0b8f132c505349",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/AdminSlotsBookedPage.jsx": {
-    "mtime": 1781507188.5082924,
-    "ast_hash": "1200f58d8312a454017997447ada851b",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/AdminUsersPage.jsx": {
-    "mtime": 1781507188.8982599,
-    "ast_hash": "42e4a91da600a82fb9858b461f2b06a8",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/ForgotPassword.jsx": {
-    "mtime": 1781507188.8492937,
-    "ast_hash": "5f87f478048dd956f50e2cdefa23e715",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/Login.jsx": {
-    "mtime": 1781858728.6461205,
-    "ast_hash": "0328a21ac16d27e950915d4e9108924b",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/ResetPassword.jsx": {
-    "mtime": 1781507188.8492937,
-    "ast_hash": "73a125bd80f2cd9caf731f629d94d9fa",
-    "semantic_hash": ""
-  },
-  "frontend/src/pages/Signup.jsx": {
-    "mtime": 1781858734.4751468,
-    "ast_hash": "411ba8ef5dcc2eb2d5ad5dd467fc5fe2",
     "semantic_hash": ""
   },
   "frontend/tailwind.config.js": {
@@ -255,8 +190,8 @@
     "semantic_hash": ""
   },
   "backend/api/routers/admin.py": {
-    "mtime": 1781265568.5864136,
-    "ast_hash": "d814776595c44b0f89a92666d42c1fa8",
+    "mtime": 1783069435.408348,
+    "ast_hash": "c965c89bcc86c1a5929a8670302c682b",
     "semantic_hash": ""
   },
   "backend/api/routers/auth.py": {
@@ -270,8 +205,8 @@
     "semantic_hash": ""
   },
   "backend/api/routers/meetings.py": {
-    "mtime": 1781265556.1230192,
-    "ast_hash": "8be9b70a3f86a4602e0dbb742c645182",
+    "mtime": 1783069260.5486999,
+    "ast_hash": "1591073032c72ef525b842d638fad82e",
     "semantic_hash": ""
   },
   "backend/api/schemas.py": {
@@ -285,8 +220,8 @@
     "semantic_hash": ""
   },
   "backend/services/meeting_service.py": {
-    "mtime": 1782887067.1509194,
-    "ast_hash": "815e9ec49aa939a9ebf985a83b6b071a",
+    "mtime": 1783069252.5170546,
+    "ast_hash": "11424c6cbaad30ce3c4ed6e59471e09f",
     "semantic_hash": ""
   },
   "backend/services/security_service.py": {
@@ -295,8 +230,8 @@
     "semantic_hash": ""
   },
   "walkthrough.md": {
-    "mtime": 1781265698.6895556,
-    "ast_hash": "95bd138b3919f837d5d861d34ed59a06",
+    "mtime": 1783070763.664163,
+    "ast_hash": "6309f9228b68d5c43cf13ddd0d094614",
     "semantic_hash": ""
   },
   "backend/reset/reset_for_production.py": {
@@ -375,8 +310,8 @@
     "semantic_hash": ""
   },
   "backend/app/api/v1/admin.py": {
-    "mtime": 1782046857.6650434,
-    "ast_hash": "ceb9ca1c28ed10564e561c4eb0ab8704",
+    "mtime": 1783069446.1756752,
+    "ast_hash": "ff07c59d90a4961fa7fdc3153d15a28d",
     "semantic_hash": ""
   },
   "backend/app/api/v1/auth.py": {
@@ -395,8 +330,8 @@
     "semantic_hash": ""
   },
   "backend/app/api/v1/meetings.py": {
-    "mtime": 1782318709.2167273,
-    "ast_hash": "f2db19af7f5438096e560ca9f2c668cd",
+    "mtime": 1783069295.1836388,
+    "ast_hash": "ee5b036c0a14064f4cc2c731095a3141",
     "semantic_hash": ""
   },
   "backend/app/api/v1/notes.py": {
@@ -515,8 +450,8 @@
     "semantic_hash": ""
   },
   "backend/app/services/ai_service.py": {
-    "mtime": 1782887087.4406683,
-    "ast_hash": "9e9fc6f4a5485eb2b32239f3e666c47c",
+    "mtime": 1783069325.887223,
+    "ast_hash": "ee52463f18cc9405e96a374b49c455ad",
     "semantic_hash": ""
   },
   "backend/app/services/calendar_service.py": {
@@ -535,8 +470,8 @@
     "semantic_hash": ""
   },
   "backend/app/services/meeting_service.py": {
-    "mtime": 1782887058.6579187,
-    "ast_hash": "e1af6e87994dcc42fa2c93d60d5528c6",
+    "mtime": 1783069267.4748712,
+    "ast_hash": "ca42411adf51b39ae7e3e138926cf22a",
     "semantic_hash": ""
   },
   "backend/app/services/notification_service.py": {
@@ -550,8 +485,8 @@
     "semantic_hash": ""
   },
   "frontend/src/App.tsx": {
-    "mtime": 1782887329.841536,
-    "ast_hash": "c2bc1c8950ca6e9c22742aaecab33997",
+    "mtime": 1783069419.9168217,
+    "ast_hash": "362683c7dc5399923d48cd0265ed314a",
     "semantic_hash": ""
   },
   "frontend/src/api/admin.ts": {
@@ -580,8 +515,8 @@
     "semantic_hash": ""
   },
   "frontend/src/api/notes.ts": {
-    "mtime": 1782047203.6213865,
-    "ast_hash": "ce64d7c0be614db45bd1dae8f2564d0a",
+    "mtime": 1783069390.5695186,
+    "ast_hash": "6073d8ade3f6e8a86994b795159790f6",
     "semantic_hash": ""
   },
   "frontend/src/components/layout/AppLayout.tsx": {
@@ -595,13 +530,13 @@
     "semantic_hash": ""
   },
   "frontend/src/components/layout/MobileNav.tsx": {
-    "mtime": 1782317779.1885166,
-    "ast_hash": "ac9d3f0cf1d607b67cf3e0f34832c7cc",
+    "mtime": 1783069408.718345,
+    "ast_hash": "7d2dbca4bdd02584aa83a91e92c7bfa6",
     "semantic_hash": ""
   },
   "frontend/src/components/layout/Sidebar.tsx": {
-    "mtime": 1782892097.1522455,
-    "ast_hash": "6b74861205c116b06abc58c09a2d5d38",
+    "mtime": 1783069402.9481933,
+    "ast_hash": "6df658405f04c1c80ad76ce9630f4316",
     "semantic_hash": ""
   },
   "frontend/src/components/ui/Badge.tsx": {
@@ -660,8 +595,8 @@
     "semantic_hash": ""
   },
   "frontend/src/config/env.ts": {
-    "mtime": 1782046957.4214964,
-    "ast_hash": "bba95b8543ed98f4a8cf765810bc792a",
+    "mtime": 1782990102.0931737,
+    "ast_hash": "0a5eb227052aef4174c26e3e0809db56",
     "semantic_hash": ""
   },
   "frontend/src/features/auth/ForgotPasswordPage.tsx": {
@@ -670,8 +605,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/auth/LoginPage.tsx": {
-    "mtime": 1782065238.916383,
-    "ast_hash": "1f9f7ec249cc226aa495ee995a24d335",
+    "mtime": 1782971843.1259778,
+    "ast_hash": "6bb010e60b3188383bdc52e5bdbcd27f",
     "semantic_hash": ""
   },
   "frontend/src/features/auth/ResetPasswordPage.tsx": {
@@ -685,8 +620,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/booking/BookingForm.tsx": {
-    "mtime": 1782893908.2277806,
-    "ast_hash": "dab60707d2b4742c0410554739a1faea",
+    "mtime": 1783074620.0691757,
+    "ast_hash": "201ab1e8b3142e75ebb539dc6dcc0693",
     "semantic_hash": ""
   },
   "frontend/src/features/booking/TimeSlotPicker.tsx": {
@@ -715,18 +650,18 @@
     "semantic_hash": ""
   },
   "frontend/src/features/chat/ChatPanel.tsx": {
-    "mtime": 1782047443.3934696,
-    "ast_hash": "d793ccf05aadef77ff43d426b2ca07d6",
+    "mtime": 1783069366.2619486,
+    "ast_hash": "ea7c662bc7ed4321cbf6bd7eddfe7052",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/ClientDashboard.tsx": {
-    "mtime": 1782892419.5621061,
-    "ast_hash": "df455bffe99d4dc65d1f5f5199bfecb7",
+    "mtime": 1783073342.708529,
+    "ast_hash": "9aea7f744b52b77d428ce66e209f3804",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/MeetingCard.tsx": {
-    "mtime": 1782887183.636397,
-    "ast_hash": "806f8467dc4a84ece0c13d9252bfcb7c",
+    "mtime": 1783072016.1917634,
+    "ast_hash": "0d8bb937bc39664c8fd3a85b2cd3a9c6",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/MeetingList.tsx": {
@@ -750,13 +685,13 @@
     "semantic_hash": ""
   },
   "frontend/src/features/notebook/NoteEditor.tsx": {
-    "mtime": 1782047331.1156166,
-    "ast_hash": "b3f12793aab0c094b12d0dd0211b8bac",
+    "mtime": 1783069384.8212268,
+    "ast_hash": "ffb5ec97dab2c6ffee2d4456b7e0a928",
     "semantic_hash": ""
   },
   "frontend/src/features/notebook/NotebookPage.tsx": {
-    "mtime": 1782893296.7732847,
-    "ast_hash": "b91753cd4a503b30ae034a372097f452",
+    "mtime": 1783069396.7106802,
+    "ast_hash": "7be1ff5d8159e30ef80fb5a281113f64",
     "semantic_hash": ""
   },
   "frontend/src/hooks/useChat.ts": {
@@ -790,8 +725,8 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/SettingsPage.tsx": {
-    "mtime": 1782887559.5213172,
-    "ast_hash": "488549ee08327bd4f6a2612e2b4f69d9",
+    "mtime": 1783069429.576528,
+    "ast_hash": "4b587a53f9c5f84589da1b6b0de03f1d",
     "semantic_hash": ""
   },
   "frontend/src/pages/SetupProfile.tsx": {
@@ -800,8 +735,8 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/SharedNoteView.tsx": {
-    "mtime": 1782047362.0203826,
-    "ast_hash": "38a30cbd14a135e74c3c0b646d67402b",
+    "mtime": 1782986492.2343922,
+    "ast_hash": "8585774164162aa7cdd49520a8e2d3ae",
     "semantic_hash": ""
   },
   "frontend/src/types/api.ts": {
@@ -945,8 +880,8 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/InvoicesPage.tsx": {
-    "mtime": 1782893296.770754,
-    "ast_hash": "b5868c785e8fe5481d03929ec2b60bc3",
+    "mtime": 1782986048.349252,
+    "ast_hash": "68f6d0f6790b748e6246368d4ccbe79b",
     "semantic_hash": ""
   },
   "frontend/src/pages/SessionDetailPage.tsx": {
@@ -957,6 +892,46 @@
   "backend/uploads/d3df404f-e688-43ef-a467-0539783598bf.png": {
     "mtime": 1782369482.630716,
     "ast_hash": "46b99acf71c59165df6dbdeac6205224",
+    "semantic_hash": ""
+  },
+  "frontend/src/features/booking/BookingModal.tsx": {
+    "mtime": 1783072005.8618782,
+    "ast_hash": "234b23a1e934ab22ba2021ca3737ebb7",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminCalendarSlotsPage.tsx": {
+    "mtime": 1783072171.2809153,
+    "ast_hash": "b0621eebd00e08b0eb72216522bab6cf",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminDashboard.tsx": {
+    "mtime": 1782971885.1305115,
+    "ast_hash": "2d05f32fbd34ac12de79ba969769cddc",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminDecisionFeed.tsx": {
+    "mtime": 1782971952.811191,
+    "ast_hash": "40fcf7f3b29278fbe9ba7036a11d46a2",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminReschedulePage.tsx": {
+    "mtime": 1782971990.2692022,
+    "ast_hash": "b5ef2fd96c868b8b953c714e633ad625",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminSlotsBookedPage.tsx": {
+    "mtime": 1782975282.4028764,
+    "ast_hash": "3c1c67365b2a87a1c42bb0923c9dabec",
+    "semantic_hash": ""
+  },
+  "frontend/src/pages/AdminUsersPage.tsx": {
+    "mtime": 1783074438.7358074,
+    "ast_hash": "307a072fdf6942fa90fb7e40dbd68a28",
+    "semantic_hash": ""
+  },
+  "frontend/src/features/invoices/ClientInvoiceTracker.tsx": {
+    "mtime": 1782985763.9258938,
+    "ast_hash": "f27792f032cedf31a03de47295baae88",
     "semantic_hash": ""
   }
 }

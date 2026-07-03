@@ -111,8 +111,8 @@ def book_meeting(title: str, start_time_str: str, reason: Optional[str] = None, 
         # 1. Agenda word and character limit checks
         if len(title.strip()) > 150:
             return "Error: The meeting title/agenda cannot exceed 150 characters."
-        if len([w for w in title.split() if w]) > 30:
-            return "Error: The meeting title/agenda exceeds the 30-word limit. Please keep it to 30 words or less."
+        if len([w for w in title.split() if w]) > 20:
+            return "Error: The meeting title/agenda exceeds the 20-word limit. Please keep it to 20 words or less."
 
         # Parse time and calculate end time (60 min default)
         start = meeting_booking_service._to_ist_naive(dt.datetime.fromisoformat(start_time_str.replace('Z', '')))
@@ -146,6 +146,7 @@ def book_meeting(title: str, start_time_str: str, reason: Optional[str] = None, 
             meeting = Meeting(
                 client_id=user_id,
                 title=title,
+                description="This is a mentorship session booked through the Sisu executive virtual assistant for strategic business review and scaling roadmap discussion to optimize performance and align organizational goals for growth today.",
                 reason=reason,
                 meeting_type="Mentorship Session",
                 start_time=start,

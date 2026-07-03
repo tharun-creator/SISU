@@ -7,6 +7,7 @@ import Modal from '../../components/ui/Modal';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Card from '../../components/ui/Card';
+import authApi from '../../api/auth';
 
 export const ClientDashboard: React.FC = () => {
   const { meetings, stats, loading, refresh, cancelMeeting, rescheduleMeeting, confirmReschedule } = useMeetings();
@@ -17,6 +18,21 @@ export const ClientDashboard: React.FC = () => {
   const [additionalTime, setAdditionalTime] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await authApi.getMe();
+        if (user && user.name) {
+          setUserName(user.name);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user in ClientDashboard:', err);
+      }
+    };
+    fetchUser();
+  }, []);
 
   // Checklist prep state
   const [prepChecklist, setPrepChecklist] = useState({
@@ -112,7 +128,7 @@ export const ClientDashboard: React.FC = () => {
     const day = current.getDay();
     const diff = current.getDate() - day + (day === 0 ? -6 : 1);
     const monday = new Date(current.setDate(diff));
-    
+
     for (let i = 0; i < 7; i++) {
       const next = new Date(monday);
       next.setDate(monday.getDate() + i);
@@ -134,36 +150,55 @@ export const ClientDashboard: React.FC = () => {
   return (
     <AppLayout title="Executive Mentorship Dashboard">
       <div className="space-y-8 animate-fade-in font-sans">
-        
+
         {/* Premium Focus & Progress Header Banner */}
         <div className="rounded-3xl p-8 text-white relative overflow-hidden shadow-lg border border-slate-700/10" style={{ background: 'linear-gradient(135deg, #51758f 0%, #345064 100%)' }}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.08),transparent_50%)]" />
-          
-          {/* Header Row */}
+
+          {/* Header Row: Welcome Banner */}
           <div className="flex justify-between items-start mb-8 relative z-10">
             <div>
-              <p className="text-sm font-semibold text-slate-200 uppercase tracking-widest opacity-80">Today</p>
-              <h2 className="text-4xl font-extrabold tracking-tight mt-1 text-white">{todayInfo.fullString}</h2>
+              <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">
+                {(() => {
+                  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                  const now = new Date();
+                  return `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+                })()}
+              </p>
+              <h2 className="text-4xl font-black tracking-tight mt-2 text-white">
+                Hello, {userName ? userName.split(' ')[0] : 'Courtney'}
+              </h2>
+              <p className="text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-cyan-200 to-sky-300 mt-1">
+                How can I help you today?
+              </p>
             </div>
           </div>
 
           {/* Today's Focus Card */}
           <div className="bg-white rounded-2xl p-8 text-slate-800 shadow-xl border border-slate-200/50 mb-8 relative z-10">
             <div className="flex justify-between items-start mb-2">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Focus</p>
+              <p className="text-xs font-black text-black uppercase tracking-widest">Up Next</p>
             </div>
 
             <h3 className="text-3xl font-black tracking-tight text-slate-900 leading-tight mb-2">
               {focusMeeting ? focusMeeting.title : "No Mentorship Session Today"}
             </h3>
-            
+
             <p className="text-sm text-slate-500 leading-relaxed max-w-2xl mb-6">
               {focusMeeting ? (focusMeeting.description || "Review strategic growth roadmap and SDR performance.") : "Gain executive mentorship to accelerate your strategic roadmap. Schedule your next session."}
             </p>
 
+            {focusMeeting && focusMeeting.admin_notes && (
+              <div className="mb-6 bg-slate-50 border border-slate-200/50 rounded-xl p-4 text-xs leading-relaxed text-slate-700">
+                <span className="font-bold uppercase tracking-wider text-[9px] text-slate-400 block mb-1">Admin Remarks / Notes</span>
+                <p className="font-medium text-slate-600">{focusMeeting.admin_notes}</p>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               {focusMeeting ? (
-                <button 
+                <button
                   onClick={() => window.location.href = `/book`}
                   className="bg-black hover:bg-slate-900 text-white text-xs font-bold px-6 py-3.5 rounded-xl transition-all active:scale-[0.98] shadow-md flex items-center gap-2"
                 >
@@ -171,7 +206,7 @@ export const ClientDashboard: React.FC = () => {
                   Schedule Another
                 </button>
               ) : (
-                <button 
+                <button
                   onClick={() => window.location.href = `/book`}
                   className="bg-black hover:bg-slate-900 text-white text-xs font-bold px-6 py-3.5 rounded-xl transition-all active:scale-[0.98] shadow-md flex items-center gap-2"
                 >
@@ -179,9 +214,13 @@ export const ClientDashboard: React.FC = () => {
                   Book Session
                 </button>
               )}
-              <div className="flex items-center gap-1.5 text-slate-400 font-semibold text-xs">
-                <span className="material-symbols-outlined text-base">schedule</span>
-                <span>{focusMeeting ? `${focusMeeting.duration_minutes} mins` : "Free"}</span>
+              <div className="flex items-center gap-1.5 text-slate-500 font-bold text-xs">
+                <span className="material-symbols-outlined text-base text-slate-400">calendar_month</span>
+                <span>
+                  Next: {nextUpMeeting ? (
+                    nextUpMeeting.display_date || new Date(nextUpMeeting.start_time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+                  ) : 'None'}
+                </span>
               </div>
             </div>
           </div>
@@ -190,7 +229,7 @@ export const ClientDashboard: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10 border-t border-white/10 pt-6">
             {/* Next Up */}
             <div className="space-y-1">
-              <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Next Up</p>
+              <p className="text-xs font-black text-white uppercase tracking-widest">Next Up</p>
               <p className="text-sm font-bold text-white">
                 {nextUpMeeting ? nextUpMeeting.title : "No upcoming sessions"}
               </p>
@@ -200,13 +239,12 @@ export const ClientDashboard: React.FC = () => {
             <div className="w-full md:w-auto">
               <div className="flex items-center justify-between md:justify-end gap-3 bg-black/10 rounded-2xl p-1.5 border border-white/5">
                 {weekDays.map((wd, i) => (
-                  <div 
-                    key={i} 
-                    className={`flex flex-col items-center justify-center transition-all ${
-                      wd.isToday 
-                        ? 'bg-white text-slate-900 font-bold rounded-xl px-3 py-2.5 shadow-md transform scale-105' 
+                  <div
+                    key={i}
+                    className={`flex flex-col items-center justify-center transition-all ${wd.isToday
+                        ? 'bg-white text-slate-900 font-bold rounded-xl px-3 py-2.5 shadow-md transform scale-105'
                         : 'text-slate-300 px-2 py-2'
-                    }`}
+                      }`}
                   >
                     <span className="text-[10px] font-semibold tracking-wider text-slate-400">{wd.dayName}</span>
                     <span className="text-sm mt-0.5">{wd.dateNum}</span>
@@ -226,7 +264,7 @@ export const ClientDashboard: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="font-heading text-xl font-bold text-slate-800">Your Sessions</h2>
-              <button 
+              <button
                 onClick={refresh}
                 className="flex items-center gap-1.5 font-body text-xs font-semibold text-indigo-600 hover:text-indigo-800"
               >
@@ -254,8 +292,8 @@ export const ClientDashboard: React.FC = () => {
 
       {/* Reschedule Modal */}
       {rescheduleTarget && (
-        <Modal 
-          isOpen={true} 
+        <Modal
+          isOpen={true}
           onClose={() => setRescheduleTarget(null)}
           title={`Reschedule: ${rescheduleTarget.title}`}
         >

@@ -5,6 +5,7 @@ import { client } from '../../api/client';
 import { useToast } from '../../components/ui/Toast';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import { env } from '../../config/env';
 
 declare global {
   interface Window {
@@ -89,9 +90,9 @@ export const LoginPage: React.FC = () => {
 
   useEffect(() => {
     const initializeGoogleSignIn = () => {
-      if (window.google) {
+      if (window.google && env.googleClientId) {
         window.google.accounts.id.initialize({
-          client_id: "793728037081-03p54l6ntfisafaavflhpmtq5o3dfs1g.apps.googleusercontent.com",
+          client_id: env.googleClientId,
           callback: handleGoogleLogin,
         });
         window.google.accounts.id.renderButton(

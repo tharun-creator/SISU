@@ -144,7 +144,7 @@ export const NotebookPage: React.FC = () => {
     if (!selectedNote) return;
     setIsShared(shared);
     try {
-      await notesApi.updateNote(selectedNote.id, { title, content });
+      await notesApi.updateNote(selectedNote.id, { title, content, is_shared: shared });
       await fetchNotes(selectedNote.id);
     } catch {
       toast.show('Failed to update sharing settings.', 'error');

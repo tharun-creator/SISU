@@ -210,15 +210,7 @@ export const SettingsPage: React.FC = () => {
                       className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
                     />
                   </label>
-                  <label className="flex items-center justify-between cursor-pointer">
-                    <span className="font-body text-sm text-slate-700">SMS / Text Alerts</span>
-                    <input 
-                      type="checkbox" 
-                      checked={channels.sms} 
-                      onChange={(e) => setChannels({ ...channels, sms: e.target.checked })} 
-                      className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                    />
-                  </label>
+
                   <label className="flex items-center justify-between cursor-pointer">
                     <span className="font-body text-sm text-slate-700">Push Notifications</span>
                     <input 

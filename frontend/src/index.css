@@ -127,6 +127,46 @@ html.dark {
   }
 }
 
+/* ── Notebook contentEditable list styles (override Preflight reset) ──────── */
+[contenteditable] ul,
+[contenteditable] ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+[contenteditable] ul {
+  list-style-type: disc;
+}
+[contenteditable] ol {
+  list-style-type: decimal;
+}
+[contenteditable] ul ul {
+  list-style-type: circle;
+}
+[contenteditable] ul ul ul {
+  list-style-type: square;
+}
+[contenteditable] li {
+  margin: 0.25em 0;
+}
+
+/* ── Notebook contentEditable general rich-text rendering ─────────────────── */
+[contenteditable] blockquote {
+  border-left: 3px solid #6366f1;
+  padding-left: 1em;
+  margin: 0.75em 0;
+  color: #64748b;
+  font-style: italic;
+}
+[contenteditable] a {
+  color: #6366f1;
+  text-decoration: underline;
+}
+[contenteditable] img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 0.75em 0;
+}
+
 /* ── Premium Scrollbars ────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;

@@ -102,6 +102,7 @@ async def create_meeting(
         db=db,
         client_id=current_user.id,
         title=req.title,
+        description=req.description,
         start=start,
         end=end,
         duration_minutes=req.duration_minutes
@@ -212,7 +213,6 @@ async def cancel_meeting(
 
     old_status = meeting.status
     meeting.status = "cancelled"
-    meeting.deleted_at = datetime.datetime.utcnow()
     db.commit()
 
     log_status_change(db, meeting.id, old_status, "cancelled", current_user.email)

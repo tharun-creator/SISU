@@ -18,7 +18,6 @@ export const MobileNav: React.FC = () => {
         { icon: 'grid_view', label: 'Dashboard', path: '/' },
         { icon: 'calendar_today', label: 'Schedule', path: '/book' },
         { icon: 'description', label: 'Notebook', path: '/notebook' },
-        { icon: 'history', label: 'Points', path: '/session-logs' },
       ];
 
   return (

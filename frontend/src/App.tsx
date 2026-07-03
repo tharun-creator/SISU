@@ -20,13 +20,13 @@ const SessionLogsPage = lazy(() => import('./features/session_logs/SessionLogsPa
 const SessionDetailPage = lazy(() => import('./pages/SessionDetailPage'));
 const InvoicesPage = lazy(() => import('./pages/InvoicesPage'));
 
-// Admin pages (temporarily imported as JSX, to be fully checked by type checker)
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard.jsx'));
-const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage.jsx'));
-const AdminCalendarSlotsPage = lazy(() => import('./pages/AdminCalendarSlotsPage.jsx'));
-const AdminDecisionFeed = lazy(() => import('./pages/AdminDecisionFeed.jsx'));
-const AdminSlotsBookedPage = lazy(() => import('./pages/AdminSlotsBookedPage.jsx'));
-const AdminReschedulePage = lazy(() => import('./pages/AdminReschedulePage.jsx'));
+// Admin pages
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
+const AdminCalendarSlotsPage = lazy(() => import('./pages/AdminCalendarSlotsPage'));
+const AdminDecisionFeed = lazy(() => import('./pages/AdminDecisionFeed'));
+const AdminSlotsBookedPage = lazy(() => import('./pages/AdminSlotsBookedPage'));
+const AdminReschedulePage = lazy(() => import('./pages/AdminReschedulePage'));
 
 function PageLoader() {
   return (
@@ -57,7 +57,6 @@ export function App() {
               <Route path="/setup-profile" element={<PrivateRoute><SetupProfile /></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
               <Route path="/notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
-              <Route path="/session-logs" element={<PrivateRoute><SessionLogsPage /></PrivateRoute>} />
               <Route path="/session/:id" element={<PrivateRoute><SessionDetailPage /></PrivateRoute>} />
               <Route path="/invoices" element={<PrivateRoute><InvoicesPage /></PrivateRoute>} />
 

@@ -31,6 +31,7 @@ export const BookingForm: React.FC = () => {
   // Form fields state
   const [agenda, setAgenda] = useState('');
   const [company, setCompany] = useState('');
+  const [name, setName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [duration, setDuration] = useState<number | 'custom'>(60);
   const [channel, setChannel] = useState('Google Meet');
@@ -39,6 +40,8 @@ export const BookingForm: React.FC = () => {
   const [description, setDescription] = useState('');
   const [phone, setPhone] = useState('');
   const [customLocation, setCustomLocation] = useState('');
+  const [durationOpen, setDurationOpen] = useState(false);
+  const [channelOpen, setChannelOpen] = useState(false);
 
   // Fetch logged in user company/role details
   useEffect(() => {
@@ -47,6 +50,7 @@ export const BookingForm: React.FC = () => {
         const user = await authApi.getMe();
         if (user) {
           if (user.company) setCompany(user.company);
+          if (user.name) setName(user.name);
           if (user.job_title) setJobTitle(user.job_title);
           if (user.phone) setPhone(user.phone);
         }
@@ -91,12 +95,36 @@ export const BookingForm: React.FC = () => {
     return text.trim().split(/\s+/).filter(Boolean).length;
   };
 
-  const handleWordLimitChange = (text: string, setter: (val: string) => void) => {
-    const words = text.trim().split(/\s+/).filter(Boolean);
-    if (words.length > 50) {
-      setter(text.split(/\s+/).slice(0, 50).join(' '));
+  const handleWordLimitChange = (
+    text: string,
+    setter: (val: string) => void,
+    limit: number,
+    maxWordLength: number = 20
+  ) => {
+    // Two separate protections working together:
+    // 1. maxLength on the <input>/<textarea> itself is the hard character
+    //    ceiling for the whole field.
+    // 2. This clamp stops any single unbroken run of non-space characters
+    //    (e.g. holding a key, or one long word with no spaces) from
+    //    ballooning up to that entire ceiling as if it were "1 word" —
+    //    without this, the word-count limit below never actually engages
+    //    for that kind of input, since it only counts space-separated runs.
+    //    20 chars comfortably covers real English words while still
+    //    stopping further letters once a run hits that length.
+    const cappedText = text.replace(
+      new RegExp(`\\S{${maxWordLength + 1},}`, 'g'),
+      (match) => match.slice(0, maxWordLength)
+    );
+
+    // We reuse this same trimmed/filtered `words` array for both counting
+    // AND truncating — re-splitting the raw, untrimmed text for truncation
+    // would let a leading space slip in as an empty "word" and silently
+    // steal one of the real word slots.
+    const words = cappedText.trim().split(/\s+/).filter(Boolean);
+    if (words.length > limit) {
+      setter(words.slice(0, limit).join(' '));
     } else {
-      setter(text);
+      setter(cappedText);
     }
   };
 
@@ -181,14 +209,27 @@ export const BookingForm: React.FC = () => {
       setError('Please fill in the meeting agenda');
       return;
     }
-    if (trimmedAgenda.length > 150) {
-      setError('Meeting title/agenda cannot exceed 150 characters');
+    if (trimmedAgenda.length > 100) {
+      setError('Meeting title/agenda cannot exceed 100 characters');
       return;
     }
     const wordCount = trimmedAgenda.split(/\s+/).filter(Boolean).length;
-    if (wordCount > 30) {
-      setError(`Meeting title/agenda cannot exceed 30 words (currently ${wordCount} words)`);
+    if (wordCount > 10) {
+      setError(`Meeting title/agenda cannot exceed 10 words (currently ${wordCount} words)`);
       return;
+    }
+
+    const descTrimmed = description.trim();
+    if (descTrimmed) {
+      if (descTrimmed.length > 300) {
+        setError('Description cannot exceed 300 characters');
+        return;
+      }
+      const descWordCount = descTrimmed.split(/\s+/).filter(Boolean).length;
+      if (descWordCount > 50) {
+        setError(`Description cannot exceed 50 words (currently ${descWordCount} words)`);
+        return;
+      }
     }
 
     if (duration !== 'custom' && (!selectedDay || !selectedSlot)) {
@@ -232,6 +273,7 @@ export const BookingForm: React.FC = () => {
       // Save/update company and job title in user profile
       try {
         await authApi.updateProfile({
+          name: name.trim(),
           company: company.trim(),
           job_title: jobTitle.trim(),
           phone: phone.trim()
@@ -316,7 +358,7 @@ export const BookingForm: React.FC = () => {
         {/* Section 0: Company & Role */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <label className="block text-xs font-black text-black uppercase tracking-widest">
               Company Name
             </label>
             <input
@@ -329,71 +371,131 @@ export const BookingForm: React.FC = () => {
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
-              Role in Company
+            <label className="block text-xs font-black text-black uppercase tracking-widest">
+              Name
             </label>
             <input
               type="text"
-              placeholder="e.g. Founder, Product Manager..."
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
+              placeholder="e.g. John Doe..."
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm placeholder-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-all"
             />
           </div>
         </div>
 
         {/* Section 1: Agenda */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3">
+        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3 min-w-0">
           <div className="flex justify-between items-center">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <label className="block text-xs font-black text-black uppercase tracking-widest">
               1. Agenda
             </label>
             <span className="text-[10px] font-mono text-slate-400">
-              {getWordCount(agenda)}/50 words
+              {getWordCount(agenda)}/10 words
             </span>
           </div>
           <input
             type="text"
             placeholder="e.g. name, company name x meeting purpose"
             value={agenda}
-            onChange={(e) => handleWordLimitChange(e.target.value, setAgenda)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm placeholder-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-all"
+            maxLength={100}
+            onChange={(e) => handleWordLimitChange(e.target.value, setAgenda, 10)}
+            className="w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm placeholder-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-all"
           />
         </div>
 
         {/* Section 2 & 3: Duration & Channel */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3 relative">
+            <label className="block text-xs font-black text-black uppercase tracking-widest">
               2. Duration
             </label>
-            <select
-              value={duration}
-              onChange={(e) => {
-                const val = e.target.value;
-                setDuration(val === 'custom' ? 'custom' : Number(val));
-              }}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm focus:border-sky-500 focus:bg-white focus:outline-none transition-all"
-            >
-              <option value={30}>30 Min Mentorship (30 mins)</option>
-              <option value={60}>60 Min Mentorship (60 mins)</option>
-              <option value="custom">Custom Duration</option>
-            </select>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setDurationOpen(!durationOpen)}
+                className="w-full flex justify-between items-center rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm focus:border-sky-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+              >
+                <span>{duration === 30 ? "30 Min Mentorship (30 mins)" : duration === 60 ? "60 Min Mentorship (60 mins)" : "Custom Duration"}</span>
+                <span className="material-symbols-outlined text-slate-400 text-lg transition-transform duration-200" style={{ transform: durationOpen ? 'rotate(180deg)' : 'none' }}>
+                  keyboard_arrow_down
+                </span>
+              </button>
+              {durationOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setDurationOpen(false)} />
+                  <div className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1.5 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => { setDuration(30); setDurationOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors cursor-pointer ${duration === 30 ? 'bg-sky-50/40 text-sky-600 font-semibold' : 'text-slate-700'}`}
+                    >
+                      30 Min Mentorship (30 mins)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setDuration(60); setDurationOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors cursor-pointer ${duration === 60 ? 'bg-sky-50/40 text-sky-600 font-semibold' : 'text-slate-700'}`}
+                    >
+                      60 Min Mentorship (60 mins)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setDuration('custom'); setDurationOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors cursor-pointer ${duration === 'custom' ? 'bg-sky-50/40 text-sky-600 font-semibold' : 'text-slate-700'}`}
+                    >
+                      Custom Duration
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3 relative">
+            <label className="block text-xs font-black text-black uppercase tracking-widest">
               3. Channel / Location
             </label>
-            <select
-              value={channel}
-              onChange={(e) => setChannel(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm focus:border-sky-500 focus:bg-white focus:outline-none transition-all"
-            >
-              <option value="Google Meet">Google Meet</option>
-              <option value="Spi edge office">Spi edge office</option>
-              <option value="custom_location">Custom Location / In-Person</option>
-            </select>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setChannelOpen(!channelOpen)}
+                className="w-full flex justify-between items-center rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm focus:border-sky-500 focus:bg-white focus:outline-none transition-all cursor-pointer"
+              >
+                <span>{channel === 'Google Meet' ? "Google Meet" : channel === 'Spi edge office' ? "Spi edge office" : "Custom Location / In-Person"}</span>
+                <span className="material-symbols-outlined text-slate-400 text-lg transition-transform duration-200" style={{ transform: channelOpen ? 'rotate(180deg)' : 'none' }}>
+                  keyboard_arrow_down
+                </span>
+              </button>
+              {channelOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setChannelOpen(false)} />
+                  <div className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1.5 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => { setChannel('Google Meet'); setChannelOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors cursor-pointer ${channel === 'Google Meet' ? 'bg-sky-50/40 text-sky-600 font-semibold' : 'text-slate-700'}`}
+                    >
+                      Google Meet
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setChannel('Spi edge office'); setChannelOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors cursor-pointer ${channel === 'Spi edge office' ? 'bg-sky-50/40 text-sky-600 font-semibold' : 'text-slate-700'}`}
+                    >
+                      Spi edge office
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setChannel('custom_location'); setChannelOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors cursor-pointer ${channel === 'custom_location' ? 'bg-sky-50/40 text-sky-600 font-semibold' : 'text-slate-700'}`}
+                    >
+                      Custom Location / In-Person
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             {channel === 'custom_location' && (
               <input
                 type="text"
@@ -408,7 +510,7 @@ export const BookingForm: React.FC = () => {
 
         {/* Section 4: Coaching Date & Time Slot */}
         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <label className="block text-xs font-black text-black uppercase tracking-widest">
             4. Select Coaching Date & Time Slot
           </label>
 
@@ -584,10 +686,10 @@ export const BookingForm: React.FC = () => {
       <div className="space-y-6">
         
         {/* Section 5: Description */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3">
+        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3 min-w-0">
           <div className="flex justify-between items-center">
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
-              5. Description
+            <label className="block text-xs font-black text-black uppercase tracking-widest">
+              5. Description (Optional)
             </label>
             <span className="text-[10px] font-mono text-slate-400">
               {getWordCount(description)}/50 words
@@ -597,14 +699,15 @@ export const BookingForm: React.FC = () => {
             rows={4}
             placeholder="e.g. Discussing outbound roadmap & scaling SDR metrics..."
             value={description}
-            onChange={(e) => handleWordLimitChange(e.target.value, setDescription)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm placeholder-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-all resize-none"
+            maxLength={300}
+            onChange={(e) => handleWordLimitChange(e.target.value, setDescription, 50)}
+            className="w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm placeholder-slate-400 focus:border-sky-500 focus:bg-white focus:outline-none transition-all resize-none break-words"
           />
         </div>
 
         {/* Section 6: Phone Number */}
         <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-3">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <label className="block text-xs font-black text-black uppercase tracking-widest">
             6. Phone Number <span className="text-rose-500">*</span>
           </label>
           <input
@@ -641,7 +744,7 @@ export const BookingForm: React.FC = () => {
             </div>
 
             <div className="flex justify-between items-center">
-              <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Role</span>
+              <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Name</span>
               <span className="text-slate-700 font-bold text-right truncate max-w-[160px]">
                 {jobTitle.trim() ? jobTitle.trim() : 'Not specified'}
               </span>

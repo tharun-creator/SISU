@@ -80,9 +80,10 @@ export const SharedNoteView: React.FC = () => {
             </div>
           )}
 
-          <div className="font-body text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
-            {note.content || <span className="italic text-slate-400">No text content.</span>}
-          </div>
+          <div 
+            className="font-body text-sm text-slate-600 leading-relaxed prose max-w-none break-words"
+            dangerouslySetInnerHTML={{ __html: note.content || '<span class="italic text-slate-400">No text content.</span>' }}
+          />
         </div>
 
         {/* Footer branding */}

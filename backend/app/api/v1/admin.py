@@ -202,7 +202,11 @@ async def admin_update_user_priority(user_id: int, req: UserPriorityUpdateReques
     }
 
 @router.post("/availability/date-signal")
-async def admin_set_date_signal(req: DateSignalRequest, db: Session = Depends(get_db)):
+async def admin_set_date_signal(
+    req: DateSignalRequest, 
+    db: Session = Depends(get_db), 
+    admin: User = Depends(require_admin)
+):
     date_str = req.date.strip()
     if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
         raise HTTPException(status_code=400, detail="Date must be in YYYY-MM-DD format")
@@ -223,6 +227,58 @@ async def admin_set_date_signal(req: DateSignalRequest, db: Session = Depends(ge
         db.add(sig)
         
     db.commit()
+
+    if req.signal == "red":
+        y, m, d = map(int, date_str.split("-"))
+        day_start = datetime.datetime(y, m, d, 0, 0, 0)
+        day_end = datetime.datetime(y, m, d, 23, 59, 59)
+        meetings_to_cancel = db.query(Meeting).filter(
+            Meeting.start_time >= day_start,
+            Meeting.start_time <= day_end,
+            Meeting.status != "cancelled",
+            Meeting.deleted_at == None
+        ).all()
+        for meeting in meetings_to_cancel:
+            old_status = meeting.status
+            meeting.status = "cancelled"
+            
+            log_status_change(db, meeting.id, old_status, "cancelled", admin.email, "Cancelled due to calendar block (Red Signal)")
+            
+            client = db.query(User).filter(User.id == meeting.client_id).first()
+            if client:
+                local_start = to_local(meeting.start_time)
+                meeting_dict = {
+                    "title": meeting.title,
+                    "description": meeting.description or "",
+                    "date": local_start.strftime("%B %d, %Y"),
+                    "time": f"{local_start.strftime('%I:%M %p')} IST",
+                    "type": meeting.meeting_type,
+                    "duration": f"{meeting.duration_minutes} mins",
+                    "priority": meeting.priority,
+                    "meet_link": meeting.meet_link or "",
+                }
+                
+                if meeting.google_event_id:
+                    try:
+                        CalendarService.delete_event(meeting.google_event_id)
+                    except Exception as e:
+                        print(f"[Calendar Direct Delete Error] {e}")
+                
+                try:
+                    EmailService.send_cancellation(client.email, client.name, meeting_dict)
+                except Exception as email_err:
+                    print(f"[Email Send Error] {email_err}")
+                
+                NotificationService.create_notification(
+                    db, 
+                    client.id, 
+                    "cancelled", 
+                    "Meeting Cancelled", 
+                    f"Your meeting '{meeting.title}' on {local_start.strftime('%B %d, %Y')} has been cancelled because the slot is no longer available.", 
+                    meeting.id
+                )
+        db.commit()
+
     return {
         "success": True,
         "data": {
@@ -265,6 +321,7 @@ async def admin_update_meeting_status(
                 db=db,
                 client_id=meeting.client_id,
                 title=meeting.title,
+                description=meeting.description,
                 start=new_start,
                 end=new_end,
                 duration_minutes=meeting.duration_minutes,
