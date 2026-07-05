@@ -18,6 +18,7 @@ from app.schemas.meeting import MeetingStatusUpdate, DateSignalRequest
 from app.schemas.user import UserOut, UserUpdate
 from app.api.v1.auth import user_to_out_dict
 from app.api.helpers import to_local, parse_dt_to_ist, meeting_to_dict, log_status_change
+from app.config import settings
 
 router = APIRouter(prefix="/admin", tags=["Admin Operations"], dependencies=[Depends(require_admin)])
 
@@ -127,8 +128,8 @@ async def admin_demote_user(req: UserDemoteRequest, db: Session = Depends(get_db
     if email == admin.email:
         raise HTTPException(status_code=400, detail="You cannot demote yourself.")
         
-    if email == "tharunriot@gmail.com":
-        raise HTTPException(status_code=400, detail="The default admin tharunriot@gmail.com cannot be demoted.")
+    if email in settings.admin_emails_list:
+        raise HTTPException(status_code=400, detail=f"The environment admin {email} cannot be demoted.")
 
     db.query(AdminEmail).filter(AdminEmail.email.ilike(email)).delete(synchronize_session=False)
     
@@ -274,7 +275,7 @@ async def admin_set_date_signal(
                     client.id, 
                     "cancelled", 
                     "Meeting Cancelled", 
-                    f"Your meeting '{meeting.title}' on {local_start.strftime('%B %d, %Y')} has been cancelled because the slot is no longer available.", 
+                    f"Your meeting '{meeting.title}' on {local_start.strftime('%B %d, %Y')} has been cancelled by Admin ({admin.name}) because the slot is no longer available.", 
                     meeting.id
                 )
         db.commit()
@@ -340,7 +341,7 @@ async def admin_update_meeting_status(
                     old_dict = {"title": meeting.title, "date": local_old.strftime("%B %d, %Y"), "time": f"{local_old.strftime('%I:%M %p')} IST", "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
                     new_dict = {"title": meeting.title, "date": local_new.strftime("%B %d, %Y"), "time": f"{local_new.strftime('%I:%M %p')} IST", "type": meeting.meeting_type, "duration": f"{meeting.duration_minutes} mins"}
                     EmailService.send_reschedule_proposed(client.email, client.name, old_dict, new_dict)
-                    NotificationService.create_notification(db, client.id, "reschedule_proposed", "Reschedule Proposed", f"Admin proposed to reschedule '{meeting.title}' to {local_new.strftime('%B %d at %I:%M %p')} IST.", meeting.id)
+                    NotificationService.create_notification(db, client.id, "reschedule_proposed", "Reschedule Proposed", f"Admin ({admin.name}) proposed to reschedule '{meeting.title}' to {local_new.strftime('%B %d at %I:%M %p')} IST.", meeting.id)
 
     db.commit()
     log_status_change(db, meeting.id, old_status, req.status, admin.email, req.admin_notes)
@@ -376,7 +377,7 @@ async def admin_update_meeting_status(
         except Exception as err:
             logger.error(f"[Google Sync Error] {err}")
 
-        NotificationService.create_notification(db, client.id, "approved", "Meeting Approved! 🎉", f"Your meeting '{meeting.title}' has been confirmed for {local_start.strftime('%B %d at %I:%M %p')}.", meeting.id)
+        NotificationService.create_notification(db, client.id, "approved", "Meeting Approved! 🎉", f"Your meeting '{meeting.title}' has been confirmed for {local_start.strftime('%B %d at %I:%M %p')}. Approved by Admin ({admin.name}).", meeting.id)
 
     elif req.status == "rejected":
         if meeting.google_event_id:
@@ -385,7 +386,7 @@ async def admin_update_meeting_status(
             except Exception as e:
                 logger.error(f"[Calendar Direct Delete Error] {e}")
         EmailService.send_meeting_rejected(client.email, client.name, meeting_dict, req.admin_notes or "")
-        NotificationService.create_notification(db, client.id, "rejected", "Meeting Request Declined", f"Your request for '{meeting.title}' was not approved.", meeting.id)
+        NotificationService.create_notification(db, client.id, "rejected", "Meeting Request Declined", f"Your request for '{meeting.title}' was declined by Admin ({admin.name}).", meeting.id)
 
     return {
         "success": True,

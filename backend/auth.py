@@ -121,7 +121,7 @@ def get_current_user(
 
 def is_email_admin(email: str, db: Session) -> bool:
     email_clean = email.strip().lower()
-    env_admins_env = os.getenv("ADMIN_EMAILS", "tharunriot@gmail.com")
+    env_admins_env = os.getenv("ADMIN_EMAILS", "")
     env_admins = [e.strip().lower() for e in env_admins_env.split(",") if e.strip()]
     if email_clean in env_admins:
         return True

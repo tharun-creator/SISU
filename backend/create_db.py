@@ -18,23 +18,14 @@ if db_url and "mysql" in db_url:
             port=parsed.port or 3306
         )
         cursor = connection.cursor()
-        db_name = parsed.path.strip("/") or "sisu_db"
+        db_name = parsed.path.strip("/")
+        if not db_name:
+            raise ValueError("DATABASE_URL must include a database name")
+            
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
         print(f"Database '{db_name}' created successfully or already exists.")
         connection.close()
     except Exception as e:
         print(f"Error creating database from DATABASE_URL: {e}")
 else:
-    try:
-        connection = pymysql.connect(
-            host='localhost',
-            user='root',
-            password='tharun2004',
-            port=3306
-        )
-        cursor = connection.cursor()
-        cursor.execute("CREATE DATABASE IF NOT EXISTS sisu_db")
-        print("Database 'sisu_db' created successfully or already exists.")
-        connection.close()
-    except Exception as e:
-        print(f"Error creating database: {e}")
+    raise ValueError("DATABASE_URL must be set in .env and must be a valid MySQL URL.")

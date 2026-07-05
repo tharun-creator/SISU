@@ -2,6 +2,7 @@ import re
 import datetime
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+import os
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -46,7 +47,8 @@ async def admin_create_user(
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(req.email)).first() is not None or req.email.lower() == "tharunriot@gmail.com"
+    admin_emails = [e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()]
+    is_admin = db.query(AdminEmail).filter(AdminEmail.email.ilike(req.email)).first() is not None or req.email.lower() in admin_emails
     role = "admin" if is_admin else "client"
     
     new_user = User(
@@ -119,8 +121,9 @@ async def admin_demote_user(
     if email == admin.email:
         raise HTTPException(status_code=400, detail="You cannot demote yourself.")
         
-    if email.lower() == "tharunriot@gmail.com":
-        raise HTTPException(status_code=400, detail="The default admin tharunriot@gmail.com cannot be demoted.")
+    admin_emails = [e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()]
+    if email.lower() in admin_emails:
+        raise HTTPException(status_code=400, detail=f"The environment admin {email} cannot be demoted.")
 
     db.query(AdminEmail).filter(AdminEmail.email.ilike(email)).delete(synchronize_session=False)
     
@@ -263,8 +266,8 @@ async def admin_set_date_signal(
                     db, 
                     client.id, 
                     "cancelled", 
-                    "Meeting Cancelled", 
-                    f"Your meeting '{meeting.title}' on {local_start.strftime('%B %d, %Y')} has been cancelled because the slot is no longer available.", 
+                    "Meeting Cancelled",
+                    f"Your meeting '{meeting.title}' on {local_start.strftime('%B %d, %Y')} has been cancelled by Admin ({admin.name}) because the slot is no longer available.",
                     meeting.id
                 )
         db.commit()
@@ -329,7 +332,7 @@ async def admin_update_meeting_status(
                         email_service.send_reschedule_proposed(client.email, client.name, old_dict, new_dict)
                     except Exception as email_err:
                         print(f"[Email Send Error] {email_err}")
-                    create_notification(db, client.id, "reschedule_proposed", "Reschedule Proposed", f"Admin proposed to reschedule '{meeting.title}' to {local_new.strftime('%B %d at %I:%M %p')} IST.", meeting.id)
+                    create_notification(db, client.id, "reschedule_proposed", "Reschedule Proposed", f"Admin ({admin.name}) proposed to reschedule '{meeting.title}' to {local_new.strftime('%B %d at %I:%M %p')} IST.", meeting.id)
 
     db.commit()
 
@@ -367,7 +370,7 @@ async def admin_update_meeting_status(
         except Exception as err:
             print(f"[Google Sync Error] Direct sync failed: {err}")
 
-        create_notification(db, client.id, "approved", "Meeting Approved! 🎉", f"Your meeting '{meeting.title}' has been confirmed for {local_start.strftime('%B %d at %I:%M %p')}. The meeting is booked and please make sure to check it in the google calendar.", meeting.id)
+        create_notification(db, client.id, "approved", "Meeting Approved! 🎉", f"Your meeting '{meeting.title}' has been confirmed for {local_start.strftime('%B %d at %I:%M %p')}. Approved by Admin ({admin.name}). The meeting is booked and please make sure to check it in the google calendar.", meeting.id)
 
     elif req.status == "rejected":
         if meeting.google_event_id:
@@ -379,7 +382,7 @@ async def admin_update_meeting_status(
             email_service.send_meeting_rejected(client.email, client.name, meeting_dict, req.admin_notes or "")
         except Exception as email_err:
             print(f"[Email Send Error] {email_err}")
-        create_notification(db, client.id, "rejected", "Meeting Request Declined", f"Your request for '{meeting.title}' was not approved. You may submit a new request.", meeting.id)
+        create_notification(db, client.id, "rejected", "Meeting Request Declined", f"Your request for '{meeting.title}' was declined by Admin ({admin.name}). You may submit a new request.", meeting.id)
 
     return meeting_to_dict(meeting)
 

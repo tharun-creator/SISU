@@ -17,21 +17,20 @@ def reset_database():
         from urllib.parse import urlparse
         
         db_url = os.getenv("DATABASE_URL")
-        host = 'localhost'
-        user = 'root'
-        password = 'tharun2004'
-        port = 3306
-        db_name = 'sisu_db'
         
-        if db_url and "mysql" in db_url:
-            cleaned_url = db_url.replace("mysql+pymysql://", "mysql://")
-            parsed = urlparse(cleaned_url)
-            host = parsed.hostname or host
-            user = parsed.username or user
-            password = parsed.password or ''
-            parsed_port = parsed.port
-            port = parsed_port if parsed_port is not None else port
-            db_name = parsed.path.strip("/") or db_name
+        if not db_url or "mysql" not in db_url:
+            raise ValueError("DATABASE_URL must be set in .env and must be a valid MySQL URL to use this script.")
+            
+        cleaned_url = db_url.replace("mysql+pymysql://", "mysql://")
+        parsed = urlparse(cleaned_url)
+        host = parsed.hostname
+        user = parsed.username
+        password = parsed.password or ''
+        port = parsed.port or 3306
+        db_name = parsed.path.strip("/")
+        
+        if not host or not user or not db_name:
+            raise ValueError("Invalid DATABASE_URL format. It must contain host, user, and database name.")
             
         connection = pymysql.connect(
             host=host,

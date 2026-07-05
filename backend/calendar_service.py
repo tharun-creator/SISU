@@ -195,8 +195,8 @@ def create_event_direct(
         service = _get_service()
         
         # Add default admin guest
-        admin_email = "tharunriot@gmail.com"
-        guests = list(set(attendees + [admin_email]))
+        admin_emails = [e.strip().lower() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()]
+        guests = list(set(attendees + admin_emails))
         
         event_body = {
             "summary": title,

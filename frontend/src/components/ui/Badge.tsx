@@ -1,4 +1,4 @@
-import React from 'react';
+hereimport React from 'react';
 
 interface BadgeProps {
   children: React.ReactNode;

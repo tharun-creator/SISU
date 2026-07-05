@@ -20,6 +20,7 @@ from app.api.helpers import (
     IST, to_local, parse_dt_to_ist, meeting_to_dict, 
     log_status_change
 )
+from app.config import settings
 from app.schemas.meeting import (
     MeetingCreate, RescheduleRequest, AvailabilityCreate, ScheduleMeetingRequest
 )
@@ -106,11 +107,8 @@ async def create_meeting(req: MeetingCreate, db: Session = Depends(get_db), curr
     EmailService.send_booking_received(current_user.email, current_user.name, meeting_dict)
     
     # Notify admin about new booking
-    import os
     from app.core.logging import logger
-    admin_emails_env = os.getenv("ADMIN_EMAILS", "tharunriot@gmail.com")
-    admin_emails = [email.strip().lower() for email in admin_emails_env.split(",") if email.strip()]
-    for admin_email in admin_emails:
+    for admin_email in settings.admin_emails_list:
         try:
             EmailService.send_email(
                 to=admin_email,

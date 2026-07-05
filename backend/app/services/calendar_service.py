@@ -179,8 +179,7 @@ class CalendarService:
             }
 
         try:
-            admin_email = "tharunriot@gmail.com"
-            guests = list(set(attendees + [admin_email]))
+            guests = list(set(attendees + settings.admin_emails_list))
             
             event_body = {
                 "summary": title,

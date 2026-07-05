@@ -15,6 +15,7 @@ interface User {
 }
 
 export default function AdminUsersPage() {
+  const envAdmins = import.meta.env.VITE_ADMIN_EMAILS ? import.meta.env.VITE_ADMIN_EMAILS.split(',').map((e: string) => e.trim().toLowerCase()) : [];
   const { user: currentUser, isAdmin } = useAuth();
   if (!isAdmin) {
     window.location.href = '/';
@@ -417,7 +418,7 @@ export default function AdminUsersPage() {
                           {!isSelf && (
                             <>
                               {userIsAdmin ? (
-                                u.email?.toLowerCase() !== 'tharunriot@gmail.com' && (
+                                !envAdmins.includes(u.email?.toLowerCase() || '') && (
                                   <button
                                     onClick={() => handleDemoteUser(u.email)}
                                     className="px-2.5 py-1 text-[11px] font-bold rounded-lg border border-orange-200 text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"
@@ -549,7 +550,7 @@ export default function AdminUsersPage() {
                   {!isSelf && (
                     <div className="flex gap-1.5 flex-wrap border-t border-slate-100 pt-2.5 mt-1" onClick={(e) => e.stopPropagation()}>
                       {userIsAdmin ? (
-                        u.email?.toLowerCase() !== 'tharunriot@gmail.com' && (
+                        !envAdmins.includes(u.email?.toLowerCase() || '') && (
                           <button
                             onClick={() => handleDemoteUser(u.email)}
                             className="px-2.5 py-1 text-[10px] font-bold rounded-lg border border-orange-200 text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"

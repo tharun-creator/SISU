@@ -36,16 +36,19 @@ def reset_database_users():
         db.commit()
         print("Successfully cleared all user and transaction tables.")
         
+        admin_emails_env = os.getenv("ADMIN_EMAILS", "admin@example.com")
+        primary_admin_email = [e.strip().lower() for e in admin_emails_env.split(",") if e.strip()][0]
+
         # 3. Seed default admin email
-        print("\nAdding default admin email: tharunriot@gmail.com")
-        db.add(AdminEmail(email="tharunriot@gmail.com"))
+        print(f"\nAdding default admin email: {primary_admin_email}")
+        db.add(AdminEmail(email=primary_admin_email))
         
         # 4. Create default admin user account
-        temp_pass = "TharunRiot@2026"
+        temp_pass = "SisuAdmin@2026"
         print(f"Recreating default admin user account with temporary password: {temp_pass}")
         admin_user = User(
-            name="Tharun Riot",
-            email="tharunriot@gmail.com",
+            name="Primary Admin",
+            email=primary_admin_email,
             password_hash=auth.hash_password(temp_pass),
             role="admin",
             is_active=True

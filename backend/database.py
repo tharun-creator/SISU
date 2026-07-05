@@ -380,7 +380,7 @@ Base.metadata.create_all(bind=engine)
 # Seed default admin emails if not present, and ensure correct role
 db = SessionLocal()
 try:
-    admin_emails_env = os.getenv("ADMIN_EMAILS", "tharunriot@gmail.com")
+    admin_emails_env = os.getenv("ADMIN_EMAILS", "")
     admin_emails = [email.strip().lower() for email in admin_emails_env.split(",") if email.strip()]
     
     for email in admin_emails:
